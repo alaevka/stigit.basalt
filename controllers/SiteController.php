@@ -452,6 +452,8 @@ class SiteController extends Controller
         */
 
         $model = $this->findModel($id);
+        $podr_tasks = \app\models\PodrTasks::findAll(['TASK_ID' => $model->ID]);
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
             //after save generate script to confirm and close window
@@ -464,6 +466,7 @@ class SiteController extends Controller
                 'model' => $model,
                 'not_ajax' => false,
                 'podr_data' => $this->_multidemensional_podr,
+                'podr_tasks' => $podr_tasks,
             ]);
         } else {
             $this->layout = 'updateissue';
@@ -474,6 +477,7 @@ class SiteController extends Controller
                 'model' => $model,
                 'not_ajax' => true,
                 'podr_data' => $this->_multidemensional_podr,
+                'podr_tasks' => $podr_tasks,
             ]);
         }
     }

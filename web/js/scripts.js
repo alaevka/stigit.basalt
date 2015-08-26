@@ -121,7 +121,7 @@ $(document).ready(function(){
 
     $(".checkbox-podr-link").click(function(){
     	var link_id = $(this).attr('data-id');
-    	$("#checkbox_"+link_id).attr("checked", true);
+    	$("#checkbox_"+link_id).prop("checked", true);
     	_selectPodr();
     	return false;
     });

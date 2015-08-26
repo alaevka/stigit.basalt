@@ -40,7 +40,19 @@
 </div>
 <?php ActiveForm::end(); ?>
 <?php
-	
+		if($podr_tasks) {
+			$podr_tasks_list = '';
+			foreach($podr_tasks as $podr) {
+				$query = new \yii\db\Query;
+		        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+		                ->from('STIGIT.V_F_PODR')
+		                ->where('KODZIFR = \''.$podr->KODZIFR.'\'');
+		        $command = $query->createCommand();
+		        $data = $command->queryOne();
+		        if($data)
+					$podr_tasks_list .= '{value: '.$data['id'].', label: \''.$data['name'].'\'},';
+			}
+		}
 		echo $this->registerJs(
 			"
 				function _selectPodr() {
@@ -82,18 +94,19 @@
 
 				$(\".checkbox-podr-link\").click(function(){
 			    	var link_id = $(this).attr('data-id');
-			    	$(\"#checkbox_\"+link_id).attr(\"checked\", true);
+			    	$(\"#checkbox_\"+link_id).prop(\"checked\", true);
 			    	_selectPodr();
 			    	return false;
 			    });
-
-				$('#tasks-podr_list').tokenfield()
-			    	.on('tokenfield:removetoken', function (e) {
-			    		$('#tasks-persons_list').tokenfield('setTokens', []);
-			    		$(\"#podr-check-list-update\").find('input:checkbox').removeAttr('checked');
-			    		$(\"#persons-check-list-update\").html('<div class=\"alert alert-warning\" role=\"alert\">Пожалуйста, сначала укажите подразделения</div>');
-			        	
-			    	});
+				
+				$('#tasks-podr_list').tokenfield();
+				$('#tasks-podr_list').tokenfield('setTokens', [".substr_replace($podr_tasks_list ,"",-1)."]);
+		    	$('#tasks-podr_list').on('tokenfield:removetoken', function (e) {
+		    		$('#tasks-persons_list-update').tokenfield('setTokens', []);
+		    		$(\"#podr-check-list-update\").find('input:checkbox').removeAttr('checked');
+		    		$(\"#persons-check-list-update\").html('<div class=\"alert alert-warning\" role=\"alert\">Пожалуйста, сначала укажите подразделения</div>');
+		        	
+		    	});
 
 			", 
 			View::POS_END, 
