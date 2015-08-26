@@ -212,12 +212,11 @@
 				    ?>
 				    <div class="hr-line-dashed"></div>
 
-				    <?= $form->field($model, 'documentation', [
-				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
-				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
-				        'inputOptions'=>['class'=>'form-control input-sm'],
-				        'enableAjaxValidation' => true
-				    ])->textInput() ?>
+				    <div class="form-group field-tasks-documentation">
+						<label class="col-sm-4 control-label" for="tasks-documentation">Выпущенная документация</label>
+						<div class="col-sm-8"><!-- <input type="file" multiple=true class="file-loading" id="tasks-documentation" name="documentation[documentation]" value=""> --></div>
+
+					</div>
 				    <div class="hr-line-dashed"></div>
 
 				    <?= $form->field($model, 'REPORT_TEXT', [
@@ -241,7 +240,26 @@
 				    ])->textInput() ?>
 				    <div class="hr-line-dashed"></div>
 
-				    
+				    <?php
+				    	$this->registerJs('function format(state) {return state.text;}', View::POS_HEAD);
+				    ?>
+				    <?= $form->field($model, 'state', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->widget(\kartik\select2\Select2::classname(), [
+					    'options' => ['placeholder' => ''],
+					    'hideSearch' => true,
+					    'data' => yii\helpers\ArrayHelper::map(app\models\States::find()->orderBy('ID')->all(), 'ID', 'state_name_state_colour'),
+					    'pluginOptions' => [
+					        'allowClear' => true,
+					        'templateResult' => new JsExpression('format'),
+					        'escapeMarkup' => new JsExpression("function(m) { return m; }")
+        					//'templateSelection' => new JsExpression('format'),
+					        //'templateSelection' => new JsExpression('function (designation) { return state.text; }'),
+					    ],
+					]);
+				    ?>
 
 </div>
 <div class="modal-footer">
@@ -460,7 +478,6 @@
 					$(\"#transmitted-podr-check-list-update\").find('#checkbox_'+e.attrs.value).removeAttr('checked');
 					_selectPodrUpdateTransmitted();
 				});
-		
 
 			", 
 			View::POS_END, 
