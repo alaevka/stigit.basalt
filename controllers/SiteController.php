@@ -107,6 +107,9 @@ class SiteController extends Controller
                 $task->DEADLINE = new \yii\db\Expression("to_date('" . $model->date . "','{$this->dateFormat}')");
                 $task->TRACT_ID = $transactions->ID;
                 
+
+                //print_r($model->podr_list); die();
+
                 if($task->save()) {
                     /*
                         Сохраняем модель PODR_TASKS
@@ -173,7 +176,7 @@ class SiteController extends Controller
                     $class = '';
                 }
 
-                $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['id']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['id']."\"><a href=\"#\" data-id=\"".$value['id']."\" class=\"checkbox-podr-link\">".$value['name']."</a></span>";
+                $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"checkbox-podr-link\">".$value['name']."</a></span>";
                 $level++;
                 $this->_createPodrTree($value['id'], $level);
                 $level--; 
@@ -233,6 +236,42 @@ class SiteController extends Controller
         return $out;
     }
 
+    public function actionOrdernumsearch($q = null, $id = null) {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new \yii\db\Query;
+            $query->select('DOCUMENTID AS id, DESIGNATION AS designation, ORDERNUM AS text, PEOORDERNUM AS peoordernum')
+                ->from('STIGIT.V_PRP_DESIGNATION')
+                ->where('LOWER(ORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
+                ->limit(20);
+                //echo mb_strtolower($q, 'UTF-8'); die();
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
+
+    public function actionPeoordernumsearch($q = null, $id = null) {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new \yii\db\Query;
+            $query->select('DOCUMENTID AS id, DESIGNATION AS designation, ORDERNUM AS ordernum, PEOORDERNUM AS text')
+                ->from('STIGIT.V_PRP_DESIGNATION')
+                ->where('LOWER(PEOORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
+                ->limit(20);
+                //echo mb_strtolower($q, 'UTF-8'); die();
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
+
 
     public function actionGetpersons() {
         if (Yii::$app->request->isAjax) {
@@ -250,7 +289,7 @@ class SiteController extends Controller
                 $data = $command->queryAll();
                 $persons_list .= '<ul>';
                 foreach ($data as $key => $value) {
-                    $persons_list .= "<li><input id=\"checkbox_".$value['TN']."\" type='checkbox' name=\"persons_check[]\" data-title=\"".$value['FAM']."\" value=\"".$value['TN']."\" /> <span style=\"font-size: 11px;\">".$value['FAM']." ".$value['IMJ']." ".$value['OTCH']."</span></li>";
+                    $persons_list .= "<li><input id=\"checkbox_".$value['TN']."\" type='checkbox' name=\"persons_check[]\" data-title=\"".$value['FIO']."\" value=\"".$value['TN']."\" /> <span style=\"font-size: 11px;\">".$value['FAM']." ".$value['IMJ']." ".$value['OTCH']."</span></li>";
                 }
                 $persons_list .= '</ul>';
             }
@@ -265,6 +304,9 @@ class SiteController extends Controller
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             
             $issue = \app\models\Tasks::findOne($issue_id);
+            
+            
+
             $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID])->all();
             if($podr_tasks) {
                 $podr_list = '';
@@ -272,12 +314,13 @@ class SiteController extends Controller
                     $query = new \yii\db\Query;
                     $query->select('*')
                         ->from('STIGIT.V_F_PODR')
-                        ->where('KODZIFR = \'' . $task->KODZIFR .'\'');
+                        ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
                     $command = $query->createCommand();
                     $data = $command->queryOne();
                     if(isset($data['NAIMPODR']))
-                        $podr_list .= $data['NAIMPODR'].'<br>';
+                        $podr_list .= $data['NAIMPODR']."<br>";
                 }
+               
             }
             $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID])->all();
             $pers_list = '';
@@ -289,7 +332,7 @@ class SiteController extends Controller
                         ->where('TN = \'' . $task->TN .'\'');
                     $command = $query->createCommand();
                     $data = $command->queryOne();
-                    $pers_list .= $data['FIO'].'<br>';
+                    $pers_list .= $data['FIO']."<br>";
                 }
             } else {
                 $pers_list = self::_UNDEFINED;
@@ -452,12 +495,22 @@ class SiteController extends Controller
         */
 
         $model = $this->findModel($id);
+        $model->DEADLINE = \Yii::$app->formatter->asDate($model->DEADLINE, 'php:d-m-Y');
         $podr_tasks = \app\models\PodrTasks::findAll(['TASK_ID' => $model->ID]);
+        $pers_tasks = \app\models\PersTasks::findAll(['TASK_ID' => $model->ID]);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return \yii\widgets\ActiveForm::validate($model);
+        }
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            //echo '<pre>';
+            //print_r($model->persons_list); die();
 
             //after save generate script to confirm and close window
-            return $this->redirect(['view', 'id' => (string) $model->_id]);
+            //return $this->redirect(['view', 'id' => (string) $model->_id]);
         } elseif (Yii::$app->request->isAjax) {
             $this->_podr_data_array = $this->_getPodrData();
             $this->_createPodrTree(1, 0);
@@ -467,6 +520,7 @@ class SiteController extends Controller
                 'not_ajax' => false,
                 'podr_data' => $this->_multidemensional_podr,
                 'podr_tasks' => $podr_tasks,
+                'pers_tasks' => $pers_tasks,
             ]);
         } else {
             $this->layout = 'updateissue';
@@ -478,6 +532,7 @@ class SiteController extends Controller
                 'not_ajax' => true,
                 'podr_data' => $this->_multidemensional_podr,
                 'podr_tasks' => $podr_tasks,
+                'pers_tasks' => $pers_tasks,
             ]);
         }
     }

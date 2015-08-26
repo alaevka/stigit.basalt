@@ -219,3 +219,6 @@ form[role=login] .form-control + .glyphicon {
     font-weight: bold;
     width: 240px;
 }
+.ui-widget-content {
+    border: 0px;
+}

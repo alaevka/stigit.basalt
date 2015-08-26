@@ -8,6 +8,7 @@ class Tasks extends \yii\db\ActiveRecord
 {
 
     public $podr_list;
+    public $persons_list;
 
     /**
      * @inheritdoc
@@ -24,7 +25,9 @@ class Tasks extends \yii\db\ActiveRecord
     {
         return [
             [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'DEADLINE', 'TRACT_ID'], 'required'],
-            [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT'], 'safe'],
+            [['TASK_NUMBER'], 'unique'],
+            [['SOURCENUM'], 'string', 'max' => 25],
+            [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list'], 'safe'],
         ];
     }
 
@@ -45,6 +48,7 @@ class Tasks extends \yii\db\ActiveRecord
             'REPORT_TEXT' => 'Отчет о работе',
 
             'podr_list' => 'Подразделения',
+            'persons_list' => 'Исполнитель',
         ];
     }
     

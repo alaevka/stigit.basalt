@@ -119,7 +119,7 @@ $(document).ready(function(){
     	});
     $('#issueform-persons_list').tokenfield();
 
-    $(".checkbox-podr-link").click(function(){
+    $("#podr-check-list").find(".checkbox-podr-link").click(function(){
     	var link_id = $(this).attr('data-id');
     	$("#checkbox_"+link_id).prop("checked", true);
     	_selectPodr();

@@ -322,7 +322,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			</div>
 			<div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
-			<button type="button" id="update-issue-button" class="btn btn-primary">Редактировать (модальное окно)</button>
+			<!-- <button type="button" id="update-issue-button" class="btn btn-primary">Редактировать (модальное окно)</button> -->
 			<a href="#" id="update-issue-button-new-tab" target="_blank" class="btn btn-primary">Редактировать (вкладка)</a>
 			</div>
 		</div>
@@ -339,4 +339,39 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	</div>
 </div>
 
+
+<div class="modal fade" id="podr-select-modal-update" role="dialog" aria-labelledby="podr-select-modal-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-podr-update">Выбор подразделений</h4>
+			</div>
+			<div class="modal-body" id="podr-check-list-update">
+				<?= $podr_data; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="persons-select-modal" role="dialog" aria-labelledby="podr-select-modal-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-pers">Выбор исполнителей</h4>
+			</div>
+			<div class="modal-body" id="persons-check-list">
+				<div class="alert alert-warning" role="alert">Пожалуйста, сначала укажите подразделения</div>
+			</div>
+			<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+				<button type="button" id="select-persons" class="btn btn-primary">Выбрать указанных исполнителей</button>
+			</div>
+		</div>
+	</div>
+</div>	
 
