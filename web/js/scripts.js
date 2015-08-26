@@ -18,13 +18,14 @@ $(document).ready(function(){
 	    $("#persons-check-list").html('<div class="alert alert-warning" role="alert">Пожалуйста, сначала укажите подразделения</div>');
 	});
 
-	$('#issue-cancel-button').click(function () {
+	$('#issue-cancel-button, #close-label-issue').click(function () {
 	   	bootbox.confirm({size: 'small', message: "Вы уверены, что хотите закрыть форму выдачи задания?", callback: function(result) {
 		  	if(result == true) {
 		  		$('#issue-modal').modal('hide');
 		  	}	
 		}}); 
 	})
+
 
 	$("#add-podr-button").click(function(){
 		$("#podr-select-modal").modal();
@@ -34,9 +35,45 @@ $(document).ready(function(){
 		$("#persons-select-modal").modal();
 	});
 	
+	$(".issue-row").click(function(){
+		//console.log($(this).attr('id'));
+		//get data and create modal
+		$.ajax({
+        	type: "POST",
+        	dataType: 'json',
+        	url: "index.php?r=site/getissuedata",
+        	data: "id="+$(this).attr('id'),
+        	success: function(data,status){
+        		$("#myModalLabel-issue").html('Просмотр задания '+data.issue_designation);	
+        		$("#issue-view-table").html(data.result_table);
+        		$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+        		$("#update-issue-button").attr('data-id', data.issue_id);
+        		$("#issue-view-modal").modal();	
+
+        	}
+        });
+
+		
+	});
+
+	$("#update-issue-button").click(function(){
+		$("#issue-view-modal").modal('hide');	
+		var issue_id = $(this).attr('data-id');
+		$.get(
+	        'index.php?r=site/updateissue',      
+	        {
+	            id: issue_id
+	        },
+	        function (data) {
+	            $('#partial-update-form').html(data);
+	            $("#issue-update-modal").modal();
+	        }  
+	    );
+	});
 
 
-	$("#select-podr").click(function(){
+	//$("#select-podr").click(function(){
+	function _selectPodr() {
 		var selected = [];
 		var selected_values = {};
 		$('#podr-check-list input:checked').each(function() {
@@ -58,8 +95,8 @@ $(document).ready(function(){
         		$('#persons-check-list').tree({checkbox: false});
         	}
         });
-
-    });
+    }    
+    //});
 
     $("#select-persons").click(function(){
     	var selected = [];
@@ -70,12 +107,29 @@ $(document).ready(function(){
         $('#persons-select-modal').modal('hide');
     });
 
-    $('#podr-check-list').tree();
+    $('#podr-check-list').tree({checkbox: false});
     $('#issueform-podr_list').tokenfield()
     	.on('tokenfield:removetoken', function (e) {
+    		$('#issueform-persons_list').tokenfield('setTokens', []);
+    		$("#podr-check-list").find('input:checkbox').removeAttr('checked');
+    		$("#persons-check-list").html('<div class="alert alert-warning" role="alert">Пожалуйста, сначала укажите подразделения</div>');
         	//update hidden field
         	// var isset_values = obj = JSON.parse($("#issueform-podr_values").val());
         	// console.log(isset_values);
     	});
     $('#issueform-persons_list').tokenfield();
+
+    $(".checkbox-podr-link").click(function(){
+    	var link_id = $(this).attr('data-id');
+    	$("#checkbox_"+link_id).attr("checked", true);
+    	_selectPodr();
+    	return false;
+    });
+
+
+
+    //for update issue
+
+    
 });
+

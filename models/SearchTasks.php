@@ -9,11 +9,11 @@ use app\models\Tasks;
 
 class SearchTasks extends Tasks
 {
+
     public function rules()
     {
         return [
-            [['DESIGNATION'], 'integer'],
-            //[['title'], 'safe'],
+            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT'], 'safe'],
         ];
     }
 
@@ -31,14 +31,21 @@ class SearchTasks extends Tasks
         ]);
 
         if (!($this->load($params) && $this->validate())) {
+            
             return $dataProvider;
         }
+
+
 
         // $query->andFilterWhere([
         //     //'DESIGNATION' => $this->DESIGNATION,
         // ]);
 
-        //$query->andFilterWhere(['like', 'title', $this->title]);
+        $query->andFilterWhere(['like', 'TASK_TEXT', $this->TASK_TEXT]);
+        $query->andFilterWhere(['like', 'PEOORDERNUM', $this->PEOORDERNUM]);
+        $query->andFilterWhere(['like', 'ORDERNUM', $this->ORDERNUM]);
+        $query->andFilterWhere(['like', 'TASK_NUMBER', $this->TASK_NUMBER]);
+        $query->andFilterWhere(['like', 'LOWER(DESIGNATION)', mb_strtolower($this->DESIGNATION, 'UTF-8')]);
         
 
         return $dataProvider;

@@ -181,5 +181,41 @@ form[role=login] .form-control + .glyphicon {
 
 .form-group label {
     font-weight: normal;
+    font-size: 14px;
+}
+.kv-grid-table {
     font-size: 12px;
+}
+.summary {
+    font-size: 12px;
+    text-align: right;
+    padding-top: 9px;
+}
+.select2-results__option {
+    font-size: 11px;
+}
+.select2-container--krajee .select2-selection {
+    font-size: 12px;
+}
+.grid-header-row th {
+    text-align: center;
+}
+.error-summary ul li {
+    font-size: 11px;
+    color: #ee526f;
+}
+.error-summary ul {
+    /*border-top: 1px solid #ee526f;*/
+    /*border-bottom: 1px solid #ee526f;*/
+    padding: 0px 0 10px 30px;
+}
+.select2-selection__clear {
+    margin-top: -4px;
+}
+.pagination {
+    margin: 0px;
+}
+.issue-table-label {
+    font-weight: bold;
+    width: 240px;
 }

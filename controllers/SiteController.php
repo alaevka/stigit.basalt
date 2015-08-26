@@ -16,6 +16,7 @@ class SiteController extends Controller
     private $_podr_data_array = [];
     private $_multidemensional_podr;
     private $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
+    const _UNDEFINED = '----------- не задано -----------';
     /*
         Метод описания поведений для доступа пользователя
     */
@@ -74,6 +75,9 @@ class SiteController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post())) {
+
+            // echo '<pre>';
+            // print_r($model); die();
             
             if($model->validate()) {
 
@@ -82,8 +86,20 @@ class SiteController extends Controller
                     Сохраняем модель TASKS
                 */
                 $task = new \app\models\Tasks;
-                $task->DESIGNATION = $model->designation;
-                $task->DOCUMENTID = $model->documentid;
+                if(empty($model->documentid)) {
+                    $task->DESIGNATION = $model->designation;
+                    
+                } else {
+                    $query = new \yii\db\Query;
+                    $query->select('DESIGNATION AS name')
+                            ->from('STIGIT.V_PRP_DESIGNATION')
+                            ->where('DOCUMENTID = \'' . $model->documentid .'\'');
+                    $command = $query->createCommand();
+                    $data = $command->queryOne();
+                    $task->DESIGNATION = $data['name'];
+                    $task->DOCUMENTID = $model->documentid;
+                }
+                
                 $task->TASK_NUMBER = $model->task_number;
                 $task->ORDERNUM = $model->ordernum;
                 $task->PEOORDERNUM = $model->peoordernum;
@@ -117,6 +133,7 @@ class SiteController extends Controller
                     \Yii::$app->getSession()->setFlash('flash_message_success', 'Задание выдано');
                     return $this->redirect(['index']);
                 } else {
+                    //print_r($task->errors); die();
                     \Yii::$app->getSession()->setFlash('flash_message_error', 'Что-то пошло не так. Обратитесь к администратору.');
                     return $this->redirect(['index']);
                 }
@@ -128,6 +145,7 @@ class SiteController extends Controller
 
         $searchModel = new \app\models\SearchTasks;
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
+        $dataProvider->pagination->pageSize=15;
 
         return $this->render('index', [
             'podr_data' => $this->_multidemensional_podr,
@@ -155,7 +173,7 @@ class SiteController extends Controller
                     $class = '';
                 }
 
-                $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['id']."\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['id']."\">".$value['name']."</span>";
+                $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['id']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['id']."\"><a href=\"#\" data-id=\"".$value['id']."\" class=\"checkbox-podr-link\">".$value['name']."</a></span>";
                 $level++;
                 $this->_createPodrTree($value['id'], $level);
                 $level--; 
@@ -205,8 +223,9 @@ class SiteController extends Controller
             $query = new \yii\db\Query;
             $query->select('DOCUMENTID AS id, DESIGNATION AS text, ORDERNUM AS ordernum, PEOORDERNUM AS peoordernum')
                 ->from('STIGIT.V_PRP_DESIGNATION')
-                ->where('DESIGNATION LIKE \'%' . $q .'%\'')
+                ->where('LOWER(DESIGNATION) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
+                //echo mb_strtolower($q, 'UTF-8'); die();
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
@@ -237,6 +256,234 @@ class SiteController extends Controller
             }
             $persons_list .= '</ul>';
             return $persons_list;
+        }
+    }
+
+    public function actionGetissuedata() {
+        if (Yii::$app->request->isAjax) {
+            $issue_id = $_POST['id'];
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            
+            $issue = \app\models\Tasks::findOne($issue_id);
+            $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID])->all();
+            if($podr_tasks) {
+                $podr_list = '';
+                foreach($podr_tasks as $task) {
+                    $query = new \yii\db\Query;
+                    $query->select('*')
+                        ->from('STIGIT.V_F_PODR')
+                        ->where('KODZIFR = \'' . $task->KODZIFR .'\'');
+                    $command = $query->createCommand();
+                    $data = $command->queryOne();
+                    if(isset($data['NAIMPODR']))
+                        $podr_list .= $data['NAIMPODR'].'<br>';
+                }
+            }
+            $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID])->all();
+            $pers_list = '';
+            if($pers_tasks) {
+                foreach($pers_tasks as $task) {
+                    $query = new \yii\db\Query;
+                    $query->select('*')
+                        ->from('STIGIT.V_F_PERS')
+                        ->where('TN = \'' . $task->TN .'\'');
+                    $command = $query->createCommand();
+                    $data = $command->queryOne();
+                    $pers_list .= $data['FIO'].'<br>';
+                }
+            } else {
+                $pers_list = self::_UNDEFINED;
+            }
+            if(!empty($issue->SOURCENUM)) {
+                $sourcenum = $issue->SOURCENUM;
+            } else {
+                $sourcenum = self::_UNDEFINED;
+            }
+            if(!empty($issue->ADDITIONAL_TEXT)) {
+                $additional_text = $issue->ADDITIONAL_TEXT;
+            } else {
+                $additional_text = self::_UNDEFINED;
+            }
+            if(!empty($issue->REPORT_TEXT)) {
+                $report_text = $issue->REPORT_TEXT;
+            } else {
+                $report_text = self::_UNDEFINED;
+            }
+
+            $task_date = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->one();
+            if($task_date) {
+                $sektor_date = $task_date->TASK_TYPE_DATE;
+            } else {
+                $sektor_date = self::_UNDEFINED;
+            }
+
+            $task_date_first_time = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '1', 'TASK_ID' => $issue_id])->one();
+            if($task_date_first_time) {
+                $first_date = $task_date_first_time->TASK_TYPE_DATE;
+            } else {
+                $first_date = self::_UNDEFINED;
+            }
+
+            $task_date_closed = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '4', 'TASK_ID' => $issue_id])->one();
+            if($task_date_closed) {
+                $closed_date = $task_date_closed->TASK_TYPE_DATE;
+            } else {
+                $closed_date = self::_UNDEFINED;
+            }
+
+            $transactions = \app\models\Transactions::findOne($issue->TRACT_ID);
+
+            $task_docs = \app\models\TaskDocs::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->all();
+            if($task_docs) {
+                $task_docs_list = 'сформировать список';
+            } else {
+                $task_docs_list = self::_UNDEFINED;
+            }
+
+            $task_confirms = \app\models\TaskConfirms::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->all();
+            if($task_confirms) {
+                $task_confirms_list = 'сформировать список';
+            } else {
+                $task_confirms_list = self::_UNDEFINED;
+            }
+
+            $task_docs_recvrs = \app\models\TaskDocsRecvrs::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->all();
+            if($task_docs_recvrs) {
+                $task_docs_recvrs_list = 'сформировать список';
+            } else {
+                $task_docs_recvrs_list = self::_UNDEFINED;
+            }
+
+            $task_states = \app\models\TaskStates::find()->where(['TASK_ID' => $issue_id])->all();
+            if($task_states) {
+                $task_states_list = 'сформировать список';
+            } else {
+                $task_states_list = self::_UNDEFINED;
+            }
+
+
+            $result_table = '<table class="table table-bordered">';
+            $result_table .= '
+                            <tr>
+                                <td class="issue-table-label">Подразделения</td>
+                                <td>'.$podr_list.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Исполнитель</td>
+                                <td>'.$pers_list.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Исходящий номер</td>
+                                <td>'.$issue->TASK_NUMBER.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Входящий номер</td>
+                                <td>'.$sourcenum.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Заказ (изделие)</td>
+                                <td>'.$issue->ORDERNUM.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Заказ ПЭО</td>
+                                <td>'.$issue->PEOORDERNUM.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Срок выполнения</td>
+                                <td>'.\Yii::$app->formatter->asDate($issue->DEADLINE, 'php:d-m-Y').'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Содержание</td>
+                                <td>'.$issue->TASK_TEXT.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Дополнительные указания</td>
+                                <td>'.$additional_text.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Дата поступления в сектор</td>
+                                <td>'.$sektor_date.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Дата поступления в группу</td>
+                                <td>'.\Yii::$app->formatter->asDate($transactions->TRACT_DATETIME, 'php:d-m-Y').'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Дата поступления исполнителю</td>
+                                <td>'.$first_date.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Дата завершения</td>
+                                <td>'.$closed_date.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Выпущенная документация</td>
+                                <td>'.$task_docs_list.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Отчет о работе</td>
+                                <td>'.$report_text.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Согласовано с</td>
+                                <td>'.$task_confirms_list.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Передано в</td>
+                                <td>'.$task_docs_recvrs_list.'</td>  
+                            </tr>
+                            <tr>
+                                <td class="issue-table-label">Состояние</td>
+                                <td>'.$task_states_list.'</td>  
+                            </tr>
+            ';
+            $result_table .= '</table>';
+
+            $items = ['issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
+            return $items;
+        }
+    }
+
+
+    public function actionUpdateissue($id) {
+
+        /*
+            @todo сделать проверку на доступ к заданию пользователя
+        */
+
+        $model = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+            //after save generate script to confirm and close window
+            return $this->redirect(['view', 'id' => (string) $model->_id]);
+        } elseif (Yii::$app->request->isAjax) {
+            $this->_podr_data_array = $this->_getPodrData();
+            $this->_createPodrTree(1, 0);
+
+            return $this->renderAjax('_formupdateissue', [
+                'model' => $model,
+                'not_ajax' => false,
+                'podr_data' => $this->_multidemensional_podr,
+            ]);
+        } else {
+            $this->layout = 'updateissue';
+            $this->_podr_data_array = $this->_getPodrData();
+            $this->_createPodrTree(1, 0);
+
+            return $this->render('_formupdateissue', [
+                'model' => $model,
+                'not_ajax' => true,
+                'podr_data' => $this->_multidemensional_podr,
+            ]);
+        }
+    }
+
+    protected function findModel($id)
+    {
+        if (($model = \app\models\Tasks::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
 
@@ -278,5 +525,8 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+
+
     
 }

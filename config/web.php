@@ -19,6 +19,13 @@ $config = [
         ]
     ],
     'components' => [
+        'assetManager' => [
+            'bundles' => [
+                'yii\bootstrap\BootstrapAsset' => [
+                    'css' => [],
+                ],
+            ],
+        ],
         'request' => [
             'cookieValidationKey' => 'XM7rkjMinlGiIOgVFz8DYypfp65TUzxc',
         ],
