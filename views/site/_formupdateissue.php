@@ -140,6 +140,109 @@
 				    ])->textArea() ?>
 				    <div class="hr-line-dashed"></div>
 
+				    <?= $form->field($model, 'ADDITIONAL_TEXT', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->textArea() ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'task_type_date_3', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->widget(\kartik\date\DatePicker::classname(), [
+				    	'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
+				    	'pluginOptions' => [
+					        'todayHighlight' => true,
+					        'todayBtn' => true,
+					        'format' => 'dd-mm-yyyy',
+					        'autoclose' => true,
+					    ]
+				    ]);
+				    ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'transactions_tract_datetime', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->widget(\kartik\date\DatePicker::classname(), [
+				    	'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
+				    	'disabled' => true,
+				    	'pluginOptions' => [
+					        'todayHighlight' => true,
+					        'todayBtn' => true,
+					        'format' => 'dd-mm-yyyy',
+					        'autoclose' => true,
+					    ]
+				    ]);
+				    ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'task_type_date_1', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->widget(\kartik\date\DatePicker::classname(), [
+				    	'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
+				    	'pluginOptions' => [
+					        'todayHighlight' => true,
+					        'todayBtn' => true,
+					        'format' => 'dd-mm-yyyy',
+					        'autoclose' => true,
+					    ]
+				    ]);
+				    ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'task_type_date_4', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->widget(\kartik\date\DatePicker::classname(), [
+				    	'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
+				    	'pluginOptions' => [
+					        'todayHighlight' => true,
+					        'todayBtn' => true,
+					        'format' => 'dd-mm-yyyy',
+					        'autoclose' => true,
+					    ]
+				    ]);
+				    ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'documentation', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm'],
+				        'enableAjaxValidation' => true
+				    ])->textInput() ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'REPORT_TEXT', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->textArea() ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'agreed_podr_list', [
+				        'template' => "{label}<div class=\"col-sm-6\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-agreed-podr-button-update\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->textInput() ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'transmitted_podr_list', [
+				        'template' => "{label}<div class=\"col-sm-6\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-transmitted-podr-button-update\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->textInput() ?>
+				    <div class="hr-line-dashed"></div>
+
+				    
+
 </div>
 <div class="modal-footer">
 	<?php 
@@ -182,6 +285,9 @@
 					$chk_pers_list .= '$("#persons-check-list-update").find("#checkbox_'.$data['TN'].'").prop("checked", true);';
 		        }
 			}
+		} else {
+			$pers_tasks_list = '';
+			$chk_pers_list = '';
 		}
 		echo $this->registerJs(
 			"
@@ -289,6 +395,73 @@
 			    });
 				
 
+				//for agreed
+				function _selectPodrUpdateAgreed() {
+					var selected = [];
+					var selected_values = {};
+					$('#agreed-podr-check-list-update input:checked').each(function() {
+					    selected.push({value: $(this).attr('value'), label:$(this).attr('data-title')});
+					    selected_values[$(this).attr('value')] = $(this).attr('data-title');
+					});
+					
+					$('#tasks-agreed_podr_list').tokenfield('setTokens', selected);
+			        $('#agreed-podr-select-modal-update').modal('hide');
+			    }
+
+				$('#add-agreed-podr-button-update').click(function(){
+					$(\"#agreed-podr-select-modal-update\").modal();
+				});	
+				$('#agreed-podr-check-list-update').tree({checkbox: false});
+
+				$(\"#agreed-podr-check-list-update\").find(\".checkbox-podr-link-agreed\").click(function(){
+			    	var link_id = $(this).attr('data-id');
+			    	
+			    	$(\"#agreed-podr-check-list-update\").find(\"#checkbox_\"+link_id).prop(\"checked\", true);
+			    	_selectPodrUpdateAgreed();
+			    	return false;
+			    });
+				$('#tasks-agreed_podr_list').tokenfield();
+				//@todo see upper
+
+				$('#tasks-agreed_podr_list').on('tokenfield:removedtoken', function (e) {
+					$(\"#agreed-podr-check-list-update\").find('#checkbox_'+e.attrs.value).removeAttr('checked');
+					_selectPodrUpdateAgreed();
+				});
+
+				//for transmitted
+				function _selectPodrUpdateTransmitted() {
+					var selected = [];
+					var selected_values = {};
+					$('#transmitted-podr-check-list-update input:checked').each(function() {
+					    selected.push({value: $(this).attr('value'), label:$(this).attr('data-title')});
+					    selected_values[$(this).attr('value')] = $(this).attr('data-title');
+					});
+					
+					$('#tasks-transmitted_podr_list').tokenfield('setTokens', selected);
+			        $('#transmitted-podr-select-modal-update').modal('hide');
+			    }
+
+				$('#add-transmitted-podr-button-update').click(function(){
+					$(\"#transmitted-podr-select-modal-update\").modal();
+				});	
+				$('#transmitted-podr-check-list-update').tree({checkbox: false});
+
+				$(\"#transmitted-podr-check-list-update\").find(\".checkbox-podr-link-transmitted\").click(function(){
+			    	var link_id = $(this).attr('data-id');
+			    	
+			    	$(\"#transmitted-podr-check-list-update\").find(\"#checkbox_\"+link_id).prop(\"checked\", true);
+			    	_selectPodrUpdateTransmitted();
+			    	return false;
+			    });
+				$('#tasks-transmitted_podr_list').tokenfield();
+				//@todo see upper
+
+				$('#tasks-transmitted_podr_list').on('tokenfield:removedtoken', function (e) {
+					$(\"#transmitted-podr-check-list-update\").find('#checkbox_'+e.attrs.value).removeAttr('checked');
+					_selectPodrUpdateTransmitted();
+				});
+		
+
 			", 
 			View::POS_END, 
 			'modal_js'
@@ -305,6 +478,40 @@
 			</div>
 			<div class="modal-body" id="podr-check-list-update">
 				<?= $podr_data; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="agreed-podr-select-modal-update" role="dialog" aria-labelledby="agreed-podr-select-modal-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-agreed-podr-update">Выбор подразделений</h4>
+			</div>
+			<div class="modal-body" id="agreed-podr-check-list-update">
+				<?= $agreed_podr_data; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="transmitted-podr-select-modal-update" role="dialog" aria-labelledby="transmitted-podr-select-modal-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-transmitted-podr-update">Выбор подразделений</h4>
+			</div>
+			<div class="modal-body" id="transmitted-podr-check-list-update">
+				<?= $transmitted_podr_data; ?>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>

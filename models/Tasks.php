@@ -9,6 +9,14 @@ class Tasks extends \yii\db\ActiveRecord
 
     public $podr_list;
     public $persons_list;
+    public $task_type_date_3;
+    public $transactions_tract_datetime;
+    public $task_type_date_1;
+    public $task_type_date_4;
+    public $documentation;
+    public $agreed_podr_list;
+    public $transmitted_podr_list;
+    public $state;
 
     /**
      * @inheritdoc
@@ -27,7 +35,7 @@ class Tasks extends \yii\db\ActiveRecord
             [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'DEADLINE', 'TRACT_ID'], 'required'],
             [['TASK_NUMBER'], 'unique'],
             [['SOURCENUM'], 'string', 'max' => 25],
-            [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list'], 'safe'],
+            [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state'], 'safe'],
         ];
     }
 
@@ -49,6 +57,14 @@ class Tasks extends \yii\db\ActiveRecord
 
             'podr_list' => 'Подразделения',
             'persons_list' => 'Исполнитель',
+            'task_type_date_3' => 'Дата поступления в сектор',
+            'transactions_tract_datetime' => 'Дата поступления в группу',
+            'task_type_date_1' => 'Дата поступления исполнителю',
+            'task_type_date_4' => 'Дата завершения',
+            'documentation' => 'Выпущенная документация',
+            'agreed_podr_list' => 'Согласовано с',
+            'transmitted_podr_list' => 'Передано в',
+            'state' => 'Состояние',
         ];
     }
     

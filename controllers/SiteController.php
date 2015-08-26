@@ -15,6 +15,8 @@ class SiteController extends Controller
 
     private $_podr_data_array = [];
     private $_multidemensional_podr;
+    private $_multidemensional_podr_agreed;
+    private $_multidemensional_podr_transmitted;
     private $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
     const _UNDEFINED = '----------- не задано -----------';
     /*
@@ -184,6 +186,45 @@ class SiteController extends Controller
             $this->_multidemensional_podr .= "</ul>";
         }
     }
+
+    public function _createPodrTreeAgreed($parent_id, $level) {
+        if (isset($this->_podr_data_array[$parent_id])) { 
+            $this->_multidemensional_podr_agreed .= "<ul>";
+            foreach ($this->_podr_data_array[$parent_id] as $value) {
+                if($this->_checkNextPodrTree($value['id'])) {
+                    $class = "class=\"collapsed\"";
+                } else {
+                    $class = '';
+                }
+
+                $this->_multidemensional_podr_agreed .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"checkbox-podr-link-agreed\">".$value['name']."</a></span>";
+                $level++;
+                $this->_createPodrTreeAgreed($value['id'], $level);
+                $level--; 
+            }
+            $this->_multidemensional_podr_agreed .= "</ul>";
+        }
+    }
+
+    public function _createPodrTreeTransmitted($parent_id, $level) {
+        if (isset($this->_podr_data_array[$parent_id])) { 
+            $this->_multidemensional_podr_transmitted .= "<ul>";
+            foreach ($this->_podr_data_array[$parent_id] as $value) {
+                if($this->_checkNextPodrTree($value['id'])) {
+                    $class = "class=\"collapsed\"";
+                } else {
+                    $class = '';
+                }
+
+                $this->_multidemensional_podr_transmitted .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"checkbox-podr-link-transmitted\">".$value['name']."</a></span>";
+                $level++;
+                $this->_createPodrTreeAgreed($value['id'], $level);
+                $level--; 
+            }
+            $this->_multidemensional_podr_transmitted .= "</ul>";
+        }
+    }
+
 
     public function _getMulti(&$rs, $parent) {
         $out = array();
@@ -506,14 +547,16 @@ class SiteController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            //echo '<pre>';
-            //print_r($model->persons_list); die();
+            echo '<pre>';
+            print_r($model->agreed_podr_list); die();
 
             //after save generate script to confirm and close window
             //return $this->redirect(['view', 'id' => (string) $model->_id]);
         } elseif (Yii::$app->request->isAjax) {
             $this->_podr_data_array = $this->_getPodrData();
             $this->_createPodrTree(1, 0);
+            $this->_createPodrTreeAgreed(1, 0);
+            $this->_createPodrTreeTransmitted(1, 0);
 
             return $this->renderAjax('_formupdateissue', [
                 'model' => $model,
@@ -521,11 +564,15 @@ class SiteController extends Controller
                 'podr_data' => $this->_multidemensional_podr,
                 'podr_tasks' => $podr_tasks,
                 'pers_tasks' => $pers_tasks,
+                'agreed_podr_data' => $this->_multidemensional_podr_agreed,
+                'transmitted_podr_data' => $this->_multidemensional_podr_transmitted,
             ]);
         } else {
             $this->layout = 'updateissue';
             $this->_podr_data_array = $this->_getPodrData();
             $this->_createPodrTree(1, 0);
+            $this->_createPodrTreeAgreed(1, 0);
+            $this->_createPodrTreeTransmitted(1, 0);
 
             return $this->render('_formupdateissue', [
                 'model' => $model,
@@ -533,6 +580,8 @@ class SiteController extends Controller
                 'podr_data' => $this->_multidemensional_podr,
                 'podr_tasks' => $podr_tasks,
                 'pers_tasks' => $pers_tasks,
+                'agreed_podr_data' => $this->_multidemensional_podr_agreed,
+                'transmitted_podr_data' => $this->_multidemensional_podr_transmitted,
             ]);
         }
     }

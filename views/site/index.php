@@ -321,7 +321,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 				
 			</div>
 			<div class="modal-footer">
-			<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
 			<!-- <button type="button" id="update-issue-button" class="btn btn-primary">Редактировать (модальное окно)</button> -->
 			<a href="#" id="update-issue-button-new-tab" target="_blank" class="btn btn-primary">Редактировать (вкладка)</a>
 			</div>
