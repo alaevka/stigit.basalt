@@ -223,7 +223,7 @@
 							// the custom tags are in braces
 							var footerTemplate = '<div class="file-thumbnail-footer">\n' +
 							'   <div style="margin:5px 0">\n' +
-							'       <input class="kv-input kv-new form-control input-sm {TAG_CSS_NEW}" value="{caption}" placeholder="Название...">\n' +
+							'       <input class="kv-input kv-new form-control input-sm {TAG_CSS_NEW}" style="display: none;" value="{caption}" placeholder="Название...">\n' +
 							'       <input style="margin-top: 2px;" class="kv-input kv-init form-control input-sm {TAG_CSS_INIT}" value="{TAG_VALUE}" placeholder="Введите формат...">\n' +
 							'   </div>\n' +
 							'   {actions}\n' +
@@ -256,22 +256,26 @@
 							    		if($task_docs) {
 							    			foreach($task_docs as $doc) {
 							    	?>
-							    	// "<img style='height:160px' src='<?= Yii::$app->params['documents_dir']. $doc->DOC_CODE; ?>'>",
+							    	"<div class='file-preview-text' style='min-height:160px;'>" +
+								    "<h2 style='text-align:center;'><i class='glyphicon glyphicon-file'></i></h2>" +
+								    "<a style='font-size: 11px;' target='_blank' href='<?= Yii::$app->params['documents_dir'] ?><?= $doc->DOC_CODE ?>'><?= $doc->DOC_CODE ?></a>" + "</div>",
 							    	<?php } } ?>
 							    ],
 							    initialPreviewConfig: [
-							        // {caption: "City-1.jpg", width: "120px", url: "/site/file-delete", key: 1},
-							        // {caption: "City-2.jpg", width: "120px", url: "/site/file-delete", key: 2}, 
+							        <?php
+							    		if($task_docs) {
+							    			foreach($task_docs as $doc) {
+							    	?>
+							        {caption: "<?= $doc->FORMAT_QUANTITY; ?>", width: "120px", url: "<?= Url::to(['site/documentdelete']); ?>", key: <?= $doc->ID; ?>},
+							        <?php } } ?> 
 							    ],
 							    initialPreviewThumbTags: [
-							        // {'{TAG_VALUE}': 'City-1.jpg', '{TAG_CSS_NEW}': 'hide', '{TAG_CSS_INIT}': ''},
-							        // {
-							        //     '{TAG_VALUE}': function() { // callback example
-							        //         return 'City-2.jpg';
-							        //     },
-							        //     '{TAG_CSS_NEW}': 'hide',
-							        //     '{TAG_CSS_INIT}': ''
-							        // }
+							        <?php
+							    		if($task_docs) {
+							    			foreach($task_docs as $doc) {
+							    	?>
+							        {'{TAG_VALUE}': '<?= $doc->FORMAT_QUANTITY; ?>', '{TAG_CSS_NEW}': 'hide', '{TAG_CSS_INIT}': ''},
+							        <?php } } ?> 
 							    ],
 							    uploadExtraData: function() {  // callback example
 							        var out = {}, key, i = 0;

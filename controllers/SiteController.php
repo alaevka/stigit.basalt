@@ -69,7 +69,7 @@ class SiteController extends Controller
         $model = new \app\models\IssueForm;
         
         $this->_podr_data_array = $this->_getPodrData();
-        $this->_createPodrTree(1, 0);
+        $this->_createPodrTree(1, 0, $link = 'checkbox-podr-link');
         
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -166,24 +166,56 @@ class SiteController extends Controller
         }
     }
 
-    public function _createPodrTree($parent_id, $level) {
+    public function _createPodrTree($parent_id, $level, $checkbox_link) {
         if (isset($this->_podr_data_array[$parent_id])) { 
-            $this->_multidemensional_podr .= "<ul>";
+            switch ($checkbox_link) {
+                case 'checkbox-podr-link':
+                    $this->_multidemensional_podr .= "<ul>";
+                    break;
+                case 'checkbox-podr-link-agreed':
+                    $this->_multidemensional_podr_agreed .= "<ul>";
+                    break;
+                case 'checkbox-podr-link-transmitted':
+                    $this->_multidemensional_podr_transmitted .= "<ul>";
+                    break;
+            }
+            
             foreach ($this->_podr_data_array[$parent_id] as $value) {
-                //$this->_multidemensional_podr .= "<li><input id=\"checkbox_".$value['id']."\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['id']."\"> <span><label for=\"checkbox_".$value['id']."\">" . $value['name'] . "</label></span></li>";
-                //check next
                 if($this->_checkNextPodrTree($value['id'])) {
                     $class = "class=\"collapsed\"";
                 } else {
                     $class = '';
                 }
 
-                $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"checkbox-podr-link\">".$value['name']."</a></span>";
+                
+                
+                switch ($checkbox_link) {
+                    case 'checkbox-podr-link':
+                        $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        break;
+                    case 'checkbox-podr-link-agreed':
+                        $this->_multidemensional_podr_agreed .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        break;
+                    case 'checkbox-podr-link-transmitted':
+                        $this->_multidemensional_podr_transmitted .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        break;
+                }
+
                 $level++;
-                $this->_createPodrTree($value['id'], $level);
+                $this->_createPodrTree($value['id'], $level, $checkbox_link);
                 $level--; 
             }
-            $this->_multidemensional_podr .= "</ul>";
+            switch ($checkbox_link) {
+                case 'checkbox-podr-link':
+                    $this->_multidemensional_podr .= "</ul>";
+                    break;
+                case 'checkbox-podr-link-agreed':
+                    $this->_multidemensional_podr_agreed .= "</ul>";
+                    break;
+                case 'checkbox-podr-link-transmitted':
+                    $this->_multidemensional_podr_transmitted .= "</ul>";
+                    break;
+            }
         }
     }
 
@@ -534,6 +566,8 @@ class SiteController extends Controller
             $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
             $task_id = $_GET['task_id'];
             if($_FILES) {
+                $no_error = 0;
+                $errors = [];
                 foreach($_FILES['documentation']['name'] as $key => $filename) {
                     
                     $model = new \app\models\TaskDocs;
@@ -546,23 +580,41 @@ class SiteController extends Controller
                         //загрузка файлов
                         move_uploaded_file($_FILES['documentation']['tmp_name'][$key], Yii::$app->params['documents_dir'] . $filename);
                         if($model->save()) {
-                            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                            return [];
+                            $no_error = 0;
                         }
                     } else {
                         //сообщение об ошибке если валидация не прошла
-                        //print_r($model->errors);
-                        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                        //Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
                         foreach ($model->errors as $key => $value) {
-                            return['error' => $value];
+                            $errors[] = ['error' => $value];
                         }
+                        $no_error = 1;
                     }
+                }
+                if($no_error == 0) {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return [];
+                } else {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return $errors;
                 }
             } else {
                 Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
                 return [];
             }
 
+        }
+    }
+
+    public function actionDocumentdelete() {
+        if (Yii::$app->request->isAjax) {
+            $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+            $doc_id = $_POST['key'];
+            $document = \app\models\TaskDocs::findOne($doc_id);
+            $document->DEL_TRACT_ID = $transactions->ID;
+            $document->save();
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return [];
         }
     }
 
@@ -592,10 +644,10 @@ class SiteController extends Controller
             //return $this->redirect(['view', 'id' => (string) $model->_id]);
         } elseif (Yii::$app->request->isAjax) {
             $this->_podr_data_array = $this->_getPodrData();
-            $this->_createPodrTree(1, 0);
-            $this->_createPodrTreeAgreed(1, 0);
-            $this->_createPodrTreeTransmitted(1, 0);
-
+            $this->_createPodrTree(1, 0, 'checkbox-podr-link');
+            $this->_createPodrTree(1, 0, 'checkbox-podr-link-agreed');
+            $this->_createPodrTree(1, 0, 'checkbox-podr-link-transmitted');
+            
             return $this->renderAjax('_formupdateissue', [
                 'model' => $model,
                 'not_ajax' => false,
@@ -608,9 +660,14 @@ class SiteController extends Controller
         } else {
             $this->layout = 'updateissue';
             $this->_podr_data_array = $this->_getPodrData();
-            $this->_createPodrTree(1, 0);
-            $this->_createPodrTreeAgreed(1, 0);
-            $this->_createPodrTreeTransmitted(1, 0);
+            $this->_createPodrTree(1, 0, 'checkbox-podr-link');
+            $this->_createPodrTree(1, 0, 'checkbox-podr-link-agreed');
+            $this->_createPodrTree(1, 0, 'checkbox-podr-link-transmitted');
+            
+
+            // echo '<pre>';
+            // print_r($this->_multidemensional_podr_transmitted); die();
+
 
             return $this->render('_formupdateissue', [
                 'model' => $model,
