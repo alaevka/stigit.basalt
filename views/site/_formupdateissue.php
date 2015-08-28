@@ -214,7 +214,7 @@
 
 				    <div class="form-group field-tasks-documentation">
 						<label class="col-sm-4 control-label" for="tasks-documentation">Выпущенная документация</label>
-						<div class="col-sm-8"><input type="file" multiple=true class="file-loading" id="tasks-documentation" name="documentation[documentation]" value=""></div>
+						<div class="col-sm-8"><input type="file" multiple=true class="file-loading" id="tasks-documentation" name="documentation[]" value=""></div>
 						<script type="text/javascript">
 							//for update issue
 						    var $el2 = $("#tasks-documentation");
@@ -228,22 +228,36 @@
 							'   </div>\n' +
 							'   {actions}\n' +
 							'</div>';
+
+							var actionsTemplate = '<div class="file-actions">\n' +
+					        '    <div class="file-footer-buttons">\n' +
+					        '        {delete}' +
+					        '    </div>\n' +
+					        '    <div class="file-upload-indicator" tabindex="-1" title="{indicatorTitle}">{indicator}</div>\n' +
+					        '    <div class="clearfix"></div>\n' +
+					        '</div>';
 							 
 							$el2.fileinput({
-							    uploadUrl: '<?= Url::to(["site/documentsupload"]); ?>',
+							    uploadUrl: '<?= Url::to(["site/documentsupload", "task_id" => $model->ID]); ?>',
 							    uploadAsync: false,
 							    language: "ru",
+							    //showUpload: false,
 							    maxFileCount: 10,
 							    overwriteInitial: false,
-							    layoutTemplates: {footer: footerTemplate},
+							    layoutTemplates: {footer: footerTemplate, actions: actionsTemplate},
 							    previewThumbTags: {
 							        '{TAG_VALUE}': '',        // no value
 							        '{TAG_CSS_NEW}': '',      // new thumbnail input
 							        '{TAG_CSS_INIT}': ''  // hide the initial input
 							    },
 							    initialPreview: [
-							        // "<img style='height:160px' src='http://placeimg.com/200/150/city/1'>",
-							        // "<img style='height:160px' src='http://placeimg.com/200/150/city/2'>",
+							    	<?php
+							    		$task_docs = \app\models\TaskDocs::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0])->all();
+							    		if($task_docs) {
+							    			foreach($task_docs as $doc) {
+							    	?>
+							    	// "<img style='height:160px' src='<?= Yii::$app->params['documents_dir']. $doc->DOC_CODE; ?>'>",
+							    	<?php } } ?>
 							    ],
 							    initialPreviewConfig: [
 							        // {caption: "City-1.jpg", width: "120px", url: "/site/file-delete", key: 1},
@@ -261,14 +275,19 @@
 							    ],
 							    uploadExtraData: function() {  // callback example
 							        var out = {}, key, i = 0;
-							        $('.kv-input:visible').each(function() {
+							        $('.kv-init').each(function() {
 							            $el = $(this);
 							            key = $el.hasClass('kv-new') ? 'new_' + i : 'init_' + i;
-							            out[key] = $el.val();
+							            out[i] = $el.val();
 							            i++;
 							        });
 							        return out;
 							    }
+							});
+							$el2.on('filebatchuploadsuccess', function(event, data, previewId, index) {
+							    var form = data.form, files = data.files, extra = data.extra,
+							        response = data.response, reader = data.reader;
+							    console.log('File batch upload success');
 							});
 						</script>
 					</div>

@@ -20,7 +20,10 @@ class TaskDocs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['TASK_ID', 'DOC_CODE', 'TRACT_ID', 'DEL_TRACT_ID', 'FORMAT_QUANTITY'], 'required'],
+            [['TASK_ID', 'DOC_CODE', 'TRACT_ID', 'FORMAT_QUANTITY'], 'required'],
+            [['DOC_CODE'], 'unique'],
+            [['DEL_TRACT_ID'], 'safe'],
+            [['FORMAT_QUANTITY'], 'number'],
         ];
     }
 

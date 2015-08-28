@@ -528,6 +528,44 @@ class SiteController extends Controller
         }
     }
 
+    public function actionDocumentsupload() {
+        if(Yii::$app->request->post()) {
+            $formats = Yii::$app->request->post();
+            $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+            $task_id = $_GET['task_id'];
+            if($_FILES) {
+                foreach($_FILES['documentation']['name'] as $key => $filename) {
+                    
+                    $model = new \app\models\TaskDocs;
+                    $model->DOC_CODE = $filename;
+                    $model->TASK_ID = $task_id;
+                    $model->TRACT_ID = $transactions->ID;
+                    $model->FORMAT_QUANTITY = $formats[$key];
+
+                    if($model->validate()) {
+                        //загрузка файлов
+                        move_uploaded_file($_FILES['documentation']['tmp_name'][$key], Yii::$app->params['documents_dir'] . $filename);
+                        if($model->save()) {
+                            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                            return [];
+                        }
+                    } else {
+                        //сообщение об ошибке если валидация не прошла
+                        //print_r($model->errors);
+                        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                        foreach ($model->errors as $key => $value) {
+                            return['error' => $value];
+                        }
+                    }
+                }
+            } else {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return [];
+            }
+
+        }
+    }
+
 
     public function actionUpdateissue($id) {
 
@@ -548,7 +586,7 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             echo '<pre>';
-            print_r($model->agreed_podr_list); die();
+            print_r(Yii::$app->request->post()); die();
 
             //after save generate script to confirm and close window
             //return $this->redirect(['view', 'id' => (string) $model->_id]);
