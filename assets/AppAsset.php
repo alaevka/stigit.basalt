@@ -25,6 +25,7 @@ class AppAsset extends AssetBundle
         'css/select2.css',
         'css/bootstrap-tokenfield.min.css',
         'css/jquery.tree.min.css',
+        'css/fileinput.css',
         'css/site.css',
     ];
     public $js = [
@@ -33,12 +34,14 @@ class AppAsset extends AssetBundle
         'js/bootstrap-tokenfield.min.js',
         'js/jquery.tree.min.js',
         'js/bootbox.min.js',
+        'js/fileinput.min.js',
+        'js/fileinput_locale_ru.js',
         'js/scripts.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapPluginAsset',
     ];
-
+    public $jsOptions = ['position' => \yii\web\View::POS_HEAD];
 
 }

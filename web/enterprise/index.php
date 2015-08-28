@@ -1,4 +1,4 @@
-<?
+<?php
 session_start();
 //if(isset($_SESSION['TAB_NUM'])) $_SESSION['tab_numb'] = $_SESSION['TAB_NUM'];
 $_SESSION["SITE_PATH_ENTERPRISE"] = dirname($PHP_SELF);    

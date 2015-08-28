@@ -128,8 +128,7 @@ $(document).ready(function(){
 
 
 
-    //for update issue
-
+    
     
 });
 

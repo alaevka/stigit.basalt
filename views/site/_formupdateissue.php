@@ -214,8 +214,63 @@
 
 				    <div class="form-group field-tasks-documentation">
 						<label class="col-sm-4 control-label" for="tasks-documentation">Выпущенная документация</label>
-						<div class="col-sm-8"><!-- <input type="file" multiple=true class="file-loading" id="tasks-documentation" name="documentation[documentation]" value=""> --></div>
-
+						<div class="col-sm-8"><input type="file" multiple=true class="file-loading" id="tasks-documentation" name="documentation[documentation]" value=""></div>
+						<script type="text/javascript">
+							//for update issue
+						    var $el2 = $("#tasks-documentation");
+						 
+							// custom footer template for the scenario
+							// the custom tags are in braces
+							var footerTemplate = '<div class="file-thumbnail-footer">\n' +
+							'   <div style="margin:5px 0">\n' +
+							'       <input class="kv-input kv-new form-control input-sm {TAG_CSS_NEW}" value="{caption}" placeholder="Название...">\n' +
+							'       <input style="margin-top: 2px;" class="kv-input kv-init form-control input-sm {TAG_CSS_INIT}" value="{TAG_VALUE}" placeholder="Введите формат...">\n' +
+							'   </div>\n' +
+							'   {actions}\n' +
+							'</div>';
+							 
+							$el2.fileinput({
+							    uploadUrl: '<?= Url::to(["site/documentsupload"]); ?>',
+							    uploadAsync: false,
+							    language: "ru",
+							    maxFileCount: 10,
+							    overwriteInitial: false,
+							    layoutTemplates: {footer: footerTemplate},
+							    previewThumbTags: {
+							        '{TAG_VALUE}': '',        // no value
+							        '{TAG_CSS_NEW}': '',      // new thumbnail input
+							        '{TAG_CSS_INIT}': ''  // hide the initial input
+							    },
+							    initialPreview: [
+							        // "<img style='height:160px' src='http://placeimg.com/200/150/city/1'>",
+							        // "<img style='height:160px' src='http://placeimg.com/200/150/city/2'>",
+							    ],
+							    initialPreviewConfig: [
+							        // {caption: "City-1.jpg", width: "120px", url: "/site/file-delete", key: 1},
+							        // {caption: "City-2.jpg", width: "120px", url: "/site/file-delete", key: 2}, 
+							    ],
+							    initialPreviewThumbTags: [
+							        // {'{TAG_VALUE}': 'City-1.jpg', '{TAG_CSS_NEW}': 'hide', '{TAG_CSS_INIT}': ''},
+							        // {
+							        //     '{TAG_VALUE}': function() { // callback example
+							        //         return 'City-2.jpg';
+							        //     },
+							        //     '{TAG_CSS_NEW}': 'hide',
+							        //     '{TAG_CSS_INIT}': ''
+							        // }
+							    ],
+							    uploadExtraData: function() {  // callback example
+							        var out = {}, key, i = 0;
+							        $('.kv-input:visible').each(function() {
+							            $el = $(this);
+							            key = $el.hasClass('kv-new') ? 'new_' + i : 'init_' + i;
+							            out[key] = $el.val();
+							            i++;
+							        });
+							        return out;
+							    }
+							});
+						</script>
 					</div>
 				    <div class="hr-line-dashed"></div>
 
