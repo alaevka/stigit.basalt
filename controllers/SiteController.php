@@ -567,7 +567,7 @@ class SiteController extends Controller
             $task_id = $_GET['task_id'];
             if($_FILES) {
                 $no_error = 0;
-                $errors = [];
+                $errors = '';
                 foreach($_FILES['documentation']['name'] as $key => $filename) {
                     
                     $model = new \app\models\TaskDocs;
@@ -586,7 +586,7 @@ class SiteController extends Controller
                         //сообщение об ошибке если валидация не прошла
                         //Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
                         foreach ($model->errors as $key => $value) {
-                            $errors[] = ['error' => $value];
+                            $errors .= '<b>Документ</b> '.$filename.': <b>'. implode("|",$value).'</b><br>';
                         }
                         $no_error = 1;
                     }
@@ -596,7 +596,7 @@ class SiteController extends Controller
                     return [];
                 } else {
                     Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                    return $errors;
+                    return ['error' => $errors];
                 }
             } else {
                 Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -637,8 +637,8 @@ class SiteController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            echo '<pre>';
-            print_r(Yii::$app->request->post()); die();
+            // echo '<pre>';
+            // print_r(Yii::$app->request->post()); die();
 
             //after save generate script to confirm and close window
             //return $this->redirect(['view', 'id' => (string) $model->_id]);

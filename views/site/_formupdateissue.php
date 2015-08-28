@@ -224,7 +224,7 @@
 							var footerTemplate = '<div class="file-thumbnail-footer">\n' +
 							'   <div style="margin:5px 0">\n' +
 							'       <input class="kv-input kv-new form-control input-sm {TAG_CSS_NEW}" style="display: none;" value="{caption}" placeholder="Название...">\n' +
-							'       <input style="margin-top: 2px;" class="kv-input kv-init form-control input-sm {TAG_CSS_INIT}" value="{TAG_VALUE}" placeholder="Введите формат...">\n' +
+							'       <input style="margin-top: 2px;" class="kv-input kv-init form-control input-sm {TAG_CSS_INIT}" {DSLBD} value="{TAG_VALUE}" placeholder="Введите формат...">\n' +
 							'   </div>\n' +
 							'   {actions}\n' +
 							'</div>';
@@ -241,7 +241,7 @@
 							    uploadUrl: '<?= Url::to(["site/documentsupload", "task_id" => $model->ID]); ?>',
 							    uploadAsync: false,
 							    language: "ru",
-							    //showUpload: false,
+							    showRemove: false, 
 							    maxFileCount: 10,
 							    overwriteInitial: false,
 							    layoutTemplates: {footer: footerTemplate, actions: actionsTemplate},
@@ -274,7 +274,7 @@
 							    		if($task_docs) {
 							    			foreach($task_docs as $doc) {
 							    	?>
-							        {'{TAG_VALUE}': '<?= $doc->FORMAT_QUANTITY; ?>', '{TAG_CSS_NEW}': 'hide', '{TAG_CSS_INIT}': ''},
+							        {'{TAG_VALUE}': '<?= $doc->FORMAT_QUANTITY; ?>', '{TAG_CSS_NEW}': 'hide', '{TAG_CSS_INIT}': '', '{DSLBD}': 'disabled="disabled"'},
 							        <?php } } ?> 
 							    ],
 							    uploadExtraData: function() {  // callback example
@@ -292,6 +292,7 @@
 							    var form = data.form, files = data.files, extra = data.extra,
 							        response = data.response, reader = data.reader;
 							    console.log('File batch upload success');
+							    $(".kv-init").attr('disabled', 'disabled');
 							});
 						</script>
 					</div>
