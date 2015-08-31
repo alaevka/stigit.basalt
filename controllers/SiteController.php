@@ -106,9 +106,15 @@ class SiteController extends Controller
                 $task->ORDERNUM = $model->ordernum;
                 $task->PEOORDERNUM = $model->peoordernum;
                 $task->TASK_TEXT = $model->message;
-                $task->DEADLINE = new \yii\db\Expression("to_date('" . $model->date . "','{$this->dateFormat}')");
+
+                $deadline = explode('-', $model->date);
+                $deadline_formatted = $deadline[2].'-'.$deadline[1].'-'.$deadline[0];
+
+                $task->DEADLINE = new \yii\db\Expression("to_date('" . $deadline_formatted . "','{$this->dateFormat}')");
                 $task->TRACT_ID = $transactions->ID;
                 
+
+
 
                 //print_r($model->podr_list); die();
 
@@ -395,6 +401,41 @@ class SiteController extends Controller
                 }
                
             }
+
+            $tasks_confirms = \app\models\TaskConfirms::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
+            if($tasks_confirms) {
+                $task_confirms_list = '';
+                foreach($tasks_confirms as $task) {
+                    $query = new \yii\db\Query;
+                    $query->select('*')
+                        ->from('STIGIT.V_F_PODR')
+                        ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
+                    $command = $query->createCommand();
+                    $data = $command->queryOne();
+                    if(isset($data['NAIMPODR']))
+                        $task_confirms_list .= $data['NAIMPODR']."<br>";
+                }
+            } else {
+                $task_confirms_list = self::_UNDEFINED;
+            }
+
+            $tasks_docs_recvrs = \app\models\TaskDocsRecvrs::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
+            if($tasks_docs_recvrs) {
+                $task_docs_recvrs_list = '';
+                foreach($tasks_docs_recvrs as $task) {
+                    $query = new \yii\db\Query;
+                    $query->select('*')
+                        ->from('STIGIT.V_F_PODR')
+                        ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
+                    $command = $query->createCommand();
+                    $data = $command->queryOne();
+                    if(isset($data['NAIMPODR']))
+                        $task_docs_recvrs_list .= $data['NAIMPODR']."<br>";
+                }
+            } else {
+                $task_docs_recvrs_list = self::_UNDEFINED;
+            }
+
             $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
             $pers_list = '';
             if($pers_tasks) {
@@ -427,48 +468,45 @@ class SiteController extends Controller
             }
 
             $transactions_for_date = \app\models\Transactions::findOne($issue->TRACT_ID);
-            $sektor_date = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');  
+            $group_date = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');  
 
-            $task_date_first_time = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '1', 'TASK_ID' => $issue_id])->one();
+            $task_date_first_time = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '1', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
             if($task_date_first_time) {
-                $first_date = $task_date_first_time->TASK_TYPE_DATE;
+                $first_date = \Yii::$app->formatter->asDate($task_date_first_time->TASK_TYPE_DATE, 'php:d-m-Y');
             } else {
                 $first_date = self::_UNDEFINED;
             }
 
-            $task_date_closed = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '4', 'TASK_ID' => $issue_id])->one();
+            $task_date_closed = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '4', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
             if($task_date_closed) {
-                $closed_date = $task_date_closed->TASK_TYPE_DATE;
+                $closed_date = \Yii::$app->formatter->asDate($task_date_closed->TASK_TYPE_DATE, 'php:d-m-Y');
             } else {
                 $closed_date = self::_UNDEFINED;
             }
 
+            $task_sector_date = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '3', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
+            if($task_sector_date) {
+                $sektor_date = \Yii::$app->formatter->asDate($task_sector_date->TASK_TYPE_DATE, 'php:d-m-Y');
+            } else {
+                $sektor_date = self::_UNDEFINED;
+            }
+
             $transactions = \app\models\Transactions::findOne($issue->TRACT_ID);
 
-            $task_docs = \app\models\TaskDocs::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->all();
+            $task_docs = \app\models\TaskDocs::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->all();
             if($task_docs) {
-                $task_docs_list = 'сформировать список';
+                $task_docs_list = '';
+                foreach($task_docs as $doc) {
+                    $task_docs_list .= '<a target="_blank" href="/storage/'.$doc->DOC_CODE.'">'.$doc->DOC_CODE.'</a><br>';
+                }
             } else {
                 $task_docs_list = self::_UNDEFINED;
             }
 
-            $task_confirms = \app\models\TaskConfirms::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->all();
-            if($task_confirms) {
-                $task_confirms_list = 'сформировать список';
-            } else {
-                $task_confirms_list = self::_UNDEFINED;
-            }
-
-            $task_docs_recvrs = \app\models\TaskDocsRecvrs::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->all();
-            if($task_docs_recvrs) {
-                $task_docs_recvrs_list = 'сформировать список';
-            } else {
-                $task_docs_recvrs_list = self::_UNDEFINED;
-            }
-
-            $task_states = \app\models\TaskStates::find()->where(['TASK_ID' => $issue_id])->all();
-            if($task_states) {
-                $task_states_list = 'сформировать список';
+            $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $issue->ID])->orderBy('ID DESC')->LIMIT(1)->one();
+            if($task_state) {
+                $tasks = \app\models\States::findOne($task_state->STATE_ID);
+                $task_states_list = $tasks->state_name_state_colour;
             } else {
                 $task_states_list = self::_UNDEFINED;
             }
@@ -518,7 +556,7 @@ class SiteController extends Controller
                             </tr>
                             <tr>
                                 <td class="issue-table-label">Дата поступления в группу</td>
-                                <td>'.\Yii::$app->formatter->asDate($transactions->TRACT_DATETIME, 'php:d-m-Y').'</td>  
+                                <td>'.$group_date.'</td>  
                             </tr>
                             <tr>
                                 <td class="issue-table-label">Дата поступления исполнителю</td>
