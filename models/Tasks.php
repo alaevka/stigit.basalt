@@ -6,6 +6,7 @@ use Yii;
 
 class Tasks extends \yii\db\ActiveRecord
 {
+    const SCENARIO_UPDATE = 'update';
 
     public $podr_list;
     public $persons_list;
@@ -17,6 +18,9 @@ class Tasks extends \yii\db\ActiveRecord
     public $agreed_podr_list;
     public $transmitted_podr_list;
     public $state;
+
+    public $hidden_ordernum;
+    public $hidden_peoordernum;
 
     /**
      * @inheritdoc
@@ -33,9 +37,11 @@ class Tasks extends \yii\db\ActiveRecord
     {
         return [
             [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'DEADLINE', 'TRACT_ID'], 'required'],
+            [['TASK_NUMBER'], 'integer'],
             [['TASK_NUMBER'], 'unique'],
+            [['SOURCENUM', 'state', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE],
             [['SOURCENUM'], 'string', 'max' => 25],
-            [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state'], 'safe'],
+            [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state', 'hidden_ordernum', 'hidden_peoordernum'], 'safe'],
         ];
     }
 

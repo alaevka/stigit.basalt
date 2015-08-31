@@ -22,7 +22,19 @@ AppAsset::register($this);
     <?php $this->head() ?>
 </head>
 <body>
+<script>
+// window.onbeforeunload = function (e) {
+//     e = e || window.event;
 
+//     // For IE and Firefox prior to version 4
+//     if (e) {
+//         e.returnValue = 'Вы уверены, что хотите закрыть вкладку редактирования задания?';
+//     }
+
+//     // For Safari
+//     return 'Вы уверены, что хотите закрыть вкладку редактирования задания?';
+// };
+</script>
 <?php $this->beginBody() ?>
 	<div class="container">
     <?= $content ?>

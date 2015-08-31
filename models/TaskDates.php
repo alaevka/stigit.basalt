@@ -20,7 +20,8 @@ class TaskDates extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['TASK_ID', 'DATE_TYPE_ID', 'TASK_TYPE_DATE', 'TRACT_ID', 'DEL_TRACT_ID'], 'required'],
+            [['TASK_ID', 'DATE_TYPE_ID', 'TASK_TYPE_DATE', 'TRACT_ID'], 'required'],
+            [['DEL_TRACT_ID'], 'safe']
         ];
     }
 

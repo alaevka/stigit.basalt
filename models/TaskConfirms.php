@@ -20,7 +20,8 @@ class TaskConfirms extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['TASK_ID', 'KODZIFR', 'TARGET_CONFIRM_DATE', 'CONFIRM_TRACT_ID', 'TRACT_ID', 'DEL_TRACT_ID'], 'required'],
+            [['TASK_ID', 'KODZIFR', 'TRACT_ID'], 'required'],
+            [['TARGET_CONFIRM_DATE', 'CONFIRM_TRACT_ID', 'DEL_TRACT_ID'], 'safe']
         ];
     }
 

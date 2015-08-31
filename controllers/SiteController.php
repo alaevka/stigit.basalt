@@ -380,7 +380,7 @@ class SiteController extends Controller
             
             
 
-            $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID])->all();
+            $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
             if($podr_tasks) {
                 $podr_list = '';
                 foreach($podr_tasks as $task) {
@@ -395,7 +395,7 @@ class SiteController extends Controller
                 }
                
             }
-            $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID])->all();
+            $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
             $pers_list = '';
             if($pers_tasks) {
                 foreach($pers_tasks as $task) {
@@ -426,12 +426,8 @@ class SiteController extends Controller
                 $report_text = self::_UNDEFINED;
             }
 
-            $task_date = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => null])->one();
-            if($task_date) {
-                $sektor_date = $task_date->TASK_TYPE_DATE;
-            } else {
-                $sektor_date = self::_UNDEFINED;
-            }
+            $transactions_for_date = \app\models\Transactions::findOne($issue->TRACT_ID);
+            $sektor_date = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');  
 
             $task_date_first_time = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '1', 'TASK_ID' => $issue_id])->one();
             if($task_date_first_time) {
@@ -626,9 +622,48 @@ class SiteController extends Controller
         */
 
         $model = $this->findModel($id);
+        $model->scenario = \app\models\Tasks::SCENARIO_UPDATE;
         $model->DEADLINE = \Yii::$app->formatter->asDate($model->DEADLINE, 'php:d-m-Y');
-        $podr_tasks = \app\models\PodrTasks::findAll(['TASK_ID' => $model->ID]);
-        $pers_tasks = \app\models\PersTasks::findAll(['TASK_ID' => $model->ID]);
+        $podr_tasks = \app\models\PodrTasks::findAll(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0]);
+        $task_confirms = \app\models\TaskConfirms::findAll(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0]);
+        $task_docs_recvrs = \app\models\TaskDocsRecvrs::findAll(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0]);
+        $pers_tasks = \app\models\PersTasks::findAll(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0]);
+
+        $task_date_3 = \app\models\TaskDates::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 3])->one();
+        if($task_date_3) {
+            $model->task_type_date_3 = \Yii::$app->formatter->asDate($task_date_3->TASK_TYPE_DATE, 'php:d-m-Y');  
+            $last_model_task_type_date_3 = $model->task_type_date_3;
+        } else {
+            $last_model_task_type_date_3 = null;
+        }
+
+        $task_date_1 = \app\models\TaskDates::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 1])->one();
+        if($task_date_1) {
+            $model->task_type_date_1 = \Yii::$app->formatter->asDate($task_date_1->TASK_TYPE_DATE, 'php:d-m-Y');  
+            $last_model_task_type_date_1 = $model->task_type_date_1;
+        } else {
+            $last_model_task_type_date_1 = null;
+        }
+
+        $task_date_4 = \app\models\TaskDates::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 4])->one();
+        if($task_date_4) {
+            $model->task_type_date_4 = \Yii::$app->formatter->asDate($task_date_4->TASK_TYPE_DATE, 'php:d-m-Y');  
+            $last_model_task_type_date_4 = $model->task_type_date_4;
+        } else {
+            $last_model_task_type_date_4 = null;
+        }
+
+        $transactions_for_date = \app\models\Transactions::findOne($model->TRACT_ID);
+        $model->transactions_tract_datetime = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');  
+
+        $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $model->ID])->orderBy('ID DESC')->LIMIT(1)->one();
+        if($task_state) {
+            $model->state = $task_state->STATE_ID;
+            $last_state = $task_state->STATE_ID;
+        } else {
+            $last_state = null;
+        }
+
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -637,8 +672,255 @@ class SiteController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            // echo '<pre>';
-            // print_r(Yii::$app->request->post()); die();
+            //echo '<pre>';
+            //print_r(Yii::$app->request->post()); die();
+
+            $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+
+            if(!empty($model->hidden_ordernum))
+                $model->ORDERNUM = $model->hidden_ordernum;
+            if(!empty($model->hidden_peoordernum))
+                $model->PEOORDERNUM = $model->hidden_peoordernum;
+
+            $deadline = explode('-', $model->DEADLINE);
+            $deadline_formatted = $deadline[2].'-'.$deadline[1].'-'.$deadline[0];
+            
+            $model->DEADLINE = new \yii\db\Expression("to_date('" . $deadline_formatted . "','{$this->dateFormat}')");
+
+            if($model->save()) {
+                
+                /*
+                Удаляем (помечаем) старые данные и сохраняем модель PODR_TASKS----------------------------------------------
+                */
+                //get isset tasks array
+                $isset_podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0])->all();
+                $isset_podr_tasks_array = [];
+                if($isset_podr_tasks) {
+                    foreach($isset_podr_tasks as $isset_podr_task) {
+                        $isset_podr_tasks_array[$isset_podr_task->ID] = $isset_podr_task->KODZIFR;
+                    }
+                }    
+
+                $new_podr_tasks_array = explode(',', $model->podr_list);
+                foreach($isset_podr_tasks_array as $key_id => $val_kodzifr) {
+                    if(!in_array($val_kodzifr, $new_podr_tasks_array)) {
+                        
+                        //помечаем как удаленный
+                        $podr_task = \app\models\PodrTasks::findOne($key_id);
+                        $podr_task->DEL_TRACT_ID = $transactions->ID;
+                        $podr_task->save();
+                    }
+                }
+                foreach($new_podr_tasks_array as $kodzifr) {
+                    if(!in_array($kodzifr, $isset_podr_tasks_array)) {
+                        //добавляем новое значение
+                        
+                        $podr_task = new \app\models\PodrTasks;
+                        $podr_task->TASK_ID = $model->ID;
+                        $podr_task->KODZIFR = $kodzifr;
+                        $podr_task->TRACT_ID = $transactions->ID;
+                        $podr_task->save();
+                    }
+                }
+                /*
+                    ------------------------------------------------------------------------------------------------------------
+                */
+                
+                /*
+                    Удаляем (помечаем) старые данные и сохраняем модель PERS_TASKS----------------------------------------------
+                */ 
+                $isset_pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0])->all();
+                $isset_pers_tasks_array = [];
+                if($isset_pers_tasks) {
+                    foreach($isset_pers_tasks as $isset_pers_task) {
+                        $isset_pers_tasks_array[$isset_pers_task->ID] = $isset_pers_task->TN;
+                    }
+                }
+                $new_pers_tasks_array = explode(',', $model->persons_list);
+                foreach($isset_pers_tasks_array as $key_id => $val_tn) {
+                    if(!in_array($val_tn, $new_pers_tasks_array)) {
+                        //помечаем как удаленный
+                        $pers_task = \app\models\PersTasks::findOne($key_id);
+                        $pers_task->DEL_TRACT_ID = $transactions->ID;
+                        $pers_task->save();
+                    }
+                }
+                foreach($new_pers_tasks_array as $tn) {
+                    if(!in_array($tn, $isset_pers_tasks_array)) {
+                        //добавляем новое значение
+                        $person_task = new \app\models\PersTasks;
+                        $person_task->TASK_ID = $model->ID;
+                        $person_task->TN = $tn;
+                        $person_task->TRACT_ID = $transactions->ID;
+                        $person_task->save();
+                    }
+                }
+                /*
+                    ------------------------------------------------------------------------------------------------------------
+                */ 
+
+                /*
+                    Проверяем на изменение и сохраняем все даты в таблицу TASK_DATES
+                */ 
+                    if($last_model_task_type_date_3 != $model->task_type_date_3) {
+                        $old_task_date_3 = \app\models\TaskDates::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 3])->one();
+                        if($old_task_date_3) {
+                            $old_task_date_3->DEL_TRACT_ID = $transactions->ID;
+                            $old_task_date_3->save();
+                        }
+
+                        $task_date_3 = new \app\models\TaskDates;
+                        $task_type_date_3 = explode('-', $model->task_type_date_3);
+                        $task_type_date_3_formatted = $task_type_date_3[2].'-'.$task_type_date_3[1].'-'.$task_type_date_3[0];
+                        $task_date_3->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . $task_type_date_3_formatted . "','{$this->dateFormat}')");
+                        $task_date_3->TASK_ID = $model->ID;
+                        $task_date_3->DATE_TYPE_ID = 3;
+                        $task_date_3->TRACT_ID = $transactions->ID;
+                        $task_date_3->save();
+                    }
+
+                    if($last_model_task_type_date_1 != $model->task_type_date_1) {
+                        $old_task_date_1 = \app\models\TaskDates::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 1])->one();
+                        if($old_task_date_1) {
+                            $old_task_date_1->DEL_TRACT_ID = $transactions->ID;
+                            $old_task_date_1->save();
+                        }
+
+                        $task_date_1 = new \app\models\TaskDates;
+                        $task_type_date_1 = explode('-', $model->task_type_date_1);
+                        $task_type_date_1_formatted = $task_type_date_1[2].'-'.$task_type_date_1[1].'-'.$task_type_date_1[0];
+                        $task_date_1->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . $task_type_date_1_formatted . "','{$this->dateFormat}')");
+                        $task_date_1->TASK_ID = $model->ID;
+                        $task_date_1->DATE_TYPE_ID = 1;
+                        $task_date_1->TRACT_ID = $transactions->ID;
+                        $task_date_1->save();
+                    }
+
+                    if($last_model_task_type_date_4 != $model->task_type_date_4) {
+                        $old_task_date_4 = \app\models\TaskDates::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 4])->one();
+                        if($old_task_date_4) {
+                            $old_task_date_4->DEL_TRACT_ID = $transactions->ID;
+                            $old_task_date_4->save();
+                        }
+
+                        $task_date_4 = new \app\models\TaskDates;
+                        $task_type_date_4 = explode('-', $model->task_type_date_4);
+                        $task_type_date_4_formatted = $task_type_date_4[2].'-'.$task_type_date_4[1].'-'.$task_type_date_4[0];
+                        $task_date_4->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . $task_type_date_4_formatted . "','{$this->dateFormat}')");
+                        $task_date_4->TASK_ID = $model->ID;
+                        $task_date_4->DATE_TYPE_ID = 4;
+                        $task_date_4->TRACT_ID = $transactions->ID;
+                        $task_date_4->save();
+                    }
+                    
+
+
+                /*
+                    ------------------------------------------------------------------------------------------------------------
+                */
+
+                /*
+                    Обработка полей "Согласовано с"
+                */
+                    //get isset tasks array
+                    $isset_podr_tasks_confirms = \app\models\TaskConfirms::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0])->all();
+                    $isset_podr_tasks_confirms_array = [];
+                    if($isset_podr_tasks_confirms) {
+                        foreach($isset_podr_tasks_confirms as $isset_podr_task_confirm) {
+                            $isset_podr_tasks_confirms_array[$isset_podr_task_confirm->ID] = $isset_podr_task_confirm->KODZIFR;
+                        }
+                    }    
+
+                    $new_podr_tasks_confirms_array = explode(',', $model->agreed_podr_list);
+
+                    foreach($isset_podr_tasks_confirms_array as $key_id => $val_kodzifr) {
+                        if(!in_array($val_kodzifr, $new_podr_tasks_confirms_array)) {
+                            
+                            //помечаем как удаленный
+                            $task_confirm = \app\models\TaskConfirms::findOne($key_id);
+                            $task_confirm->DEL_TRACT_ID = $transactions->ID;
+                            $task_confirm->save();
+                        }
+                    }
+                    foreach($new_podr_tasks_confirms_array as $kodzifr) {
+                        if(!in_array($kodzifr, $isset_podr_tasks_confirms_array)) {
+                            //добавляем новое значение
+                            
+                            $task_confirms = new \app\models\TaskConfirms;
+                            $task_confirms->TASK_ID = $model->ID;
+                            $task_confirms->KODZIFR = $kodzifr;
+                            $task_confirms->TRACT_ID = $transactions->ID;
+                            $task_confirms->save();
+                        }
+                    }
+
+                /*
+                    ------------------------------------------------------------------------------------------------------------
+                */
+
+                /*
+                    Обработка полей "Передано в"
+                */
+                    //get isset tasks array
+                    $isset_podr_task_docs_recvrs = \app\models\TaskDocsRecvrs::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0])->all();
+                    $isset_podr_task_docs_recvrs_array = [];
+                    if($isset_podr_task_docs_recvrs) {
+                        foreach($isset_podr_task_docs_recvrs as $isset_podr_task_docs_recvrs) {
+                            $isset_podr_task_docs_recvrs_array[$isset_podr_task_docs_recvrs->ID] = $isset_podr_task_docs_recvrs->KODZIFR;
+                        }
+                    }    
+
+                    $new_podr_task_docs_recvrs_array = explode(',', $model->transmitted_podr_list);
+
+
+
+                    foreach($isset_podr_task_docs_recvrs_array as $key_id => $val_kodzifr) {
+                        if(!in_array($val_kodzifr, $new_podr_task_docs_recvrs_array)) {
+                            
+                            //помечаем как удаленный
+                            $task_doc = \app\models\TaskDocsRecvrs::findOne($key_id);
+                            $task_doc->DEL_TRACT_ID = $transactions->ID;
+                            $task_doc->save();
+                        }
+                    }
+                    foreach($new_podr_task_docs_recvrs_array as $kodzifr) {
+                        if(!in_array($kodzifr, $isset_podr_task_docs_recvrs_array)) {
+                            //добавляем новое значение
+                            
+                            $task_doc = new \app\models\TaskDocsRecvrs;
+                            $task_doc->TASK_ID = $model->ID;
+                            $task_doc->KODZIFR = $kodzifr;
+                            $task_doc->TRACT_ID = $transactions->ID;
+                            $task_doc->save();
+                        }
+                    }
+
+                /*
+                    ------------------------------------------------------------------------------------------------------------
+                */
+
+                /*
+                    Обработка состояния задания
+                */
+                    if($last_state != $model->state) {
+                        $new_state = new \app\models\TaskStates;
+                        $new_state->TASK_ID = $model->ID;
+                        $new_state->STATE_ID = $model->state;
+                        $new_state->TRACT_ID = $transactions->ID;
+                        $new_state->save();
+                    }
+
+                /*
+                    ------------------------------------------------------------------------------------------------------------
+                */
+
+                \Yii::$app->getSession()->setFlash('flash_message_success', 'Изменения сохранены');
+                return $this->refresh();
+
+            } else {
+                print_r($model->errors); die();
+            }
+
 
             //after save generate script to confirm and close window
             //return $this->redirect(['view', 'id' => (string) $model->_id]);
@@ -675,6 +957,8 @@ class SiteController extends Controller
                 'podr_data' => $this->_multidemensional_podr,
                 'podr_tasks' => $podr_tasks,
                 'pers_tasks' => $pers_tasks,
+                'task_confirms' => $task_confirms,
+                'task_docs_recvrs' => $task_docs_recvrs,
                 'agreed_podr_data' => $this->_multidemensional_podr_agreed,
                 'transmitted_podr_data' => $this->_multidemensional_podr_transmitted,
             ]);

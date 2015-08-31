@@ -21,6 +21,7 @@ class PersTasks extends \yii\db\ActiveRecord
     {
         return [
             [['TASK_ID', 'TN', 'TRACT_ID'], 'required'],
+            [['DEL_TRACT_ID'], 'safe'],
         ];
     }
 

@@ -80,11 +80,15 @@
 					    ],
 					    'pluginEvents' => [
 					    	"select2:selecting" => "function(e) { 
-					    		
+					    		var selected_data = e.params.args.data; 
+					    		if (typeof selected_data.peoordernum != 'undefined') {
+					    			$(\"#tasks-hidden_ordernum\").val(selected_data.text);
+					    		}
 					    	}",
 					    ]
 					]);
 				    ?>
+				    <?= $form->field($model, 'hidden_ordernum', ['options' => ['class' => '']])->hiddenInput()->label(false); ?>
 
 				    <?= $form->field($model, 'PEOORDERNUM', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
@@ -111,11 +115,15 @@
 					    ],
 					    'pluginEvents' => [
 					    	"select2:selecting" => "function(e) { 
-					    		
+					    		var selected_data = e.params.args.data; 
+					    		if (typeof selected_data.ordernum != 'undefined') {
+					    			$(\"#tasks-hidden_peoordernum\").val(selected_data.text);
+					    		}
 					    	}",
 					    ]
 					]);
 				    ?>
+				    <?= $form->field($model, 'hidden_peoordernum', ['options' => ['class' => '']])->hiddenInput()->label(false); ?>
 
 				    <?= $form->field($model, 'DEADLINE', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
@@ -366,6 +374,9 @@
 					$chk_podr_list .= '$("#podr-check-list-update").find("#checkbox_'.$data['code'].'").prop("checked", true);';
 		        }
 			}
+		} else {
+			$podr_tasks_list = '';
+			$chk_podr_list = '';
 		}
 		if($pers_tasks) {
 			$pers_tasks_list = '';
@@ -385,6 +396,44 @@
 		} else {
 			$pers_tasks_list = '';
 			$chk_pers_list = '';
+		}
+		if($task_confirms) {
+			$task_confirms_list = '';
+			$chk_task_confirms = '';
+			foreach($task_confirms as $podr) {
+				$query = new \yii\db\Query;
+		        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+		                ->from('STIGIT.V_F_PODR')
+		                ->where('KODZIFR = \''.trim($podr->KODZIFR).'\'');
+		        $command = $query->createCommand();
+		        $data = $command->queryOne();
+		        if($data) {
+					$task_confirms_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
+					$chk_task_confirms .= '$("#agreed-podr-check-list-update").find("#checkbox_'.$data['code'].'").prop("checked", true);';
+		        }
+			}
+		} else {
+			$task_confirms_list = '';
+			$chk_task_confirms = '';
+		}
+		if($task_docs_recvrs) {
+			$task_docs_recvrs_list = '';
+			$chk_task_docs_recvrs = '';
+			foreach($task_docs_recvrs as $podr) {
+				$query = new \yii\db\Query;
+		        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+		                ->from('STIGIT.V_F_PODR')
+		                ->where('KODZIFR = \''.trim($podr->KODZIFR).'\'');
+		        $command = $query->createCommand();
+		        $data = $command->queryOne();
+		        if($data) {
+					$task_docs_recvrs_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
+					$chk_task_docs_recvrs .= '$("#transmitted-podr-check-list-update").find("#checkbox_'.$data['code'].'").prop("checked", true);';
+		        }
+			}
+		} else {
+			$task_docs_recvrs_list = '';
+			$chk_task_docs_recvrs = '';
 		}
 		echo $this->registerJs(
 			"
@@ -518,7 +567,9 @@
 			    	return false;
 			    });
 				$('#tasks-agreed_podr_list').tokenfield();
-				//@todo see upper
+				$('#tasks-agreed_podr_list').tokenfield('setTokens', [".substr_replace($task_confirms_list ,"",-1)."]);
+				//set checked in modal podr window
+				".$chk_task_confirms."
 
 				$('#tasks-agreed_podr_list').on('tokenfield:removedtoken', function (e) {
 					$(\"#agreed-podr-check-list-update\").find('#checkbox_'+e.attrs.value).removeAttr('checked');
@@ -551,7 +602,9 @@
 			    	return false;
 			    });
 				$('#tasks-transmitted_podr_list').tokenfield();
-				//@todo see upper
+				$('#tasks-transmitted_podr_list').tokenfield('setTokens', [".substr_replace($task_docs_recvrs_list ,"",-1)."]);
+				//set checked in modal podr window
+				".$chk_task_docs_recvrs."
 
 				$('#tasks-transmitted_podr_list').on('tokenfield:removedtoken', function (e) {
 					$(\"#transmitted-podr-check-list-update\").find('#checkbox_'+e.attrs.value).removeAttr('checked');
