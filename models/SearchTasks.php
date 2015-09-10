@@ -9,17 +9,31 @@ use app\models\Tasks;
 
 class SearchTasks extends Tasks
 {
+    public $states;
 
     public function rules()
     {
         return [
-            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT'], 'safe'],
+            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'states'], 'safe'],
         ];
     }
 
     public function scenarios()
     {
         return Model::scenarios();
+    }
+
+    public function getSelectedTasksStatesNames()
+    {
+        $selected_states = \app\models\States::find()->where(['ID' => $this->states])->all();
+        if($selected_states) {
+            $selected_states_string = 'значение: ';
+            foreach($selected_states as $state) {
+                $selected_states_string .= $state->STATE_NAME.' ';
+            }  
+            return $selected_states_string;
+        }
+        
     }
 
     public function search($params)
@@ -35,6 +49,10 @@ class SearchTasks extends Tasks
             return $dataProvider;
         }
 
+        if(!empty($this->states)) {
+            $query->joinWith('taskstates'); 
+            $query->andFilterWhere(['TASK_STATES.STATE_ID' => $this->states]);
+        }
 
 
         // $query->andFilterWhere([

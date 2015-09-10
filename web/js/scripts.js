@@ -127,8 +127,23 @@ $(document).ready(function(){
     });
 
 
-
+    $("#searchtasks-states input").change(function() {	
+    	var state_moment_string = '';
+    	$('#searchtasks-states input:checked').each(function() {
+    		state_moment_string = state_moment_string + $(this).parent().text();
+    		
+    	});
+    	//console.log(state_moment_string);
+    	if(state_moment_string != '') {
+    		state_moment_string = 'значение: '+state_moment_string;
+    	}
+    	$("#state_moment").html(state_moment_string);
+    });
     
     
 });
+
+function viewWhatSelectedInFilter(val, moment) {
+	$("#"+moment).html('значение: '+val);
+}
 

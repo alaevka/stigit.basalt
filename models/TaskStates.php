@@ -20,7 +20,7 @@ class TaskStates extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['TASK_ID', 'STATE_ID', 'TRACT_ID'], 'required'],
+            [['TASK_ID', 'STATE_ID', 'TRACT_ID', 'IS_CURRENT'], 'required'],
         ];
     }
 
@@ -30,6 +30,7 @@ class TaskStates extends \yii\db\ActiveRecord
             'TASK_ID' => 'Идентификатор текущей задачи',
             'STATE_ID' => 'Идентификатор указанного состояния',
             'TRACT_ID' => 'Идентификатор текущей транзакции пользователя',
+            'IS_CURRENT' => 'Текущее состояние'
         ];
     }
     

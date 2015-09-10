@@ -66,6 +66,7 @@ class SiteController extends Controller
     */
     public function actionIndex()
     {
+       
         $model = new \app\models\IssueForm;
         
         $this->_podr_data_array = $this->_getPodrData();
@@ -158,11 +159,15 @@ class SiteController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
         $dataProvider->pagination->pageSize=15;
 
+       
+
+
         return $this->render('index', [
             'podr_data' => $this->_multidemensional_podr,
             'model' => $model,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
+            
         ]);
     }
 
@@ -945,7 +950,14 @@ class SiteController extends Controller
                         $new_state->TASK_ID = $model->ID;
                         $new_state->STATE_ID = $model->state;
                         $new_state->TRACT_ID = $transactions->ID;
+                        $new_state->IS_CURRENT = 1;
                         $new_state->save();
+
+                        //обновление поля IS_CURRENT для предыдущего состояния
+                        if($last_state != null) {
+                            $task_state->IS_CURRENT = 0;
+                            $task_state->save();
+                        }
                     }
 
                 /*

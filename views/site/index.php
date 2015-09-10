@@ -22,7 +22,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="<?= Url::to(['/']); ?>"><img src="/images/logo_fullsize.png" height="40"></a>
+			<a class="navbar-brand" href="<?= Url::to(['site/index']); ?>"><img src="/images/logo_fullsize.png" height="40"></a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
@@ -56,11 +56,91 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	<div id="page-content-wrapper">
 		<div class="container-fluid">
 			<div class="row">
+				<div class="panel-group col-md-offset-6 col-md-6" id="accordion" role="tablist" aria-multiselectable="true">
+					<div class="filters-header">Фильтры</div>
+					<?php $form_filter = ActiveForm::begin([
+			                'id' => 'filter-form',
+			                'method' => 'get',
+			                'action' => ['index'],
+			                'options' => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
+			        ]); ?>
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingOne">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+									Состояние
+									<div class="what-selected pull-right" id="state_moment">
+										<?php echo $searchModel->getSelectedTasksStatesNames(); ?>
+									</div>
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+							<div class="panel-body">
+								<?= $form_filter->field($searchModel, 'states', ['template' => "{label}\n{input}"])
+								    ->label(false)
+								    ->checkboxList(yii\helpers\ArrayHelper::map(\app\models\States::find()->orderBy('ID asc')->all(), 'ID', 'STATE_NAME'), ['separator' => '', 'class' => 'state-checkbox']); ?>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingTwo">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+									Подразделение
+								</a>
+							</h4>
+						</div>
+						<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+							<div class="panel-body">
+								фильтр
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingThree">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+									Исполнитель
+								</a>
+							</h4>
+						</div>
+						<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+							<div class="panel-body">
+								фильтр
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingFour">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+									Исходящий номер
+									<div class="what-selected pull-right" id="task_number_moment"><?php if($searchModel->TASK_NUMBER) { ?>значение: <?= $searchModel->TASK_NUMBER; } ?></div>
+								</a>
+							</h4>
+						</div>
+						<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+							<div class="panel-body">
+								<?= $form_filter->field($searchModel, 'TASK_NUMBER', [
+							        'inputOptions'=>['class'=>'form-control input-sm'],
+							    ])->textInput(['onkeyup' => 'viewWhatSelectedInFilter(this.value, \'task_number_moment\');'])->label(false) ?>
+							</div>
+						</div>
+					</div>
+					<div class="filter-submit-block pull-right">
+						<?= Html::a('Очистить фильтр', ['index'], ['class' => 'btn btn-default']) ?>
+						<?= Html::submitButton('Применить фильтр', ['class' => 'btn btn-primary', 'id' => 'filter-submit-button']) ?>
+					</div>
+					<?php ActiveForm::end(); ?>
+				</div>	
+			</div>
+			<div class="row">
 				<div class="col-lg-12">
 					<?php
 						echo GridView::widget([
 						    'dataProvider' => $dataProvider,
-						    'filterModel' => $searchModel,
+						    //'filterModel' => $searchModel,
 						    'layout' => '<div class="row"><div class="col-md-9">{pager}</div><div class="col-md-3">{summary}</div></div><div>{items}</div>',
 						    'summary' => '<div class="summary">Всего заданий {totalCount}</div>',
 						    'hover'=>true,
@@ -77,7 +157,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							    	'label' => '',
 							    	'format' => 'html',
 							    	'value' => function ($model, $key, $index, $widget) {
-							    		return '<img height="20" src="/images/items_status/Желтый.png">';
+							    		return $model->_getLastTaskStatus($model->ID);
 							    	}
 							    ],
 							    [

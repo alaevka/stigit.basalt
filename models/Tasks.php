@@ -45,6 +45,13 @@ class Tasks extends \yii\db\ActiveRecord
         ];
     }
 
+
+    public function getTaskstates()
+    {
+        return $this->hasMany(\app\models\TaskStates::className(), ['TASK_ID' => 'ID'])->where(['IS_CURRENT' => 1]);
+    }
+
+
     public function attributeLabels()
     {
         return [
@@ -72,6 +79,16 @@ class Tasks extends \yii\db\ActiveRecord
             'transmitted_podr_list' => 'Передано в',
             'state' => 'Состояние',
         ];
+    }
+
+    public function _getLastTaskStatus($id) {
+        $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $id])->orderBy('ID DESC')->LIMIT(1)->one();
+        if($task_state) {
+            $this_task_state = \app\models\States::findOne($task_state->STATE_ID);
+            return $this_task_state->getState_name_state_colour_without_text();
+        } else {
+            return '';
+        }
     }
     
 }

@@ -18,5 +18,10 @@ class States extends \yii\db\ActiveRecord
     {
         return '<img height="16" src="/images/items_status/'.$this->STATE_COLOUR.'.png"> '.$this->STATE_NAME;
     }
+
+    public function getState_name_state_colour_without_text()
+    {
+        return '<img height="16" src="/images/items_status/'.$this->STATE_COLOUR.'.png">';
+    }
     
 }

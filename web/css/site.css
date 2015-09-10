@@ -225,3 +225,18 @@ form[role=login] .form-control + .glyphicon {
 .file-preview .fileinput-remove {
     display: none;
 }
+.filters-header {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 10px;
+    background-color: #e7e7e7;
+}
+.filter-submit-block {
+    padding: 5px 0 0 0;
+}
+#filter-form label {
+    font-size: 12px;
+}
+.what-selected {
+    font-size: 11px;
+}
