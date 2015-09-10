@@ -11,10 +11,11 @@ class SearchTasks extends Tasks
 {
     public $states;
 
+
     public function rules()
     {
         return [
-            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'states'], 'safe'],
+            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'states', 'podr_list'], 'safe'],
         ];
     }
 

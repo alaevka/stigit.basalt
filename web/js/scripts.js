@@ -127,6 +127,8 @@ $(document).ready(function(){
     });
 
 
+    //filter 
+
     $("#searchtasks-states input").change(function() {	
     	var state_moment_string = '';
     	$('#searchtasks-states input:checked').each(function() {
@@ -140,6 +142,7 @@ $(document).ready(function(){
     	$("#state_moment").html(state_moment_string);
     });
     
+    $('#searchtasks-podr_list').tokenfield();
     
 });
 
