@@ -212,6 +212,8 @@ $(document).ready(function(){
     $('#searchtasks-persons_list').on('tokenfield:removedtoken', function (e) {
 		$("#persons-check-list-filter").find('#checkbox_'+e.attrs.value).removeAttr('checked');
 	});
+	
+		
 
 });
 

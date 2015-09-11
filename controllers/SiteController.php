@@ -337,6 +337,24 @@ class SiteController extends Controller
         return $out;
     }
 
+    public function actionFilterordernumsearch($q = null, $id = null) {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new \yii\db\Query;
+            $query->select('DOCUMENTID AS id, ORDERNUM AS text')
+                ->from('STIGIT.V_PRP_DESIGNATION')
+                ->where('LOWER(DESIGNATION) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
+                ->limit(20);
+                //echo mb_strtolower($q, 'UTF-8'); die();
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
+
     public function actionOrdernumsearch($q = null, $id = null) {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

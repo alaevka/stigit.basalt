@@ -168,7 +168,35 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						</div>
 						<div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'ORDERNUM', [
+							        'template' => "<div class=\"col-sm-12\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(Select2::classname(), [
+								    'options' => ['placeholder' => '', 'multiple' => true],
+								    'pluginOptions' => [
+								        'tags' => true,
+								        'minimumInputLength' => 3,
+								        'maximumInputLength' => 25,
+								        'ajax' => [
+								            'url' => Url::to(['site/filterordernumsearch']),
+								            'dataType' => 'json',
+								            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+								        ],
+								        // 'createSearchChoice' => new JsExpression('function (term) { return {id: term, text: term}; }'),
+								        // 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+								        // 'templateResult' => new JsExpression('function(designation) { return designation.text; }'),
+								        // 'templateSelection' => new JsExpression('function (designation) { return designation.text; }'),
+								    ],
+								    'pluginEvents' => [
+								    	"select2:selecting" => "function(e) { 
+								    		var selected_data = e.params.args.data; 
+								    		console.log(e);
+								    	}",
+								    ]
+								])->label(false);
+							    ?>
+							    <div><p class="help-block"><small>Вы можете ввести несколько заказов для поиска</small></p></div>	
 							</div>
 						</div>
 					</div>
@@ -536,7 +564,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel-podr-filter">Выбор подразделений</h4>
+				<h4 class="modal-title" id="myModalLabel-podr-filter">Фильтр: выбор подразделений</h4>
 			</div>
 			<div class="modal-body" id="podr-check-list-filter">
 				<?= $podr_data_filter; ?>
@@ -619,7 +647,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel-pers">Выбор исполнителей</h4>
+				<h4 class="modal-title" id="myModalLabel-pers">Фильтр: выбор исполнителей</h4>
 			</div>
 			<div class="modal-body" id="persons-check-list-filter">
 				<div class="alert alert-warning" role="alert">Пожалуйста, сначала укажите подразделения</div>
@@ -630,5 +658,4 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			</div>
 		</div>
 	</div>
-</div>	
-
+</div>
