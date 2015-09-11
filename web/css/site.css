@@ -228,7 +228,7 @@ form[role=login] .form-control + .glyphicon {
 .filters-header {
     font-size: 14px;
     font-weight: bold;
-    padding: 5px 10px;
+    padding: 10px 10px;
     background-color: #e7e7e7;
 }
 .filter-submit-block {
@@ -239,4 +239,11 @@ form[role=login] .form-control + .glyphicon {
 }
 .what-selected {
     font-size: 11px;
+}
+.state-checkbox {
+    padding-left: 20px;
+}
+#filter-form .tokenfield .token .token-label
+{
+  max-width: 350px !important;
 }

@@ -128,25 +128,94 @@ $(document).ready(function(){
 
 
     //filter 
+    function _selectPodrFilter() {
+		var selected = [];
+		var selected_values = {};
+		$('#podr-check-list-filter input:checked').each(function() {
+		    selected.push({value: $(this).attr('value'), label:$(this).attr('data-title')});
+		    selected_values[$(this).attr('value')] = $(this).attr('data-title');
+		});
+		
+		$('#searchtasks-podr_list').tokenfield('setTokens', selected);
+		if(selected.length > 0) {
+			$("#podr_list_moment").html('выбрано: '+selected.length+' подразделение(ия)');
+		} else {
+			$("#podr_list_moment").html('');
+		}
 
+        $('#podr-select-modal-filter').modal('hide');
+
+        //create persons tree
+        $.ajax({
+        	type: "POST",
+        	dataType: 'json',
+        	url: "index.php?r=site/getpersons",
+        	data: "selected_podr="+JSON.stringify(selected_values),
+        	success: function(data,status){
+        		$("#persons-check-list-filter").html(data);
+        		$('#persons-check-list-filter').tree({checkbox: false});
+        		$('#searchtasks-persons_list').tokenfield('setTokens', []);
+        		$("#persons_list_moment").html('');
+        	}
+        });
+    }    
     $("#searchtasks-states input").change(function() {	
     	var state_moment_string = '';
     	$('#searchtasks-states input:checked').each(function() {
     		state_moment_string = state_moment_string + $(this).parent().text();
-    		
     	});
-    	//console.log(state_moment_string);
     	if(state_moment_string != '') {
-    		state_moment_string = 'значение: '+state_moment_string;
+    		state_moment_string = 'выбрано: '+state_moment_string;
     	}
     	$("#state_moment").html(state_moment_string);
     });
+    $('#searchtasks-podr_list').tokenfield({minWidth: 200})
+	    .on('tokenfield:removedtoken', function (e) {
+	   		$("#podr-check-list-filter").find('#checkbox_filter_'+e.attrs.value).removeAttr('checked');
+	  		_selectPodrFilter();
+  	});
+	$('#searchtasks-podr_list').on('tokenfield:removetoken', function (e) {
+		$('#searchtasks-persons_list').tokenfield('setTokens', []);
+		$("#persons-check-list-filter").html('<div class="alert alert-warning" role="alert">Пожалуйста, сначала укажите подразделения</div>');
+	   	$("#persons_list_moment").html('');
+	});
+
+    $("#add-podr-button-filter").click(function(){
+		$("#podr-select-modal-filter").modal();
+	});
+	$('#podr-check-list-filter').tree({checkbox: false});
+	$("#podr-check-list-filter").find(".checkbox-podr-link-filter").click(function(){
+    	var link_id = $(this).attr('data-id');
+    	$("#checkbox_filter_"+link_id).prop("checked", true);
+    	_selectPodrFilter();
+    	return false;
+    });
     
-    $('#searchtasks-podr_list').tokenfield();
-    
+
+
+	$("#add-persons-button-filter").click(function(){
+		$("#persons-select-modal-filter").modal();
+	});
+
+	$("#select-persons-filter").click(function(){
+    	var selected = [];
+    	$('#persons-check-list-filter input:checked').each(function() {
+		    selected.push({value: $(this).attr('value'), label:$(this).attr('data-title')});
+		});
+		$("#persons_list_moment").html('выбрано: '+selected.length+' исполнителя(ей)');
+		$('#searchtasks-persons_list').tokenfield('setTokens', selected);
+        $('#persons-select-modal-filter').modal('hide');
+    });
+
+    $('#searchtasks-persons_list').tokenfield({minWidth: 200});
+
+    $('#searchtasks-persons_list').on('tokenfield:removedtoken', function (e) {
+		$("#persons-check-list-filter").find('#checkbox_'+e.attrs.value).removeAttr('checked');
+	});
+
 });
 
 function viewWhatSelectedInFilter(val, moment) {
-	$("#"+moment).html('значение: '+val);
+	$("#"+moment).html('выбрано: '+val);
 }
 

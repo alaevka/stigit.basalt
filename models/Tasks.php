@@ -51,6 +51,16 @@ class Tasks extends \yii\db\ActiveRecord
         return $this->hasMany(\app\models\TaskStates::className(), ['TASK_ID' => 'ID'])->where(['IS_CURRENT' => 1]);
     }
 
+    public function getPodrtasks()
+    {
+        return $this->hasMany(\app\models\PodrTasks::className(), ['TASK_ID' => 'ID'])->where('PODR_TASKS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
+    }
+
+    public function getPerstasks()
+    {
+        return $this->hasMany(\app\models\PersTasks::className(), ['TASK_ID' => 'ID'])->where('PERS_TASKS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
+    }
+
 
     public function attributeLabels()
     {

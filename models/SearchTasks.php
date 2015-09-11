@@ -15,7 +15,7 @@ class SearchTasks extends Tasks
     public function rules()
     {
         return [
-            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'states', 'podr_list'], 'safe'],
+            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'SOURCENUM', 'TASK_TEXT', 'states', 'podr_list', 'persons_list'], 'safe'],
         ];
     }
 
@@ -28,7 +28,7 @@ class SearchTasks extends Tasks
     {
         $selected_states = \app\models\States::find()->where(['ID' => $this->states])->all();
         if($selected_states) {
-            $selected_states_string = 'значение: ';
+            $selected_states_string = 'выбрано: ';
             foreach($selected_states as $state) {
                 $selected_states_string .= $state->STATE_NAME.' ';
             }  
@@ -54,11 +54,22 @@ class SearchTasks extends Tasks
             $query->joinWith('taskstates'); 
             $query->andFilterWhere(['TASK_STATES.STATE_ID' => $this->states]);
         }
+        if(!empty($this->podr_list)) {
+            $podr_list = array_map('trim', explode(',', $this->podr_list));
+            $query->joinWith('podrtasks'); 
+            $query->andFilterWhere(['PODR_TASKS.KODZIFR' => $podr_list]);
+        }
+        if(!empty($this->persons_list)) {
+            $persons_list = array_map('trim', explode(',', $this->persons_list));
+            $query->joinWith('perstasks'); 
+            $query->andFilterWhere(['PERS_TASKS.TN' => $persons_list]);
+        }
 
 
         // $query->andFilterWhere([
         //     //'DESIGNATION' => $this->DESIGNATION,
         // ]);
+        $query->andFilterWhere(['like', 'SOURCENUM', $this->SOURCENUM]);
 
         $query->andFilterWhere(['like', 'TASK_TEXT', $this->TASK_TEXT]);
         $query->andFilterWhere(['like', 'PEOORDERNUM', $this->PEOORDERNUM]);

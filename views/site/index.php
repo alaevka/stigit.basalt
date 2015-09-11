@@ -6,6 +6,7 @@ use kartik\date\DatePicker;
 use yii\web\JsExpression;
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use yii\web\View;
 $this->title = 'index page';
 /*
 	поиск транзакции (будущем перенести в модель в relations)
@@ -58,6 +59,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			<div class="row">
 				<div class="panel-group col-md-offset-6 col-md-6" id="accordion" role="tablist" aria-multiselectable="true">
 					<div class="filters-header">Фильтры</div>
+					
 					<?php $form_filter = ActiveForm::begin([
 			                'id' => 'filter-form',
 			                'method' => 'get',
@@ -88,7 +90,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
 									Подразделение
-									<div class="what-selected pull-right" id="podr_list_moment"></div>
+									<div class="what-selected pull-right" id="podr_list_moment"><?php if($searchModel->podr_list) { ?>выбрано: <?= count(explode(',', $searchModel->podr_list)).' подразделение(ия)'; } ?></div>
 								</a>
 							</h4>
 						</div>
@@ -106,12 +108,16 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
 									Исполнитель
+									<div class="what-selected pull-right" id="persons_list_moment"><?php if($searchModel->persons_list) { ?>выбрано: <?= count(explode(',', $searchModel->persons_list)).' исполнителя(ей)'; } ?></div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'persons_list', [
+							        'inputOptions'=>['class'=>'form-control input-sm'],
+							        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-persons-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
+							    ])->textInput()->label(false) ?>								
 							</div>
 						</div>
 					</div>
@@ -120,7 +126,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
 									Исходящий номер
-									<div class="what-selected pull-right" id="task_number_moment"><?php if($searchModel->TASK_NUMBER) { ?>значение: <?= $searchModel->TASK_NUMBER; } ?></div>
+									<div class="what-selected pull-right" id="task_number_moment"><?php if($searchModel->TASK_NUMBER) { ?>выбрано: <?= $searchModel->TASK_NUMBER; } ?></div>
 								</a>
 							</h4>
 						</div>
@@ -139,12 +145,15 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
 									Входящий номер
+									<div class="what-selected pull-right" id="task_sourcenum_moment"><?php if($searchModel->SOURCENUM) { ?>выбрано: <?= $searchModel->SOURCENUM; } ?></div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'SOURCENUM', [
+							        'inputOptions'=>['class'=>'form-control input-sm'],
+							    ])->textInput(['onkeyup' => 'viewWhatSelectedInFilter(this.value, \'task_sourcenum_moment\');'])->label(false) ?>
 							</div>
 						</div>
 					</div>
@@ -214,6 +223,76 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						<?= Html::submitButton('Применить фильтр', ['class' => 'btn btn-primary', 'id' => 'filter-submit-button']) ?>
 					</div>
 					<?php ActiveForm::end(); ?>
+					<?php
+							if($searchModel->podr_list) {
+								$podr_tasks_list = '';
+								$chk_podr_list = '';
+								$podr_list_array = explode(',', $searchModel->podr_list);
+								foreach($podr_list_array as $podr) {
+									$query = new \yii\db\Query;
+							        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+							                ->from('STIGIT.V_F_PODR')
+							                ->where('KODZIFR = \''.trim($podr).'\'');
+							        $command = $query->createCommand();
+							        $data = $command->queryOne();
+							        if($data) {
+										$podr_tasks_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
+										$chk_podr_list .= '$("#podr-check-list-filter").find("#checkbox_filter_'.$data['code'].'").prop("checked", true);';
+							        }
+							        
+								}
+							} else {
+								$podr_tasks_list = '';
+								$chk_podr_list = '';
+							}
+
+							if($searchModel->persons_list) {
+								$pers_tasks_list = '';
+								$chk_pers_list = '';
+								$persons_list_array = explode(',', $searchModel->persons_list);
+								foreach($persons_list_array as $pers) {
+									$query = new \yii\db\Query;
+							        $query->select('*')
+							                ->from('STIGIT.V_F_PERS')
+							                ->where('TN = \''.trim($pers).'\'');
+							        $command = $query->createCommand();
+							        $data = $command->queryOne();
+							        if($data) {
+										$pers_tasks_list .= '{value: '.$data['TN'].', label: \''.$data['FIO'].'\'},';
+										$chk_pers_list .= '$("#persons-check-list-filter").find("#checkbox_'.$data['TN'].'").prop("checked", true);';
+							        }
+								}
+							} else {
+								$pers_tasks_list = '';
+								$chk_pers_list = '';
+							}
+
+							$this->registerJs('$(document).ready(function(){ 
+										$("#searchtasks-podr_list").tokenfield(\'setTokens\', ['.substr_replace($podr_tasks_list ,"",-1).']); '.$chk_podr_list.'
+										$("#searchtasks-persons_list").tokenfield(\'setTokens\', ['.substr_replace($pers_tasks_list ,"",-1).']); 
+							        	var selected_values = {};
+										$(\'#podr-check-list-filter input:checked\').each(function() {
+										    selected_values[$(this).attr(\'value\')] = $(this).attr(\'data-title\');
+										});
+										var csrfToken = $(\'meta[name="csrf-token"]\').attr(\'content\');
+									    $.ajax({
+								        	type: "POST",
+								        	dataType: \'json\',
+								        	url: "index.php?r=site/getpersons",
+								        	data: "selected_podr="+JSON.stringify(selected_values)+"&_csrf="+csrfToken,
+								        	success: function(data,status){
+								        		$(\'#persons-check-list-filter\').html(data);
+								        		$(\'#persons-check-list-filter\').tree({checkbox: false});
+								        		'.$chk_pers_list.'
+								        	},
+									    });
+							    		}); ', View::POS_END, 'filter_update');
+
+
+
+					?>
+						
+					    
 				</div>	
 			</div>
 			<div class="row">
@@ -452,6 +531,23 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	</div>
 </div>
 
+<div class="modal fade" id="podr-select-modal-filter" role="dialog" aria-labelledby="podr-select-modal-filter-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-podr-filter">Выбор подразделений</h4>
+			</div>
+			<div class="modal-body" id="podr-check-list-filter">
+				<?= $podr_data_filter; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class="modal fade" id="persons-select-modal" role="dialog" aria-labelledby="podr-select-modal-label">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -518,19 +614,19 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	</div>
 </div>
 
-<div class="modal fade" id="persons-select-modal" role="dialog" aria-labelledby="podr-select-modal-label">
+<div class="modal fade" id="persons-select-modal-filter" role="dialog" aria-labelledby="podr-select-modal-label">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				<h4 class="modal-title" id="myModalLabel-pers">Выбор исполнителей</h4>
 			</div>
-			<div class="modal-body" id="persons-check-list">
+			<div class="modal-body" id="persons-check-list-filter">
 				<div class="alert alert-warning" role="alert">Пожалуйста, сначала укажите подразделения</div>
 			</div>
 			<div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
-				<button type="button" id="select-persons" class="btn btn-primary">Выбрать указанных исполнителей</button>
+				<button type="button" id="select-persons-filter" class="btn btn-primary">Выбрать указанных исполнителей</button>
 			</div>
 		</div>
 	</div>
