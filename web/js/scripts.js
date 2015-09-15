@@ -264,5 +264,20 @@ function showSelectedDateRange(moment) {
 		}
 		
 	}
+
+	if(moment == 'task_type_date_4_moment') {
+		var date_from = $("#searchtasks-task_type_date_4_from").val();
+		var date_to = $("#searchtasks-task_type_date_4_to").val();
+		if(date_from == '' && date_to != '') {
+			$("#"+moment).html('выбрано: до '+date_to);
+		} else if(date_from != '' && date_to == '') {
+			$("#"+moment).html('выбрано: от '+date_from);
+		} else if(date_from != '' && date_to != '') {
+			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+		} else {
+			$("#"+moment).html('');
+		}
+		
+	}
 }
 
