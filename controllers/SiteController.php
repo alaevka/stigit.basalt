@@ -161,6 +161,10 @@ class SiteController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
         $dataProvider->pagination->pageSize=15;
 
+        if(!is_array($searchModel->ORDERNUM))
+            $searchModel->ORDERNUM = [];
+        if(!is_array($searchModel->PEOORDERNUM))
+            $searchModel->PEOORDERNUM = [];
        
 
 
@@ -343,9 +347,27 @@ class SiteController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new \yii\db\Query;
-            $query->select('DOCUMENTID AS id, ORDERNUM AS text')
+            $query->select('ORDERNUM AS id, ORDERNUM AS text')
                 ->from('STIGIT.V_PRP_DESIGNATION')
-                ->where('LOWER(DESIGNATION) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
+                ->where('LOWER(ORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
+                ->limit(20);
+                //echo mb_strtolower($q, 'UTF-8'); die();
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
+
+    public function actionFilterpeoordernumsearch($q = null, $id = null) {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new \yii\db\Query;
+            $query->select('PEOORDERNUM AS id, PEOORDERNUM AS text')
+                ->from('STIGIT.V_PRP_DESIGNATION')
+                ->where('LOWER(PEOORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
                 //echo mb_strtolower($q, 'UTF-8'); die();
             $command = $query->createCommand();

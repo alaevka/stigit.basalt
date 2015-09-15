@@ -61,6 +61,26 @@ class Tasks extends \yii\db\ActiveRecord
         return $this->hasMany(\app\models\PersTasks::className(), ['TASK_ID' => 'ID'])->where('PERS_TASKS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
     }
 
+    public function getDatetype3()
+    {
+        return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>3]);
+    }
+
+    public function getDatetype2()
+    {
+        return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>2]);
+    }
+
+    public function getDatetype1()
+    {
+        return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>1]);
+    }
+
+    public function getDatetype4()
+    {
+        return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>4]);
+    }
+
 
     public function attributeLabels()
     {

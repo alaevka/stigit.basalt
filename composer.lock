@@ -5,6 +5,7 @@
         "This file is @generated automatically"
     ],
     "hash": "7863f4ecb083c0dd1b5480d36922f5e7",
+    "content-hash": "9813cac3691ca35f197ab660d82242cf",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -322,12 +323,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
-                "reference": "da3575c818d4e3636d22a90733ce25a6a8522eb0"
+                "reference": "883d8b623579d6ec2ec4ca28b6b8cc51ececd9ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/da3575c818d4e3636d22a90733ce25a6a8522eb0",
-                "reference": "da3575c818d4e3636d22a90733ce25a6a8522eb0",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/883d8b623579d6ec2ec4ca28b6b8cc51ececd9ac",
+                "reference": "883d8b623579d6ec2ec4ca28b6b8cc51ececd9ac",
                 "shasum": ""
             },
             "type": "library",
@@ -362,7 +363,7 @@
                 "progress",
                 "upload"
             ],
-            "time": "2015-09-07 20:03:00"
+            "time": "2015-09-14 15:42:34"
         },
         {
             "name": "kartik-v/mpdf",
@@ -413,12 +414,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-grid.git",
-                "reference": "f3fe827cb0f69ecf107a91626afe9d36b9a4bded"
+                "reference": "913fde8fbe41bf998d53a88d0443e25e1e696194"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/f3fe827cb0f69ecf107a91626afe9d36b9a4bded",
-                "reference": "f3fe827cb0f69ecf107a91626afe9d36b9a4bded",
+                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/913fde8fbe41bf998d53a88d0443e25e1e696194",
+                "reference": "913fde8fbe41bf998d53a88d0443e25e1e696194",
                 "shasum": ""
             },
             "require": {
@@ -449,7 +450,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-09-03 17:18:54"
+            "time": "2015-09-12 19:41:22"
         },
         {
             "name": "kartik-v/yii2-krajee-base",
@@ -649,12 +650,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-select2.git",
-                "reference": "8899c9062e9111583bdbfe070f60e4075fd45a44"
+                "reference": "e72880e7e8dfc845c112ed7df275bf1c929be6db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/8899c9062e9111583bdbfe070f60e4075fd45a44",
-                "reference": "8899c9062e9111583bdbfe070f60e4075fd45a44",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/e72880e7e8dfc845c112ed7df275bf1c929be6db",
+                "reference": "e72880e7e8dfc845c112ed7df275bf1c929be6db",
                 "shasum": ""
             },
             "require": {
@@ -689,7 +690,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-08-30 13:38:14"
+            "time": "2015-09-12 19:56:48"
         },
         {
             "name": "swiftmailer/swiftmailer",

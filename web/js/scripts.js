@@ -220,4 +220,49 @@ $(document).ready(function(){
 function viewWhatSelectedInFilter(val, moment) {
 	$("#"+moment).html('выбрано: '+val);
 }
+function showSelectedDateRange(moment) {
+	if(moment == 'task_deadline_moment') {
+		var date_from = $("#searchtasks-deadline_from").val();
+		var date_to = $("#searchtasks-deadline_to").val();
+		if(date_from == '' && date_to != '') {
+			$("#"+moment).html('выбрано: до '+date_to);
+		} else if(date_from != '' && date_to == '') {
+			$("#"+moment).html('выбрано: от '+date_from);
+		} else if(date_from != '' && date_to != '') {
+			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+		} else {
+			$("#"+moment).html('');
+		}
+		
+	}
+	if(moment == 'task_type_date_3_moment') {
+		var date_from = $("#searchtasks-task_type_date_3_from").val();
+		var date_to = $("#searchtasks-task_type_date_3_to").val();
+		if(date_from == '' && date_to != '') {
+			$("#"+moment).html('выбрано: до '+date_to);
+		} else if(date_from != '' && date_to == '') {
+			$("#"+moment).html('выбрано: от '+date_from);
+		} else if(date_from != '' && date_to != '') {
+			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+		} else {
+			$("#"+moment).html('');
+		}
+		
+	}
+
+	if(moment == 'task_type_date_1_moment') {
+		var date_from = $("#searchtasks-task_type_date_1_from").val();
+		var date_to = $("#searchtasks-task_type_date_1_to").val();
+		if(date_from == '' && date_to != '') {
+			$("#"+moment).html('выбрано: до '+date_to);
+		} else if(date_from != '' && date_to == '') {
+			$("#"+moment).html('выбрано: от '+date_from);
+		} else if(date_from != '' && date_to != '') {
+			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+		} else {
+			$("#"+moment).html('');
+		}
+		
+	}
+}
 

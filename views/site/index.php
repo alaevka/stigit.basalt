@@ -163,6 +163,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
 									Заказ
+									<div class="what-selected pull-right" id="task_ordernum_moment"><?php if(!empty($searchModel->ORDERNUM)) { ?>выбрано: <?= count($searchModel->ORDERNUM). ' заказ(а)'; } ?></div>
 								</a>
 							</h4>
 						</div>
@@ -183,16 +184,23 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								            'dataType' => 'json',
 								            'data' => new JsExpression('function(params) { return {q:params.term}; }')
 								        ],
-								        // 'createSearchChoice' => new JsExpression('function (term) { return {id: term, text: term}; }'),
-								        // 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-								        // 'templateResult' => new JsExpression('function(designation) { return designation.text; }'),
-								        // 'templateSelection' => new JsExpression('function (designation) { return designation.text; }'),
 								    ],
 								    'pluginEvents' => [
-								    	"select2:selecting" => "function(e) { 
-								    		var selected_data = e.params.args.data; 
-								    		console.log(e);
+								    	"select2:select" => "function(e) { 
+								    		var selected_data = $(this).val();
+								    		if(selected_data.length)
+								    			$('#task_ordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
 								    	}",
+								    	"select2:unselect" => "function(e) { 
+								    		var selected_data = $(this).val();
+									    		if(selected_data != null) {
+									    			$('#task_ordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
+									    		} else {
+									    			$('#task_ordernum_moment').html('');
+									    		}
+								    		
+								    	}",
+
 								    ]
 								])->label(false);
 							    ?>
@@ -206,12 +214,48 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
 									Заказ ПЭО
+									<div class="what-selected pull-right" id="task_peoordernum_moment"><?php if(!empty($searchModel->PEOORDERNUM)) { ?>выбрано: <?= count($searchModel->PEOORDERNUM). ' заказ(а)'; } ?></div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'PEOORDERNUM', [
+							        'template' => "<div class=\"col-sm-12\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(Select2::classname(), [
+								    'options' => ['placeholder' => '', 'multiple' => true],
+								    'pluginOptions' => [
+								        'tags' => true,
+								        'minimumInputLength' => 3,
+								        'maximumInputLength' => 25,
+								        'ajax' => [
+								            'url' => Url::to(['site/filterpeoordernumsearch']),
+								            'dataType' => 'json',
+								            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+								        ],
+								    ],
+								    'pluginEvents' => [
+								    	"select2:select" => "function(e) { 
+								    		var selected_data = $(this).val();
+								    		if(selected_data.length)
+								    			$('#task_peoordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
+								    	}",
+								    	"select2:unselect" => "function(e) { 
+								    		var selected_data = $(this).val();
+									    		if(selected_data != null) {
+									    			$('#task_peoordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
+									    		} else {
+									    			$('#task_peoordernum_moment').html('');
+									    		}
+								    		
+								    	}",
+
+								    ]
+								])->label(false);
+							    ?>
+							    <div><p class="help-block"><small>Вы можете ввести несколько заказов для поиска</small></p></div>
 							</div>
 						</div>
 					</div>
@@ -221,12 +265,62 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
 									Срок выполнения
+									<div class="what-selected pull-right" id="task_deadline_moment">
+										<?php 
+											if($searchModel->deadline_from != '' && $searchModel->deadline_to != '') {
+												echo 'выбрано: от '.$searchModel->deadline_from.' до '.$searchModel->deadline_to;
+											} else if($searchModel->deadline_from == '' && $searchModel->deadline_to != '') {
+												echo 'выбрано: до '.$searchModel->deadline_to;
+											} else if($searchModel->deadline_from != '' && $searchModel->deadline_to == '') {
+												echo 'выбрано: от '.$searchModel->deadline_from;
+											} else if($searchModel->deadline_from == '' && $searchModel->deadline_to == '') {
+											
+											}
+										?>
+									</div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapseEight" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEight">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'deadline_from', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_deadline_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							    <?= $form_filter->field($searchModel, 'deadline_to', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_deadline_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
 							</div>
 						</div>
 					</div>
@@ -236,10 +330,235 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
 									Дата поступления в сектор
+									<div class="what-selected pull-right" id="task_type_date_3_moment">
+										<?php 
+											if($searchModel->task_type_date_3_from != '' && $searchModel->task_type_date_3_to != '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_3_from.' до '.$searchModel->task_type_date_3_to;
+											} else if($searchModel->task_type_date_3_from == '' && $searchModel->task_type_date_3_to != '') {
+												echo 'выбрано: до '.$searchModel->task_type_date_3_to;
+											} else if($searchModel->task_type_date_3_from != '' && $searchModel->task_type_date_3_to == '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_3_from;
+											} else if($searchModel->task_type_date_3_from == '' && $searchModel->task_type_date_3_to == '') {
+											
+											}
+										?>
+									</div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingNine">
+							<div class="panel-body">
+								<?= $form_filter->field($searchModel, 'task_type_date_3_from', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_3_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							    <?= $form_filter->field($searchModel, 'task_type_date_3_to', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_3_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingTen">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+									Дата поступления в группу
+								</a>
+							</h4>
+						</div>
+						<div id="collapseTen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTen">
+							<div class="panel-body">
+								фильтр
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingEleven">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEleven" aria-expanded="false" aria-controls="collapseEleven">
+									Дата поступления исполнителю
+									<div class="what-selected pull-right" id="task_type_date_1_moment">
+										<?php 
+											if($searchModel->task_type_date_1_from != '' && $searchModel->task_type_date_1_to != '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_1_from.' до '.$searchModel->task_type_date_1_to;
+											} else if($searchModel->task_type_date_1_from == '' && $searchModel->task_type_date_1_to != '') {
+												echo 'выбрано: до '.$searchModel->task_type_date_1_to;
+											} else if($searchModel->task_type_date_1_from != '' && $searchModel->task_type_date_1_to == '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_1_from;
+											} else if($searchModel->task_type_date_1_from == '' && $searchModel->task_type_date_1_to == '') {
+											
+											}
+										?>
+									</div>
+								</a>
+							</h4>
+						</div>
+						<div id="collapseEleven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEleven">
+							<div class="panel-body">
+								<?= $form_filter->field($searchModel, 'task_type_date_1_from', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_1_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							    <?= $form_filter->field($searchModel, 'task_type_date_1_to', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_1_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingTwelve">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve">
+									Дата завершения
+									<div class="what-selected pull-right" id="task_type_date_4_moment">
+										<?php 
+											if($searchModel->task_type_date_4_from != '' && $searchModel->task_type_date_4_to != '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_4_from.' до '.$searchModel->task_type_date_4_to;
+											} else if($searchModel->task_type_date_4_from == '' && $searchModel->task_type_date_4_to != '') {
+												echo 'выбрано: до '.$searchModel->task_type_date_4_to;
+											} else if($searchModel->task_type_date_4_from != '' && $searchModel->task_type_date_4_to == '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_4_from;
+											} else if($searchModel->task_type_date_4_from == '' && $searchModel->task_type_date_4_to == '') {
+											
+											}
+										?>
+									</div>
+								</a>
+							</h4>
+						</div>
+						<div id="collapseTwelve" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwelve">
+							<div class="panel-body">
+								<?= $form_filter->field($searchModel, 'task_type_date_4_from', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_4_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							    <?= $form_filter->field($searchModel, 'task_type_date_4_to', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_4_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingthirteen">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsethirteen" aria-expanded="false" aria-controls="collapsethirteen">
+									Выпущенная документация
+								</a>
+							</h4>
+						</div>
+						<div id="collapsethirteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingthirteen">
+							<div class="panel-body">
+								фильтр
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingFourteen">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen">
+									Согласовано с
+								</a>
+							</h4>
+						</div>
+						<div id="collapseFourteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFourteen">
 							<div class="panel-body">
 								фильтр
 							</div>
@@ -391,7 +710,14 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						        [
 						        	'attribute' => 'TASK_TEXT',
 						        	'enableSorting' => false
-						        ]
+						        ],
+						        // [
+						        // 	'value' => function ($model, $key, $index, $widget) {
+						        // 		if(isset($model->datetype4->TASK_TYPE_DATE))
+						        // 			return $model->datetype4->TASK_TYPE_DATE;
+						        // 	},
+						        // 	'label' => 'Дата 4 тест'
+						        // ]
 						        // 'DEADLINE',
 						        // 'TRACT_ID'
 						    ],

@@ -10,12 +10,22 @@ use app\models\Tasks;
 class SearchTasks extends Tasks
 {
     public $states;
+    public $deadline_from;
+    public $deadline_to;
+    public $task_type_date_3_from;
+    public $task_type_date_3_to;
+    public $task_type_date_1_from;
+    public $task_type_date_1_to;
+    public $task_type_date_4_from;
+    public $task_type_date_4_to;
+    private $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
 
 
     public function rules()
     {
         return [
-            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'SOURCENUM', 'TASK_TEXT', 'states', 'podr_list', 'persons_list'], 'safe'],
+            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'SOURCENUM', 'DEADLINE', 'TASK_TEXT', 'states', 'podr_list', 'persons_list', 'deadline_from', 'deadline_to',
+            'task_type_date_3_from', 'task_type_date_3_to', 'task_type_date_1_from', 'task_type_date_1_to', 'task_type_date_4_from', 'task_type_date_4_to'], 'safe'],
         ];
     }
 
@@ -35,6 +45,20 @@ class SearchTasks extends Tasks
             return $selected_states_string;
         }
         
+    }
+
+    public function attributeLabels()
+    {
+        return [
+            'deadline_from' => 'От',
+            'deadline_to' => 'До',
+            'task_type_date_3_from' => 'От',
+            'task_type_date_3_to' => 'До',
+            'task_type_date_1_from' => 'От',
+            'task_type_date_1_to' => 'До',
+            'task_type_date_4_from' => 'От',
+            'task_type_date_4_to' => 'До',
+        ];
     }
 
     public function search($params)
@@ -65,15 +89,93 @@ class SearchTasks extends Tasks
             $query->andFilterWhere(['PERS_TASKS.TN' => $persons_list]);
         }
 
+        if($this->deadline_from != '' && $this->deadline_to != '') {
+            $deadline_from = explode('-', $this->deadline_from);
+            $deadline_from_formatted = $deadline_from[2].'-'.$deadline_from[1].'-'.$deadline_from[0];
+            $deadline_to = explode('-', $this->deadline_to);
+            $deadline_to_formatted = $deadline_to[2].'-'.$deadline_to[1].'-'.$deadline_to[0];
+            $query->andFilterWhere(['>=', 'DEADLINE', new \yii\db\Expression("to_date('" . $deadline_from_formatted . "','{$this->dateFormat}')")])
+                    ->andFilterWhere(['<=', 'DEADLINE', new \yii\db\Expression("to_date('" . $deadline_to_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->deadline_from != '' && $this->deadline_to == '') {
+            $deadline_from = explode('-', $this->deadline_from);
+            $deadline_from_formatted = $deadline_from[2].'-'.$deadline_from[1].'-'.$deadline_from[0];
+            $query->andFilterWhere(['>=', 'DEADLINE', new \yii\db\Expression("to_date('" . $deadline_from_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->deadline_from == '' && $this->deadline_to != '') {
+            $deadline_to = explode('-', $this->deadline_to);
+            $deadline_to_formatted = $deadline_to[2].'-'.$deadline_to[1].'-'.$deadline_to[0];
+            $query->andFilterWhere(['<=', 'DEADLINE', new \yii\db\Expression("to_date('" . $deadline_to_formatted . "','{$this->dateFormat}')")]);
+        }
 
-        // $query->andFilterWhere([
-        //     //'DESIGNATION' => $this->DESIGNATION,
-        // ]);
+
+        if($this->task_type_date_3_from != '' && $this->task_type_date_3_to != '') {
+            $query->joinWith('datetype3'); 
+            $task_type_date_3_from = explode('-', $this->task_type_date_3_from);
+            $task_type_date_3_from_formatted = $task_type_date_3_from[2].'-'.$task_type_date_3_from[1].'-'.$task_type_date_3_from[0];
+            $task_type_date_3_to = explode('-', $this->task_type_date_3_to);
+            $task_type_date_3_to_formatted = $task_type_date_3_to[2].'-'.$task_type_date_3_to[1].'-'.$task_type_date_3_to[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_3_from_formatted . "','{$this->dateFormat}')")])
+                    ->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_3_to_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_3_from != '' && $this->task_type_date_3_to == '') {
+            $query->joinWith('datetype3'); 
+            $task_type_date_3_from = explode('-', $this->task_type_date_3_from);
+            $task_type_date_3_from_formatted = $task_type_date_3_from[2].'-'.$task_type_date_3_from[1].'-'.$task_type_date_3_from[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_3_from_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_3_from == '' && $this->task_type_date_3_to != '') {
+            $query->joinWith('datetype3'); 
+            $task_type_date_3_to = explode('-', $this->task_type_date_3_to);
+            $task_type_date_3_to_formatted = $task_type_date_3_to[2].'-'.$task_type_date_3_to[1].'-'.$task_type_date_3_to[0];
+            $query->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_3_to_formatted . "','{$this->dateFormat}')")]);
+        }
+
+        if($this->task_type_date_1_from != '' && $this->task_type_date_1_to != '') {
+            $query->joinWith('datetype1'); 
+            $task_type_date_1_from = explode('-', $this->task_type_date_1_from);
+            $task_type_date_1_from_formatted = $task_type_date_1_from[2].'-'.$task_type_date_1_from[1].'-'.$task_type_date_1_from[0];
+            $task_type_date_1_to = explode('-', $this->task_type_date_1_to);
+            $task_type_date_1_to_formatted = $task_type_date_1_to[2].'-'.$task_type_date_1_to[1].'-'.$task_type_date_1_to[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_1_from_formatted . "','{$this->dateFormat}')")])
+                    ->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_1_to_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_1_from != '' && $this->task_type_date_1_to == '') {
+            $query->joinWith('datetype1'); 
+            $task_type_date_1_from = explode('-', $this->task_type_date_1_from);
+            $task_type_date_1_from_formatted = $task_type_date_1_from[2].'-'.$task_type_date_1_from[1].'-'.$task_type_date_1_from[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_1_from_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_1_from == '' && $this->task_type_date_1_to != '') {
+            $query->joinWith('datetype1'); 
+            $task_type_date_1_to = explode('-', $this->task_type_date_1_to);
+            $task_type_date_1_to_formatted = $task_type_date_1_to[2].'-'.$task_type_date_1_to[1].'-'.$task_type_date_1_to[0];
+            $query->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_1_to_formatted . "','{$this->dateFormat}')")]);
+        }
+
+        if($this->task_type_date_4_from != '' && $this->task_type_date_4_to != '') {
+            $query->joinWith('datetype4'); 
+            $task_type_date_4_from = explode('-', $this->task_type_date_4_from);
+            $task_type_date_4_from_formatted = $task_type_date_4_from[2].'-'.$task_type_date_4_from[1].'-'.$task_type_date_4_from[0];
+            $task_type_date_4_to = explode('-', $this->task_type_date_4_to);
+            $task_type_date_4_to_formatted = $task_type_date_4_to[2].'-'.$task_type_date_4_to[1].'-'.$task_type_date_4_to[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_4_from_formatted . "','{$this->dateFormat}')")])
+                    ->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_4_to_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_4_from != '' && $this->task_type_date_4_to == '') {
+            $query->joinWith('datetype4'); 
+            $task_type_date_4_from = explode('-', $this->task_type_date_4_from);
+            $task_type_date_4_from_formatted = $task_type_date_4_from[2].'-'.$task_type_date_4_from[1].'-'.$task_type_date_4_from[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_4_from_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_4_from == '' && $this->task_type_date_4_to != '') {
+            $query->joinWith('datetype4'); 
+            $task_type_date_4_to = explode('-', $this->task_type_date_4_to);
+            $task_type_date_4_to_formatted = $task_type_date_4_to[2].'-'.$task_type_date_4_to[1].'-'.$task_type_date_4_to[0];
+            $query->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_4_to_formatted . "','{$this->dateFormat}')")]);
+        }
+
+        
         $query->andFilterWhere(['like', 'SOURCENUM', $this->SOURCENUM]);
 
         $query->andFilterWhere(['like', 'TASK_TEXT', $this->TASK_TEXT]);
-        $query->andFilterWhere(['like', 'PEOORDERNUM', $this->PEOORDERNUM]);
-        $query->andFilterWhere(['like', 'ORDERNUM', $this->ORDERNUM]);
+
+        $query->andFilterWhere(['or like', 'PEOORDERNUM', $this->PEOORDERNUM]);
+
+        $query->andFilterWhere(['or like', 'ORDERNUM', $this->ORDERNUM]);
+        
         $query->andFilterWhere(['like', 'TASK_NUMBER', $this->TASK_NUMBER]);
         $query->andFilterWhere(['like', 'LOWER(DESIGNATION)', mb_strtolower($this->DESIGNATION, 'UTF-8')]);
         
