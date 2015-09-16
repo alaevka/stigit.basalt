@@ -395,12 +395,62 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
 									Дата поступления в группу
+									<div class="what-selected pull-right" id="task_type_date_2_moment">
+										<?php 
+											if($searchModel->task_type_date_2_from != '' && $searchModel->task_type_date_2_to != '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_2_from.' до '.$searchModel->task_type_date_2_to;
+											} else if($searchModel->task_type_date_2_from == '' && $searchModel->task_type_date_2_to != '') {
+												echo 'выбрано: до '.$searchModel->task_type_date_2_to;
+											} else if($searchModel->task_type_date_2_from != '' && $searchModel->task_type_date_2_to == '') {
+												echo 'выбрано: от '.$searchModel->task_type_date_2_from;
+											} else if($searchModel->task_type_date_2_from == '' && $searchModel->task_type_date_2_to == '') {
+											
+											}
+										?>
+									</div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapseTen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTen">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'task_type_date_2_from', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_2_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
+							    <?= $form_filter->field($searchModel, 'task_type_date_2_to', [
+							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(DatePicker::classname(), [
+							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+							    	'pluginOptions' => [
+								        'todayHighlight' => true,
+								        'todayBtn' => true,
+								        'format' => 'dd-mm-yyyy',
+								        'autoclose' => true,
+								    ],
+								    'pluginEvents' => [
+								    	"changeDate" => "function(e) { 
+								    		showSelectedDateRange('task_type_date_2_moment');
+								    	}",
+								    ]
+							    ]);
+							    ?>
 							</div>
 						</div>
 					</div>
@@ -540,12 +590,48 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsethirteen" aria-expanded="false" aria-controls="collapsethirteen">
 									Выпущенная документация
+									<div class="what-selected pull-right" id="task_documentation_moment"><?php if(!empty($searchModel->documentation)) { ?>выбрано: <?= count($searchModel->documentation). ' документ(а)'; } ?></div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapsethirteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingthirteen">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'documentation', [
+							        'template' => "<div class=\"col-sm-12\">{input}</div>", 
+							        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+							        'inputOptions'=>['class'=>'form-control input-sm']
+							    ])->widget(Select2::classname(), [
+								    'options' => ['placeholder' => '', 'multiple' => true],
+								    'pluginOptions' => [
+								        'tags' => true,
+								        'minimumInputLength' => 3,
+								        'maximumInputLength' => 25,
+								        'ajax' => [
+								            'url' => Url::to(['site/filterdocumentationsearch']),
+								            'dataType' => 'json',
+								            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+								        ],
+								    ],
+								    'pluginEvents' => [
+								    	"select2:select" => "function(e) { 
+								    		var selected_data = $(this).val();
+								    		if(selected_data.length)
+								    			$('#task_documentation_moment').html('выбрано: '+selected_data.length+' документ(а)');
+								    	}",
+								    	"select2:unselect" => "function(e) { 
+								    		var selected_data = $(this).val();
+									    		if(selected_data != null) {
+									    			$('#task_documentation_moment').html('выбрано: '+selected_data.length+' документ(а)');
+									    		} else {
+									    			$('#task_documentation_moment').html('');
+									    		}
+								    		
+								    	}",
+
+								    ]
+								])->label(false);
+							    ?>
+							    <div><p class="help-block"><small>Вы можете ввести несколько документов для поиска</small></p></div>	
 							</div>
 						</div>
 					</div>
@@ -555,12 +641,16 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<h4 class="panel-title">
 								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen">
 									Согласовано с
+									<div class="what-selected pull-right" id="agreed_podr_list_moment"><?php if($searchModel->agreed_podr_list) { ?>выбрано: <?= count(explode(',', $searchModel->agreed_podr_list)).' подразделение(ия)'; } ?></div>
 								</a>
 							</h4>
 						</div>
 						<div id="collapseFourteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFourteen">
 							<div class="panel-body">
-								фильтр
+								<?= $form_filter->field($searchModel, 'agreed_podr_list', [
+							        'inputOptions'=>['class'=>'form-control input-sm'],
+							        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-agreed-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
+							    ])->textInput()->label(false) ?>
 							</div>
 						</div>
 					</div>
@@ -593,6 +683,28 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								$chk_podr_list = '';
 							}
 
+							if($searchModel->agreed_podr_list) {
+								$agreed_tasks_list = '';
+								$chk_agreed_list = '';
+								$agreed_list_array = explode(',', $searchModel->agreed_podr_list);
+								foreach($agreed_list_array as $podr) {
+									$query = new \yii\db\Query;
+							        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+							                ->from('STIGIT.V_F_PODR')
+							                ->where('KODZIFR = \''.trim($podr).'\'');
+							        $command = $query->createCommand();
+							        $data = $command->queryOne();
+							        if($data) {
+										$agreed_tasks_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
+										$chk_agreed_list .= '$("#agreed-check-list-filter").find("#checkbox_filter_agreed_'.$data['code'].'").prop("checked", true);';
+							        }
+							        
+								}
+							} else {
+								$agreed_tasks_list = '';
+								$chk_agreed_list = '';
+							}
+
 							if($searchModel->persons_list) {
 								$pers_tasks_list = '';
 								$chk_pers_list = '';
@@ -614,8 +726,10 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								$chk_pers_list = '';
 							}
 
+
 							$this->registerJs('$(document).ready(function(){ 
 										$("#searchtasks-podr_list").tokenfield(\'setTokens\', ['.substr_replace($podr_tasks_list ,"",-1).']); '.$chk_podr_list.'
+										$("#searchtasks-agreed_podr_list").tokenfield(\'setTokens\', ['.substr_replace($agreed_tasks_list ,"",-1).']); '.$chk_agreed_list.'
 										$("#searchtasks-persons_list").tokenfield(\'setTokens\', ['.substr_replace($pers_tasks_list ,"",-1).']); 
 							        	var selected_values = {};
 										$(\'#podr-check-list-filter input:checked\').each(function() {
@@ -894,6 +1008,23 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			</div>
 			<div class="modal-body" id="podr-check-list-filter">
 				<?= $podr_data_filter; ?>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="agreed-select-modal-filter" role="dialog" aria-labelledby="agreed-select-modal-filter-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-agreed-filter">Фильтр: выбор подразделений</h4>
+			</div>
+			<div class="modal-body" id="agreed-check-list-filter">
+				<?= $agreed_data_filter; ?>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>

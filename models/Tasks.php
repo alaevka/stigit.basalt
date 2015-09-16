@@ -56,9 +56,19 @@ class Tasks extends \yii\db\ActiveRecord
         return $this->hasMany(\app\models\PodrTasks::className(), ['TASK_ID' => 'ID'])->where('PODR_TASKS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
     }
 
+    public function getTaskconfirms()
+    {
+        return $this->hasMany(\app\models\TaskConfirms::className(), ['TASK_ID' => 'ID'])->where('TASK_CONFIRMS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
+    }
+
     public function getPerstasks()
     {
         return $this->hasMany(\app\models\PersTasks::className(), ['TASK_ID' => 'ID'])->where('PERS_TASKS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
+    }
+
+    public function getTaskdocs()
+    {
+        return $this->hasMany(\app\models\TaskDocs::className(), ['TASK_ID' => 'ID'])->where('TASK_DOCS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
     }
 
     public function getDatetype3()

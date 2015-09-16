@@ -190,6 +190,46 @@ $(document).ready(function(){
     	_selectPodrFilter();
     	return false;
     });
+
+	//------------------------------------------------------------------------------------------------------
+	function _selectAgreedFilter() {
+		var selected = [];
+		var selected_values = {};
+		$('#agreed-check-list-filter input:checked').each(function() {
+		    selected.push({value: $(this).attr('value'), label:$(this).attr('data-title')});
+		    selected_values[$(this).attr('value')] = $(this).attr('data-title');
+		});
+
+		
+		$('#searchtasks-agreed_podr_list').tokenfield('setTokens', selected);
+		if(selected.length > 0) {
+			$("#agreed_podr_list_moment").html('выбрано: '+selected.length+' подразделение(ия)');
+		} else {
+			$("#agreed_podr_list_moment").html('');
+		}
+
+        $('#agreed-select-modal-filter').modal('hide');
+
+    } 
+
+    $('#searchtasks-agreed_podr_list').tokenfield({minWidth: 200})
+	    .on('tokenfield:removedtoken', function (e) {
+	   		$("#agreed-check-list-filter").find('#checkbox_filter_agreed_'+e.attrs.value).removeAttr('checked');
+	  		_selectAgreedFilter();
+  	});
+	
+
+	$("#add-agreed-button-filter").click(function(){
+		$("#agreed-select-modal-filter").modal();
+	});
+	$('#agreed-check-list-filter').tree({checkbox: false});
+	$("#agreed-check-list-filter").find(".checkbox-agreed-link-filter").click(function(){
+    	var link_id = $(this).attr('data-id');
+    	$("#checkbox_filter_agreed_"+link_id).prop("checked", true);
+    	_selectAgreedFilter();
+    	return false;
+    });
+
     
 
 
@@ -268,6 +308,21 @@ function showSelectedDateRange(moment) {
 	if(moment == 'task_type_date_4_moment') {
 		var date_from = $("#searchtasks-task_type_date_4_from").val();
 		var date_to = $("#searchtasks-task_type_date_4_to").val();
+		if(date_from == '' && date_to != '') {
+			$("#"+moment).html('выбрано: до '+date_to);
+		} else if(date_from != '' && date_to == '') {
+			$("#"+moment).html('выбрано: от '+date_from);
+		} else if(date_from != '' && date_to != '') {
+			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+		} else {
+			$("#"+moment).html('');
+		}
+		
+	}
+
+	if(moment == 'task_type_date_2_moment') {
+		var date_from = $("#searchtasks-task_type_date_2_from").val();
+		var date_to = $("#searchtasks-task_type_date_2_to").val();
 		if(date_from == '' && date_to != '') {
 			$("#"+moment).html('выбрано: до '+date_to);
 		} else if(date_from != '' && date_to == '') {

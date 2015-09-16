@@ -16,6 +16,7 @@ class SiteController extends Controller
     private $_podr_data_array = [];
     private $_multidemensional_podr;
     private $_multidemensional_podr_filter;
+    private $_multidemensional_agreed_filter;
     private $_multidemensional_podr_agreed;
     private $_multidemensional_podr_transmitted;
     private $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
@@ -73,6 +74,7 @@ class SiteController extends Controller
         $this->_podr_data_array = $this->_getPodrData();
         $this->_createPodrTree(1, 0, $link = 'checkbox-podr-link');
         $this->_createPodrTree(1, 0, 'checkbox-podr-link-filter');
+        $this->_createPodrTree(1, 0, 'checkbox-agreed-link-filter');
         
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -165,12 +167,15 @@ class SiteController extends Controller
             $searchModel->ORDERNUM = [];
         if(!is_array($searchModel->PEOORDERNUM))
             $searchModel->PEOORDERNUM = [];
+        if(!is_array($searchModel->documentation))
+            $searchModel->documentation = [];
        
 
 
         return $this->render('index', [
             'podr_data' => $this->_multidemensional_podr,
             'podr_data_filter' => $this->_multidemensional_podr_filter,
+            'agreed_data_filter' => $this->_multidemensional_agreed_filter,
             'model' => $model,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
@@ -199,10 +204,13 @@ class SiteController extends Controller
                 case 'checkbox-podr-link-filter':
                     $this->_multidemensional_podr_filter .= "<ul>";
                     break;
+                case 'checkbox-agreed-link-filter':
+                    $this->_multidemensional_agreed_filter .= "<ul>";
+                    break;
             }
             
             foreach ($this->_podr_data_array[$parent_id] as $value) {
-                if($checkbox_link != 'checkbox-podr-link-filter') {
+                if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
                     if($this->_checkNextPodrTree($value['id'])) {
                         $class = "class=\"collapsed\"";
                     } else {
@@ -226,10 +234,13 @@ class SiteController extends Controller
                     case 'checkbox-podr-link-filter':
                         $this->_multidemensional_podr_filter .= "<li ".$class."><input id=\"checkbox_filter_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
                         break;
+                    case 'checkbox-agreed-link-filter':
+                        $this->_multidemensional_agreed_filter .= "<li ".$class."><input id=\"checkbox_filter_agreed_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        break;
                 }
 
                 $level++;
-                if($checkbox_link != 'checkbox-podr-link-filter') {
+                if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
                     $this->_createPodrTree($value['id'], $level, $checkbox_link);
                 }
                 $level--; 
@@ -247,6 +258,9 @@ class SiteController extends Controller
                 case 'checkbox-podr-link-filter':
                     $this->_multidemensional_podr_filter .= "</ul>";
                     break;
+                case 'checkbox-agreed-link-filter':
+                    $this->_multidemensional_agreed_filter .= "</ul>";
+                    break;    
             }
         }
     }
@@ -370,6 +384,23 @@ class SiteController extends Controller
                 ->where('LOWER(PEOORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
                 //echo mb_strtolower($q, 'UTF-8'); die();
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
+
+    public function actionFilterdocumentationsearch($q = null, $id = null) {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new \yii\db\Query;
+            $query->select('DOC_CODE AS id, DOC_CODE AS text')
+                ->from('DEV03.TASK_DOCS')
+                ->where('LOWER(DOC_CODE) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
+                ->limit(20);
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
