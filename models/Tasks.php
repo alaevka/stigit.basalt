@@ -107,7 +107,6 @@ class Tasks extends \yii\db\ActiveRecord
             'SOURCENUM' => 'Входящий номер',
             'ADDITIONAL_TEXT' => 'Дополнительные указания',
             'REPORT_TEXT' => 'Отчет о работе',
-
             'podr_list' => 'Подразделения',
             'persons_list' => 'Исполнитель',
             'task_type_date_3' => 'Дата поступления в сектор',

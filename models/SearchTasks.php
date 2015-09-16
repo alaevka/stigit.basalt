@@ -171,6 +171,25 @@ class SearchTasks extends Tasks
             $task_type_date_4_to_formatted = $task_type_date_4_to[2].'-'.$task_type_date_4_to[1].'-'.$task_type_date_4_to[0];
             $query->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_4_to_formatted . "','{$this->dateFormat}')")]);
         }
+        if($this->task_type_date_2_from != '' && $this->task_type_date_2_to != '') {
+            $query->joinWith('datetype2'); 
+            $task_type_date_2_from = explode('-', $this->task_type_date_2_from);
+            $task_type_date_2_from_formatted = $task_type_date_2_from[2].'-'.$task_type_date_2_from[1].'-'.$task_type_date_2_from[0];
+            $task_type_date_2_to = explode('-', $this->task_type_date_2_to);
+            $task_type_date_2_to_formatted = $task_type_date_2_to[2].'-'.$task_type_date_2_to[1].'-'.$task_type_date_2_to[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_2_from_formatted . "','{$this->dateFormat}')")])
+                    ->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_2_to_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_2_from != '' && $this->task_type_date_2_to == '') {
+            $query->joinWith('datetype2'); 
+            $task_type_date_2_from = explode('-', $this->task_type_date_2_from);
+            $task_type_date_2_from_formatted = $task_type_date_2_from[2].'-'.$task_type_date_2_from[1].'-'.$task_type_date_2_from[0];
+            $query->andFilterWhere(['>=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_2_from_formatted . "','{$this->dateFormat}')")]);
+        } else if($this->task_type_date_2_from == '' && $this->task_type_date_2_to != '') {
+            $query->joinWith('datetype2'); 
+            $task_type_date_2_to = explode('-', $this->task_type_date_2_to);
+            $task_type_date_2_to_formatted = $task_type_date_2_to[2].'-'.$task_type_date_2_to[1].'-'.$task_type_date_2_to[0];
+            $query->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_2_to_formatted . "','{$this->dateFormat}')")]);
+        }
         $query->andFilterWhere(['like', 'SOURCENUM', $this->SOURCENUM]);
         $query->andFilterWhere(['like', 'TASK_TEXT', $this->TASK_TEXT]);
         $query->andFilterWhere(['or like', 'PEOORDERNUM', $this->PEOORDERNUM]);

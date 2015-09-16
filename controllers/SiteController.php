@@ -477,8 +477,6 @@ class SiteController extends Controller
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             
             $issue = \app\models\Tasks::findOne($issue_id);
-            
-            
 
             $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
             if($podr_tasks) {
@@ -533,6 +531,7 @@ class SiteController extends Controller
             $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
             $pers_list = '';
             if($pers_tasks) {
+                $persons_array = [];
                 foreach($pers_tasks as $task) {
                     $query = new \yii\db\Query;
                     $query->select('*')
@@ -541,10 +540,51 @@ class SiteController extends Controller
                     $command = $query->createCommand();
                     $data = $command->queryOne();
                     $pers_list .= $data['FIO']."<br>";
+                    $persons_array[] = $data['TN'];
                 }
             } else {
                 $pers_list = self::_UNDEFINED;
             }
+
+            $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+            //save date for person if his owner this issue
+            if(in_array(\Yii::$app->user->id, $persons_array)) {
+
+                //check if window opened first time
+                $old_task_date_1 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 1])->one();
+                if(!$old_task_date_1) {
+                    
+                    $task_date_1 = new \app\models\TaskDates;
+                    $task_date_1->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . date("Y-m-d H:i:s") . "','{$this->dateFormat}')");
+                    $task_date_1->TASK_ID = $issue_id;
+                    $task_date_1->DATE_TYPE_ID = 1;
+                    $task_date_1->TRACT_ID = $transactions->ID;
+                    $task_date_1->save();
+                }
+            }
+
+            //group date
+            $old_task_date_2 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 2])->one();
+            if(!$old_task_date_2) {
+                $transactions_for_date = \app\models\Transactions::findOne($issue->TRACT_ID);
+                $group_date = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:Y-m-d');
+                $group_date_for_table = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');
+
+                $task_date_2 = new \app\models\TaskDates;
+                $task_date_2->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . $group_date . "','{$this->dateFormat}')");
+                $task_date_2->TASK_ID = $issue_id;
+                $task_date_2->DATE_TYPE_ID = 2;
+                $task_date_2->TRACT_ID = $transactions->ID;
+                $task_date_2->save();
+            } else {
+                $group_date_for_table = \Yii::$app->formatter->asDate($old_task_date_2->TASK_TYPE_DATE, 'php:d-m-Y');
+            }
+
+              
+
+
+
+
             if(!empty($issue->SOURCENUM)) {
                 $sourcenum = $issue->SOURCENUM;
             } else {
@@ -560,9 +600,6 @@ class SiteController extends Controller
             } else {
                 $report_text = self::_UNDEFINED;
             }
-
-            $transactions_for_date = \app\models\Transactions::findOne($issue->TRACT_ID);
-            $group_date = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');  
 
             $task_date_first_time = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '1', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
             if($task_date_first_time) {
@@ -650,7 +687,7 @@ class SiteController extends Controller
                             </tr>
                             <tr>
                                 <td class="issue-table-label">Дата поступления в группу</td>
-                                <td>'.$group_date.'</td>  
+                                <td>'.$group_date_for_table.'</td>  
                             </tr>
                             <tr>
                                 <td class="issue-table-label">Дата поступления исполнителю</td>

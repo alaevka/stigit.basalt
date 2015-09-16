@@ -56,708 +56,9 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	<!-- Page Content -->
 	<div id="page-content-wrapper">
 		<div class="container-fluid">
+			
 			<div class="row">
-				<div class="panel-group col-md-offset-6 col-md-6" id="accordion" role="tablist" aria-multiselectable="true">
-					<div class="filters-header">Фильтры</div>
-					
-					<?php $form_filter = ActiveForm::begin([
-			                'id' => 'filter-form',
-			                'method' => 'get',
-			                'action' => ['index'],
-			                'options' => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
-			        ]); ?>
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingOne">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-									Состояние
-									<div class="what-selected pull-right" id="state_moment">
-										<?php echo $searchModel->getSelectedTasksStatesNames(); ?>
-									</div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'states', ['template' => "{label}\n{input}"])
-								    ->label(false)
-								    ->checkboxList(yii\helpers\ArrayHelper::map(\app\models\States::find()->orderBy('ID asc')->all(), 'ID', 'STATE_NAME'), ['separator' => '', 'class' => 'state-checkbox']); ?>
-							</div>
-						</div>
-					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingTwo">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-									Подразделение
-									<div class="what-selected pull-right" id="podr_list_moment"><?php if($searchModel->podr_list) { ?>выбрано: <?= count(explode(',', $searchModel->podr_list)).' подразделение(ия)'; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'podr_list', [
-							        'inputOptions'=>['class'=>'form-control input-sm'],
-							        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-podr-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
-							    ])->textInput()->label(false) ?>
-							</div>
-						</div>
-					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingThree">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-									Исполнитель
-									<div class="what-selected pull-right" id="persons_list_moment"><?php if($searchModel->persons_list) { ?>выбрано: <?= count(explode(',', $searchModel->persons_list)).' исполнителя(ей)'; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'persons_list', [
-							        'inputOptions'=>['class'=>'form-control input-sm'],
-							        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-persons-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
-							    ])->textInput()->label(false) ?>								
-							</div>
-						</div>
-					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingFour">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-									Исходящий номер
-									<div class="what-selected pull-right" id="task_number_moment"><?php if($searchModel->TASK_NUMBER) { ?>выбрано: <?= $searchModel->TASK_NUMBER; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'TASK_NUMBER', [
-							        'inputOptions'=>['class'=>'form-control input-sm'],
-							    ])->textInput(['onkeyup' => 'viewWhatSelectedInFilter(this.value, \'task_number_moment\');'])->label(false) ?>
-							</div>
-						</div>
-					</div>
-
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingFive">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-									Входящий номер
-									<div class="what-selected pull-right" id="task_sourcenum_moment"><?php if($searchModel->SOURCENUM) { ?>выбрано: <?= $searchModel->SOURCENUM; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'SOURCENUM', [
-							        'inputOptions'=>['class'=>'form-control input-sm'],
-							    ])->textInput(['onkeyup' => 'viewWhatSelectedInFilter(this.value, \'task_sourcenum_moment\');'])->label(false) ?>
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingSix">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-									Заказ
-									<div class="what-selected pull-right" id="task_ordernum_moment"><?php if(!empty($searchModel->ORDERNUM)) { ?>выбрано: <?= count($searchModel->ORDERNUM). ' заказ(а)'; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'ORDERNUM', [
-							        'template' => "<div class=\"col-sm-12\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-4 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(Select2::classname(), [
-								    'options' => ['placeholder' => '', 'multiple' => true],
-								    'pluginOptions' => [
-								        'tags' => true,
-								        'minimumInputLength' => 3,
-								        'maximumInputLength' => 25,
-								        'ajax' => [
-								            'url' => Url::to(['site/filterordernumsearch']),
-								            'dataType' => 'json',
-								            'data' => new JsExpression('function(params) { return {q:params.term}; }')
-								        ],
-								    ],
-								    'pluginEvents' => [
-								    	"select2:select" => "function(e) { 
-								    		var selected_data = $(this).val();
-								    		if(selected_data.length)
-								    			$('#task_ordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
-								    	}",
-								    	"select2:unselect" => "function(e) { 
-								    		var selected_data = $(this).val();
-									    		if(selected_data != null) {
-									    			$('#task_ordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
-									    		} else {
-									    			$('#task_ordernum_moment').html('');
-									    		}
-								    		
-								    	}",
-
-								    ]
-								])->label(false);
-							    ?>
-							    <div><p class="help-block"><small>Вы можете ввести несколько заказов для поиска</small></p></div>	
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingSeven">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
-									Заказ ПЭО
-									<div class="what-selected pull-right" id="task_peoordernum_moment"><?php if(!empty($searchModel->PEOORDERNUM)) { ?>выбрано: <?= count($searchModel->PEOORDERNUM). ' заказ(а)'; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'PEOORDERNUM', [
-							        'template' => "<div class=\"col-sm-12\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-4 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(Select2::classname(), [
-								    'options' => ['placeholder' => '', 'multiple' => true],
-								    'pluginOptions' => [
-								        'tags' => true,
-								        'minimumInputLength' => 3,
-								        'maximumInputLength' => 25,
-								        'ajax' => [
-								            'url' => Url::to(['site/filterpeoordernumsearch']),
-								            'dataType' => 'json',
-								            'data' => new JsExpression('function(params) { return {q:params.term}; }')
-								        ],
-								    ],
-								    'pluginEvents' => [
-								    	"select2:select" => "function(e) { 
-								    		var selected_data = $(this).val();
-								    		if(selected_data.length)
-								    			$('#task_peoordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
-								    	}",
-								    	"select2:unselect" => "function(e) { 
-								    		var selected_data = $(this).val();
-									    		if(selected_data != null) {
-									    			$('#task_peoordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
-									    		} else {
-									    			$('#task_peoordernum_moment').html('');
-									    		}
-								    		
-								    	}",
-
-								    ]
-								])->label(false);
-							    ?>
-							    <div><p class="help-block"><small>Вы можете ввести несколько заказов для поиска</small></p></div>
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingEight">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
-									Срок выполнения
-									<div class="what-selected pull-right" id="task_deadline_moment">
-										<?php 
-											if($searchModel->deadline_from != '' && $searchModel->deadline_to != '') {
-												echo 'выбрано: от '.$searchModel->deadline_from.' до '.$searchModel->deadline_to;
-											} else if($searchModel->deadline_from == '' && $searchModel->deadline_to != '') {
-												echo 'выбрано: до '.$searchModel->deadline_to;
-											} else if($searchModel->deadline_from != '' && $searchModel->deadline_to == '') {
-												echo 'выбрано: от '.$searchModel->deadline_from;
-											} else if($searchModel->deadline_from == '' && $searchModel->deadline_to == '') {
-											
-											}
-										?>
-									</div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseEight" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEight">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'deadline_from', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_deadline_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							    <?= $form_filter->field($searchModel, 'deadline_to', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_deadline_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingNine">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
-									Дата поступления в сектор
-									<div class="what-selected pull-right" id="task_type_date_3_moment">
-										<?php 
-											if($searchModel->task_type_date_3_from != '' && $searchModel->task_type_date_3_to != '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_3_from.' до '.$searchModel->task_type_date_3_to;
-											} else if($searchModel->task_type_date_3_from == '' && $searchModel->task_type_date_3_to != '') {
-												echo 'выбрано: до '.$searchModel->task_type_date_3_to;
-											} else if($searchModel->task_type_date_3_from != '' && $searchModel->task_type_date_3_to == '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_3_from;
-											} else if($searchModel->task_type_date_3_from == '' && $searchModel->task_type_date_3_to == '') {
-											
-											}
-										?>
-									</div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingNine">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'task_type_date_3_from', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_3_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							    <?= $form_filter->field($searchModel, 'task_type_date_3_to', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_3_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingTen">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
-									Дата поступления в группу
-									<div class="what-selected pull-right" id="task_type_date_2_moment">
-										<?php 
-											if($searchModel->task_type_date_2_from != '' && $searchModel->task_type_date_2_to != '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_2_from.' до '.$searchModel->task_type_date_2_to;
-											} else if($searchModel->task_type_date_2_from == '' && $searchModel->task_type_date_2_to != '') {
-												echo 'выбрано: до '.$searchModel->task_type_date_2_to;
-											} else if($searchModel->task_type_date_2_from != '' && $searchModel->task_type_date_2_to == '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_2_from;
-											} else if($searchModel->task_type_date_2_from == '' && $searchModel->task_type_date_2_to == '') {
-											
-											}
-										?>
-									</div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseTen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTen">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'task_type_date_2_from', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_2_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							    <?= $form_filter->field($searchModel, 'task_type_date_2_to', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_2_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingEleven">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEleven" aria-expanded="false" aria-controls="collapseEleven">
-									Дата поступления исполнителю
-									<div class="what-selected pull-right" id="task_type_date_1_moment">
-										<?php 
-											if($searchModel->task_type_date_1_from != '' && $searchModel->task_type_date_1_to != '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_1_from.' до '.$searchModel->task_type_date_1_to;
-											} else if($searchModel->task_type_date_1_from == '' && $searchModel->task_type_date_1_to != '') {
-												echo 'выбрано: до '.$searchModel->task_type_date_1_to;
-											} else if($searchModel->task_type_date_1_from != '' && $searchModel->task_type_date_1_to == '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_1_from;
-											} else if($searchModel->task_type_date_1_from == '' && $searchModel->task_type_date_1_to == '') {
-											
-											}
-										?>
-									</div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseEleven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEleven">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'task_type_date_1_from', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_1_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							    <?= $form_filter->field($searchModel, 'task_type_date_1_to', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_1_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingTwelve">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve">
-									Дата завершения
-									<div class="what-selected pull-right" id="task_type_date_4_moment">
-										<?php 
-											if($searchModel->task_type_date_4_from != '' && $searchModel->task_type_date_4_to != '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_4_from.' до '.$searchModel->task_type_date_4_to;
-											} else if($searchModel->task_type_date_4_from == '' && $searchModel->task_type_date_4_to != '') {
-												echo 'выбрано: до '.$searchModel->task_type_date_4_to;
-											} else if($searchModel->task_type_date_4_from != '' && $searchModel->task_type_date_4_to == '') {
-												echo 'выбрано: от '.$searchModel->task_type_date_4_from;
-											} else if($searchModel->task_type_date_4_from == '' && $searchModel->task_type_date_4_to == '') {
-											
-											}
-										?>
-									</div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseTwelve" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwelve">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'task_type_date_4_from', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_4_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							    <?= $form_filter->field($searchModel, 'task_type_date_4_to', [
-							        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-2 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(DatePicker::classname(), [
-							    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
-							    	'pluginOptions' => [
-								        'todayHighlight' => true,
-								        'todayBtn' => true,
-								        'format' => 'dd-mm-yyyy',
-								        'autoclose' => true,
-								    ],
-								    'pluginEvents' => [
-								    	"changeDate" => "function(e) { 
-								    		showSelectedDateRange('task_type_date_4_moment');
-								    	}",
-								    ]
-							    ]);
-							    ?>
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingthirteen">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsethirteen" aria-expanded="false" aria-controls="collapsethirteen">
-									Выпущенная документация
-									<div class="what-selected pull-right" id="task_documentation_moment"><?php if(!empty($searchModel->documentation)) { ?>выбрано: <?= count($searchModel->documentation). ' документ(а)'; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapsethirteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingthirteen">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'documentation', [
-							        'template' => "<div class=\"col-sm-12\">{input}</div>", 
-							        'labelOptions'=>['class'=>'col-sm-4 control-label'],
-							        'inputOptions'=>['class'=>'form-control input-sm']
-							    ])->widget(Select2::classname(), [
-								    'options' => ['placeholder' => '', 'multiple' => true],
-								    'pluginOptions' => [
-								        'tags' => true,
-								        'minimumInputLength' => 3,
-								        'maximumInputLength' => 25,
-								        'ajax' => [
-								            'url' => Url::to(['site/filterdocumentationsearch']),
-								            'dataType' => 'json',
-								            'data' => new JsExpression('function(params) { return {q:params.term}; }')
-								        ],
-								    ],
-								    'pluginEvents' => [
-								    	"select2:select" => "function(e) { 
-								    		var selected_data = $(this).val();
-								    		if(selected_data.length)
-								    			$('#task_documentation_moment').html('выбрано: '+selected_data.length+' документ(а)');
-								    	}",
-								    	"select2:unselect" => "function(e) { 
-								    		var selected_data = $(this).val();
-									    		if(selected_data != null) {
-									    			$('#task_documentation_moment').html('выбрано: '+selected_data.length+' документ(а)');
-									    		} else {
-									    			$('#task_documentation_moment').html('');
-									    		}
-								    		
-								    	}",
-
-								    ]
-								])->label(false);
-							    ?>
-							    <div><p class="help-block"><small>Вы можете ввести несколько документов для поиска</small></p></div>	
-							</div>
-						</div>
-					</div>
-
-					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingFourteen">
-							<h4 class="panel-title">
-								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen">
-									Согласовано с
-									<div class="what-selected pull-right" id="agreed_podr_list_moment"><?php if($searchModel->agreed_podr_list) { ?>выбрано: <?= count(explode(',', $searchModel->agreed_podr_list)).' подразделение(ия)'; } ?></div>
-								</a>
-							</h4>
-						</div>
-						<div id="collapseFourteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFourteen">
-							<div class="panel-body">
-								<?= $form_filter->field($searchModel, 'agreed_podr_list', [
-							        'inputOptions'=>['class'=>'form-control input-sm'],
-							        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-agreed-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
-							    ])->textInput()->label(false) ?>
-							</div>
-						</div>
-					</div>
-
-					<div class="filter-submit-block pull-right">
-						<?= Html::a('Очистить фильтр', ['index'], ['class' => 'btn btn-default']) ?>
-						<?= Html::submitButton('Применить фильтр', ['class' => 'btn btn-primary', 'id' => 'filter-submit-button']) ?>
-					</div>
-					<?php ActiveForm::end(); ?>
-					<?php
-							if($searchModel->podr_list) {
-								$podr_tasks_list = '';
-								$chk_podr_list = '';
-								$podr_list_array = explode(',', $searchModel->podr_list);
-								foreach($podr_list_array as $podr) {
-									$query = new \yii\db\Query;
-							        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
-							                ->from('STIGIT.V_F_PODR')
-							                ->where('KODZIFR = \''.trim($podr).'\'');
-							        $command = $query->createCommand();
-							        $data = $command->queryOne();
-							        if($data) {
-										$podr_tasks_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
-										$chk_podr_list .= '$("#podr-check-list-filter").find("#checkbox_filter_'.$data['code'].'").prop("checked", true);';
-							        }
-							        
-								}
-							} else {
-								$podr_tasks_list = '';
-								$chk_podr_list = '';
-							}
-
-							if($searchModel->agreed_podr_list) {
-								$agreed_tasks_list = '';
-								$chk_agreed_list = '';
-								$agreed_list_array = explode(',', $searchModel->agreed_podr_list);
-								foreach($agreed_list_array as $podr) {
-									$query = new \yii\db\Query;
-							        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
-							                ->from('STIGIT.V_F_PODR')
-							                ->where('KODZIFR = \''.trim($podr).'\'');
-							        $command = $query->createCommand();
-							        $data = $command->queryOne();
-							        if($data) {
-										$agreed_tasks_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
-										$chk_agreed_list .= '$("#agreed-check-list-filter").find("#checkbox_filter_agreed_'.$data['code'].'").prop("checked", true);';
-							        }
-							        
-								}
-							} else {
-								$agreed_tasks_list = '';
-								$chk_agreed_list = '';
-							}
-
-							if($searchModel->persons_list) {
-								$pers_tasks_list = '';
-								$chk_pers_list = '';
-								$persons_list_array = explode(',', $searchModel->persons_list);
-								foreach($persons_list_array as $pers) {
-									$query = new \yii\db\Query;
-							        $query->select('*')
-							                ->from('STIGIT.V_F_PERS')
-							                ->where('TN = \''.trim($pers).'\'');
-							        $command = $query->createCommand();
-							        $data = $command->queryOne();
-							        if($data) {
-										$pers_tasks_list .= '{value: '.$data['TN'].', label: \''.$data['FIO'].'\'},';
-										$chk_pers_list .= '$("#persons-check-list-filter").find("#checkbox_'.$data['TN'].'").prop("checked", true);';
-							        }
-								}
-							} else {
-								$pers_tasks_list = '';
-								$chk_pers_list = '';
-							}
-
-
-							$this->registerJs('$(document).ready(function(){ 
-										$("#searchtasks-podr_list").tokenfield(\'setTokens\', ['.substr_replace($podr_tasks_list ,"",-1).']); '.$chk_podr_list.'
-										$("#searchtasks-agreed_podr_list").tokenfield(\'setTokens\', ['.substr_replace($agreed_tasks_list ,"",-1).']); '.$chk_agreed_list.'
-										$("#searchtasks-persons_list").tokenfield(\'setTokens\', ['.substr_replace($pers_tasks_list ,"",-1).']); 
-							        	var selected_values = {};
-										$(\'#podr-check-list-filter input:checked\').each(function() {
-										    selected_values[$(this).attr(\'value\')] = $(this).attr(\'data-title\');
-										});
-										var csrfToken = $(\'meta[name="csrf-token"]\').attr(\'content\');
-									    $.ajax({
-								        	type: "POST",
-								        	dataType: \'json\',
-								        	url: "index.php?r=site/getpersons",
-								        	data: "selected_podr="+JSON.stringify(selected_values)+"&_csrf="+csrfToken,
-								        	success: function(data,status){
-								        		$(\'#persons-check-list-filter\').html(data);
-								        		$(\'#persons-check-list-filter\').tree({checkbox: false});
-								        		'.$chk_pers_list.'
-								        	},
-									    });
-							    		}); ', View::POS_END, 'filter_update');
-
-
-
-					?>
-						
-					    
-				</div>	
-			</div>
-			<div class="row">
-				<div class="col-lg-12">
+				<div class="col-md-8">
 					<?php
 						echo GridView::widget([
 						    'dataProvider' => $dataProvider,
@@ -804,23 +105,35 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							    	},
 							    	'contentOptions' => ['style' => 'width: 250px;']
 							    ],
-						    	[
-						    		'attribute' => 'DESIGNATION',
-						    		//'filter' => false,
-						    		'enableSorting' => false,
-						    	],
-						    	[
-						        	'attribute' => 'TASK_NUMBER',
-						        	'enableSorting' => false
-						        ],
-						        [
-						        	'attribute' => 'ORDERNUM',
-						        	'enableSorting' => false
-						        ],
-						        [
-						        	'attribute' => 'PEOORDERNUM',
-						        	'enableSorting' => false
-						        ],
+							    [
+							    	'label' => 'Номера',
+							    	'format' => 'html',
+							    	'value' => function ($model, $key, $index, $widget) {
+							    		return '
+							    			Заказ: <b>'.$model->ORDERNUM.'</b><br>
+							    			Входящий: <b>'.$model->SOURCENUM.'</b><br>
+							    			Исходящий: <b>'.$model->TASK_NUMBER.'</b>
+							    		';
+							    	},
+							    	'contentOptions' => ['style' => 'width: 270px;']
+							    ],
+						    	// [
+						    	// 	'attribute' => 'DESIGNATION',
+						    	// 	//'filter' => false,
+						    	// 	'enableSorting' => false,
+						    	// ],
+						    	// [
+						     //    	'attribute' => 'TASK_NUMBER',
+						     //    	'enableSorting' => false
+						     //    ],
+						     //    [
+						     //    	'attribute' => 'ORDERNUM',
+						     //    	'enableSorting' => false
+						     //    ],
+						     //    [
+						     //    	'attribute' => 'PEOORDERNUM',
+						     //    	'enableSorting' => false
+						     //    ],
 						        [
 						        	'attribute' => 'TASK_TEXT',
 						        	'enableSorting' => false
@@ -837,6 +150,708 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						    ],
 						]);
 					?>
+				</div>
+				<div class="col-md-4">
+					<div class="row">
+						<div class="panel-group fixed" id="accordion" role="tablist" aria-multiselectable="true">
+							<div class="filters-header">Фильтры</div>
+							
+							<?php $form_filter = ActiveForm::begin([
+					                'id' => 'filter-form',
+					                'method' => 'get',
+					                'action' => ['index'],
+					                'options' => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
+					        ]); ?>
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingOne">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+											Состояние
+											<div class="what-selected pull-right" id="state_moment">
+												<?php echo $searchModel->getSelectedTasksStatesNames(); ?>
+											</div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'states', ['template' => "{label}\n{input}"])
+										    ->label(false)
+										    ->checkboxList(yii\helpers\ArrayHelper::map(\app\models\States::find()->orderBy('ID asc')->all(), 'ID', 'STATE_NAME'), ['separator' => '', 'class' => 'state-checkbox']); ?>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingTwo">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+											Подразделение
+											<div class="what-selected pull-right" id="podr_list_moment"><?php if($searchModel->podr_list) { ?>выбрано: <?= count(explode(',', $searchModel->podr_list)).' подразделение(ия)'; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'podr_list', [
+									        'inputOptions'=>['class'=>'form-control input-sm'],
+									        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-podr-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
+									    ])->textInput()->label(false) ?>
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingThree">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+											Исполнитель
+											<div class="what-selected pull-right" id="persons_list_moment"><?php if($searchModel->persons_list) { ?>выбрано: <?= count(explode(',', $searchModel->persons_list)).' исполнителя(ей)'; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'persons_list', [
+									        'inputOptions'=>['class'=>'form-control input-sm'],
+									        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-persons-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
+									    ])->textInput()->label(false) ?>								
+									</div>
+								</div>
+							</div>
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingFour">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+											Исходящий номер
+											<div class="what-selected pull-right" id="task_number_moment"><?php if($searchModel->TASK_NUMBER) { ?>выбрано: <?= $searchModel->TASK_NUMBER; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'TASK_NUMBER', [
+									        'inputOptions'=>['class'=>'form-control input-sm'],
+									    ])->textInput(['onkeyup' => 'viewWhatSelectedInFilter(this.value, \'task_number_moment\');'])->label(false) ?>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingFive">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+											Входящий номер
+											<div class="what-selected pull-right" id="task_sourcenum_moment"><?php if($searchModel->SOURCENUM) { ?>выбрано: <?= $searchModel->SOURCENUM; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'SOURCENUM', [
+									        'inputOptions'=>['class'=>'form-control input-sm'],
+									    ])->textInput(['onkeyup' => 'viewWhatSelectedInFilter(this.value, \'task_sourcenum_moment\');'])->label(false) ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingSix">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+											Заказ
+											<div class="what-selected pull-right" id="task_ordernum_moment"><?php if(!empty($searchModel->ORDERNUM)) { ?>выбрано: <?= count($searchModel->ORDERNUM). ' заказ(а)'; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'ORDERNUM', [
+									        'template' => "<div class=\"col-sm-12\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(Select2::classname(), [
+										    'options' => ['placeholder' => '', 'multiple' => true],
+										    'pluginOptions' => [
+										        'tags' => true,
+										        'minimumInputLength' => 3,
+										        'maximumInputLength' => 25,
+										        'ajax' => [
+										            'url' => Url::to(['site/filterordernumsearch']),
+										            'dataType' => 'json',
+										            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+										        ],
+										    ],
+										    'pluginEvents' => [
+										    	"select2:select" => "function(e) { 
+										    		var selected_data = $(this).val();
+										    		if(selected_data.length)
+										    			$('#task_ordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
+										    	}",
+										    	"select2:unselect" => "function(e) { 
+										    		var selected_data = $(this).val();
+											    		if(selected_data != null) {
+											    			$('#task_ordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
+											    		} else {
+											    			$('#task_ordernum_moment').html('');
+											    		}
+										    		
+										    	}",
+
+										    ]
+										])->label(false);
+									    ?>
+									    <div><p class="help-block"><small>Вы можете ввести несколько заказов для поиска</small></p></div>	
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingSeven">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+											Заказ ПЭО
+											<div class="what-selected pull-right" id="task_peoordernum_moment"><?php if(!empty($searchModel->PEOORDERNUM)) { ?>выбрано: <?= count($searchModel->PEOORDERNUM). ' заказ(а)'; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'PEOORDERNUM', [
+									        'template' => "<div class=\"col-sm-12\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(Select2::classname(), [
+										    'options' => ['placeholder' => '', 'multiple' => true],
+										    'pluginOptions' => [
+										        'tags' => true,
+										        'minimumInputLength' => 3,
+										        'maximumInputLength' => 25,
+										        'ajax' => [
+										            'url' => Url::to(['site/filterpeoordernumsearch']),
+										            'dataType' => 'json',
+										            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+										        ],
+										    ],
+										    'pluginEvents' => [
+										    	"select2:select" => "function(e) { 
+										    		var selected_data = $(this).val();
+										    		if(selected_data.length)
+										    			$('#task_peoordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
+										    	}",
+										    	"select2:unselect" => "function(e) { 
+										    		var selected_data = $(this).val();
+											    		if(selected_data != null) {
+											    			$('#task_peoordernum_moment').html('выбрано: '+selected_data.length+' заказ(а)');
+											    		} else {
+											    			$('#task_peoordernum_moment').html('');
+											    		}
+										    		
+										    	}",
+
+										    ]
+										])->label(false);
+									    ?>
+									    <div><p class="help-block"><small>Вы можете ввести несколько заказов для поиска</small></p></div>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingEight">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+											Срок выполнения
+											<div class="what-selected pull-right" id="task_deadline_moment">
+												<?php 
+													if($searchModel->deadline_from != '' && $searchModel->deadline_to != '') {
+														echo 'от '.$searchModel->deadline_from.' до '.$searchModel->deadline_to;
+													} else if($searchModel->deadline_from == '' && $searchModel->deadline_to != '') {
+														echo 'до '.$searchModel->deadline_to;
+													} else if($searchModel->deadline_from != '' && $searchModel->deadline_to == '') {
+														echo 'от '.$searchModel->deadline_from;
+													} else if($searchModel->deadline_from == '' && $searchModel->deadline_to == '') {
+													
+													}
+												?>
+											</div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseEight" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEight">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'deadline_from', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_deadline_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									    <?= $form_filter->field($searchModel, 'deadline_to', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_deadline_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingNine">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+											Дата поступления в сектор
+											<div class="what-selected pull-right" id="task_type_date_3_moment">
+												<?php 
+													if($searchModel->task_type_date_3_from != '' && $searchModel->task_type_date_3_to != '') {
+														echo 'от '.$searchModel->task_type_date_3_from.' до '.$searchModel->task_type_date_3_to;
+													} else if($searchModel->task_type_date_3_from == '' && $searchModel->task_type_date_3_to != '') {
+														echo 'до '.$searchModel->task_type_date_3_to;
+													} else if($searchModel->task_type_date_3_from != '' && $searchModel->task_type_date_3_to == '') {
+														echo 'от '.$searchModel->task_type_date_3_from;
+													} else if($searchModel->task_type_date_3_from == '' && $searchModel->task_type_date_3_to == '') {
+													
+													}
+												?>
+											</div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingNine">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'task_type_date_3_from', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_3_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									    <?= $form_filter->field($searchModel, 'task_type_date_3_to', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_3_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingTen">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+											Дата поступления в группу
+											<div class="what-selected pull-right" id="task_type_date_2_moment">
+												<?php 
+													if($searchModel->task_type_date_2_from != '' && $searchModel->task_type_date_2_to != '') {
+														echo 'от '.$searchModel->task_type_date_2_from.' до '.$searchModel->task_type_date_2_to;
+													} else if($searchModel->task_type_date_2_from == '' && $searchModel->task_type_date_2_to != '') {
+														echo 'до '.$searchModel->task_type_date_2_to;
+													} else if($searchModel->task_type_date_2_from != '' && $searchModel->task_type_date_2_to == '') {
+														echo 'от '.$searchModel->task_type_date_2_from;
+													} else if($searchModel->task_type_date_2_from == '' && $searchModel->task_type_date_2_to == '') {
+													
+													}
+												?>
+											</div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseTen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTen">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'task_type_date_2_from', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_2_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									    <?= $form_filter->field($searchModel, 'task_type_date_2_to', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_2_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingEleven">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEleven" aria-expanded="false" aria-controls="collapseEleven">
+											Дата поступления исполнителю
+											<div class="what-selected pull-right" id="task_type_date_1_moment">
+												<?php 
+													if($searchModel->task_type_date_1_from != '' && $searchModel->task_type_date_1_to != '') {
+														echo 'от '.$searchModel->task_type_date_1_from.' до '.$searchModel->task_type_date_1_to;
+													} else if($searchModel->task_type_date_1_from == '' && $searchModel->task_type_date_1_to != '') {
+														echo 'до '.$searchModel->task_type_date_1_to;
+													} else if($searchModel->task_type_date_1_from != '' && $searchModel->task_type_date_1_to == '') {
+														echo 'от '.$searchModel->task_type_date_1_from;
+													} else if($searchModel->task_type_date_1_from == '' && $searchModel->task_type_date_1_to == '') {
+													
+													}
+												?>
+											</div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseEleven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingEleven">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'task_type_date_1_from', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_1_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									    <?= $form_filter->field($searchModel, 'task_type_date_1_to', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_1_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingTwelve">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve">
+											Дата завершения
+											<div class="what-selected pull-right" id="task_type_date_4_moment">
+												<?php 
+													if($searchModel->task_type_date_4_from != '' && $searchModel->task_type_date_4_to != '') {
+														echo 'от '.$searchModel->task_type_date_4_from.' до '.$searchModel->task_type_date_4_to;
+													} else if($searchModel->task_type_date_4_from == '' && $searchModel->task_type_date_4_to != '') {
+														echo 'до '.$searchModel->task_type_date_4_to;
+													} else if($searchModel->task_type_date_4_from != '' && $searchModel->task_type_date_4_to == '') {
+														echo 'от '.$searchModel->task_type_date_4_from;
+													} else if($searchModel->task_type_date_4_from == '' && $searchModel->task_type_date_4_to == '') {
+													
+													}
+												?>
+											</div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseTwelve" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwelve">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'task_type_date_4_from', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_4_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									    <?= $form_filter->field($searchModel, 'task_type_date_4_to', [
+									        'template' => "{label}<div class=\"col-sm-10\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-2 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(DatePicker::classname(), [
+									    	'type' => DatePicker::TYPE_COMPONENT_APPEND,
+									    	'pluginOptions' => [
+										        'todayHighlight' => true,
+										        'todayBtn' => true,
+										        'format' => 'dd-mm-yyyy',
+										        'autoclose' => true,
+										    ],
+										    'pluginEvents' => [
+										    	"changeDate" => "function(e) { 
+										    		showSelectedDateRange('task_type_date_4_moment');
+										    	}",
+										    ]
+									    ]);
+									    ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingthirteen">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsethirteen" aria-expanded="false" aria-controls="collapsethirteen">
+											Выпущенная документация
+											<div class="what-selected pull-right" id="task_documentation_moment"><?php if(!empty($searchModel->documentation)) { ?>выбрано: <?= count($searchModel->documentation). ' документ(а)'; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapsethirteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingthirteen">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'documentation', [
+									        'template' => "<div class=\"col-sm-12\">{input}</div>", 
+									        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+									        'inputOptions'=>['class'=>'form-control input-sm']
+									    ])->widget(Select2::classname(), [
+										    'options' => ['placeholder' => '', 'multiple' => true],
+										    'pluginOptions' => [
+										        'tags' => true,
+										        'minimumInputLength' => 3,
+										        'maximumInputLength' => 25,
+										        'ajax' => [
+										            'url' => Url::to(['site/filterdocumentationsearch']),
+										            'dataType' => 'json',
+										            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+										        ],
+										    ],
+										    'pluginEvents' => [
+										    	"select2:select" => "function(e) { 
+										    		var selected_data = $(this).val();
+										    		if(selected_data.length)
+										    			$('#task_documentation_moment').html('выбрано: '+selected_data.length+' документ(а)');
+										    	}",
+										    	"select2:unselect" => "function(e) { 
+										    		var selected_data = $(this).val();
+											    		if(selected_data != null) {
+											    			$('#task_documentation_moment').html('выбрано: '+selected_data.length+' документ(а)');
+											    		} else {
+											    			$('#task_documentation_moment').html('');
+											    		}
+										    		
+										    	}",
+
+										    ]
+										])->label(false);
+									    ?>
+									    <div><p class="help-block"><small>Вы можете ввести несколько документов для поиска</small></p></div>	
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="headingFourteen">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen">
+											Согласовано с
+											<div class="what-selected pull-right" id="agreed_podr_list_moment"><?php if($searchModel->agreed_podr_list) { ?>выбрано: <?= count(explode(',', $searchModel->agreed_podr_list)).' подразделение(ия)'; } ?></div>
+										</a>
+									</h4>
+								</div>
+								<div id="collapseFourteen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFourteen">
+									<div class="panel-body">
+										<?= $form_filter->field($searchModel, 'agreed_podr_list', [
+									        'inputOptions'=>['class'=>'form-control input-sm'],
+									        'template' => "<div class=\"col-sm-10\">{input}</div><div class=\"col-sm-2\" style=\"text-align: right;\"><button type=\"button\" id=\"add-agreed-button-filter\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-plus\"></span></button></div>", 
+									    ])->textInput()->label(false) ?>
+									</div>
+								</div>
+							</div>
+
+							<div class="filter-submit-block pull-right">
+								<?= Html::a('Очистить фильтр', ['index'], ['class' => 'btn btn-default']) ?>
+								<?= Html::submitButton('Применить фильтр', ['class' => 'btn btn-primary', 'id' => 'filter-submit-button']) ?>
+							</div>
+							<?php ActiveForm::end(); ?>
+							<?php
+									if($searchModel->podr_list) {
+										$podr_tasks_list = '';
+										$chk_podr_list = '';
+										$podr_list_array = explode(',', $searchModel->podr_list);
+										foreach($podr_list_array as $podr) {
+											$query = new \yii\db\Query;
+									        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+									                ->from('STIGIT.V_F_PODR')
+									                ->where('KODZIFR = \''.trim($podr).'\'');
+									        $command = $query->createCommand();
+									        $data = $command->queryOne();
+									        if($data) {
+												$podr_tasks_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
+												$chk_podr_list .= '$("#podr-check-list-filter").find("#checkbox_filter_'.$data['code'].'").prop("checked", true);';
+									        }
+									        
+										}
+									} else {
+										$podr_tasks_list = '';
+										$chk_podr_list = '';
+									}
+
+									if($searchModel->agreed_podr_list) {
+										$agreed_tasks_list = '';
+										$chk_agreed_list = '';
+										$agreed_list_array = explode(',', $searchModel->agreed_podr_list);
+										foreach($agreed_list_array as $podr) {
+											$query = new \yii\db\Query;
+									        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+									                ->from('STIGIT.V_F_PODR')
+									                ->where('KODZIFR = \''.trim($podr).'\'');
+									        $command = $query->createCommand();
+									        $data = $command->queryOne();
+									        if($data) {
+												$agreed_tasks_list .= '{value: '.$data['code'].', label: \''.$data['name'].'\'},';
+												$chk_agreed_list .= '$("#agreed-check-list-filter").find("#checkbox_filter_agreed_'.$data['code'].'").prop("checked", true);';
+									        }
+									        
+										}
+									} else {
+										$agreed_tasks_list = '';
+										$chk_agreed_list = '';
+									}
+
+									if($searchModel->persons_list) {
+										$pers_tasks_list = '';
+										$chk_pers_list = '';
+										$persons_list_array = explode(',', $searchModel->persons_list);
+										foreach($persons_list_array as $pers) {
+											$query = new \yii\db\Query;
+									        $query->select('*')
+									                ->from('STIGIT.V_F_PERS')
+									                ->where('TN = \''.trim($pers).'\'');
+									        $command = $query->createCommand();
+									        $data = $command->queryOne();
+									        if($data) {
+												$pers_tasks_list .= '{value: '.$data['TN'].', label: \''.$data['FIO'].'\'},';
+												$chk_pers_list .= '$("#persons-check-list-filter").find("#checkbox_'.$data['TN'].'").prop("checked", true);';
+									        }
+										}
+									} else {
+										$pers_tasks_list = '';
+										$chk_pers_list = '';
+									}
+
+
+									$this->registerJs('$(document).ready(function(){ 
+												$("#searchtasks-podr_list").tokenfield(\'setTokens\', ['.substr_replace($podr_tasks_list ,"",-1).']); '.$chk_podr_list.'
+												$("#searchtasks-agreed_podr_list").tokenfield(\'setTokens\', ['.substr_replace($agreed_tasks_list ,"",-1).']); '.$chk_agreed_list.'
+												$("#searchtasks-persons_list").tokenfield(\'setTokens\', ['.substr_replace($pers_tasks_list ,"",-1).']); 
+									        	var selected_values = {};
+												$(\'#podr-check-list-filter input:checked\').each(function() {
+												    selected_values[$(this).attr(\'value\')] = $(this).attr(\'data-title\');
+												});
+												var csrfToken = $(\'meta[name="csrf-token"]\').attr(\'content\');
+											    $.ajax({
+										        	type: "POST",
+										        	dataType: \'json\',
+										        	url: "index.php?r=site/getpersons",
+										        	data: "selected_podr="+JSON.stringify(selected_values)+"&_csrf="+csrfToken,
+										        	success: function(data,status){
+										        		$(\'#persons-check-list-filter\').html(data);
+										        		$(\'#persons-check-list-filter\').tree({checkbox: false});
+										        		'.$chk_pers_list.'
+										        	},
+											    });
+									    		}); ', View::POS_END, 'filter_update');
+
+
+
+							?>
+								
+							    
+						</div>	
+					</div>
 				</div>
 			</div>
 		</div>

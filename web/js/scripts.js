@@ -265,11 +265,11 @@ function showSelectedDateRange(moment) {
 		var date_from = $("#searchtasks-deadline_from").val();
 		var date_to = $("#searchtasks-deadline_to").val();
 		if(date_from == '' && date_to != '') {
-			$("#"+moment).html('выбрано: до '+date_to);
+			$("#"+moment).html('до '+date_to);
 		} else if(date_from != '' && date_to == '') {
-			$("#"+moment).html('выбрано: от '+date_from);
+			$("#"+moment).html('от '+date_from);
 		} else if(date_from != '' && date_to != '') {
-			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+			$("#"+moment).html('от '+date_from+' до '+date_to);
 		} else {
 			$("#"+moment).html('');
 		}
@@ -279,11 +279,11 @@ function showSelectedDateRange(moment) {
 		var date_from = $("#searchtasks-task_type_date_3_from").val();
 		var date_to = $("#searchtasks-task_type_date_3_to").val();
 		if(date_from == '' && date_to != '') {
-			$("#"+moment).html('выбрано: до '+date_to);
+			$("#"+moment).html('до '+date_to);
 		} else if(date_from != '' && date_to == '') {
-			$("#"+moment).html('выбрано: от '+date_from);
+			$("#"+moment).html('от '+date_from);
 		} else if(date_from != '' && date_to != '') {
-			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+			$("#"+moment).html('от '+date_from+' до '+date_to);
 		} else {
 			$("#"+moment).html('');
 		}
@@ -294,11 +294,11 @@ function showSelectedDateRange(moment) {
 		var date_from = $("#searchtasks-task_type_date_1_from").val();
 		var date_to = $("#searchtasks-task_type_date_1_to").val();
 		if(date_from == '' && date_to != '') {
-			$("#"+moment).html('выбрано: до '+date_to);
+			$("#"+moment).html('до '+date_to);
 		} else if(date_from != '' && date_to == '') {
-			$("#"+moment).html('выбрано: от '+date_from);
+			$("#"+moment).html('от '+date_from);
 		} else if(date_from != '' && date_to != '') {
-			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+			$("#"+moment).html('от '+date_from+' до '+date_to);
 		} else {
 			$("#"+moment).html('');
 		}
@@ -309,11 +309,11 @@ function showSelectedDateRange(moment) {
 		var date_from = $("#searchtasks-task_type_date_4_from").val();
 		var date_to = $("#searchtasks-task_type_date_4_to").val();
 		if(date_from == '' && date_to != '') {
-			$("#"+moment).html('выбрано: до '+date_to);
+			$("#"+moment).html('до '+date_to);
 		} else if(date_from != '' && date_to == '') {
-			$("#"+moment).html('выбрано: от '+date_from);
+			$("#"+moment).html('от '+date_from);
 		} else if(date_from != '' && date_to != '') {
-			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+			$("#"+moment).html('от '+date_from+' до '+date_to);
 		} else {
 			$("#"+moment).html('');
 		}
@@ -324,11 +324,11 @@ function showSelectedDateRange(moment) {
 		var date_from = $("#searchtasks-task_type_date_2_from").val();
 		var date_to = $("#searchtasks-task_type_date_2_to").val();
 		if(date_from == '' && date_to != '') {
-			$("#"+moment).html('выбрано: до '+date_to);
+			$("#"+moment).html('до '+date_to);
 		} else if(date_from != '' && date_to == '') {
-			$("#"+moment).html('выбрано: от '+date_from);
+			$("#"+moment).html('от '+date_from);
 		} else if(date_from != '' && date_to != '') {
-			$("#"+moment).html('выбрано: от '+date_from+' до '+date_to);
+			$("#"+moment).html('от '+date_from+' до '+date_to);
 		} else {
 			$("#"+moment).html('');
 		}
