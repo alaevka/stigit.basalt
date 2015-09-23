@@ -13,16 +13,17 @@ use app\models\Transactions;
 class SiteController extends Controller
 {
 
-    private $_podr_data_array = [];
-    private $_multidemensional_podr;
-    private $_multidemensional_podr_filter;
-    private $_multidemensional_agreed_filter;
-    private $_multidemensional_podr_agreed;
-    private $_multidemensional_podr_transmitted;
-    private $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
-    const _UNDEFINED = '----------- не задано -----------';
+    private $_podr_data_array = []; // в результате формирования содержит сформированный nested-массив подразделений
+    private $_multidemensional_podr; // в резудьтате формирования содержит сформированный html-код дерева подразделений для поля выбора подразделений при создании или изменении задания
+    private $_multidemensional_podr_filter; // в резудьтате формирования содержит сформированный html-код дерева подразделений для поля выбора подразделений "фильтра подразделений"
+    private $_multidemensional_agreed_filter; // в резудьтате формирования содержит сформированный html-код дерева подразделений для поля выбора подразделений "фильтра согласованно"
+    private $_multidemensional_podr_agreed; // в резудьтате формирования содержит сформированный html-код дерева подразделений для поля выбора подразделений поля "согласованно" при изменении задания
+    private $_multidemensional_podr_transmitted; // в резудьтате формирования содержит сформированный html-код дерева подразделений для поля выбора подразделений поля "передано в" при изменении задания
+    private $dateFormat = 'YYYY-MM-DD hh24:mi:ss'; // формат даты для записи в БД
+    const _UNDEFINED = '----------- не задано -----------'; // константа для вывода в таблицу информации о задании, если данные отсутствуют
+    
     /*
-        Метод описания поведений для доступа пользователя
+        Метод формирования доступа к страницам
     */
     public function behaviors()
     {
@@ -48,23 +49,30 @@ class SiteController extends Controller
     }
 
     /*
-        Определение действий для обработки ошибок и формирования капчи (если необходимо)
+        global actions
     */
     public function actions()
     {
         return [
             'error' => [
-                'class' => 'yii\web\ErrorAction',
+                'class' => 'yii\web\ErrorAction', // метод обработки исключений
             ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
+            // 'captcha' => [
+            //     'class' => 'yii\captcha\CaptchaAction', // метод формирования капчи (не используется)
+            //     'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+            // ],
         ];
     }
 
     /*
-        Метод формирования индексной страницы
+        Index - метод формирования главной страницы
+        данные рендерятся в шаблон /views/site/index.php возвращая следующие данные
+        podr_data - сформированный html-код дерева подразделений для создания и редактирования задания
+        podr_data_filter - сформированный html-код дерева подразделений для фильтра "подразделения"
+        agreed_data_filter - сформированный html-код дерева подразделений для фильтра "согласованно"
+        model - модель создаваемого задания
+        dataProvider - объект, содержащий список заданий, выводимых на главной странице
+        searchModel - модель (наследованная от Tasks) для фильтрации заданий
     */
     public function actionIndex()
     {
@@ -76,27 +84,26 @@ class SiteController extends Controller
         $this->_createPodrTree(1, 0, 'checkbox-podr-link-filter');
         $this->_createPodrTree(1, 0, 'checkbox-agreed-link-filter');
         
+        // ajax - валидация при создании задания
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             return \yii\widgets\ActiveForm::validate($model);
         }
-
+        // если данные переданы POST запросом
         if ($model->load(Yii::$app->request->post())) {
-
-            // echo '<pre>';
-            // print_r($model); die();
-            
+            // дополнительно валидируем полученные данные
             if($model->validate()) {
-
+                // получаем объект текущей транзакции
                 $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
                 /*
                     Сохраняем модель TASKS
                 */
                 $task = new \app\models\Tasks;
+                // в случае, если DESIGNATION не был выбран из имеющихся данных и создан новый
                 if(empty($model->documentid)) {
                     $task->DESIGNATION = $model->designation;
                     
-                } else {
+                } else { // в случае, если DESIGNATION был выбран из имеющихся данных получаем его значение
                     $query = new \yii\db\Query;
                     $query->select('DESIGNATION AS name')
                             ->from('STIGIT.V_PRP_DESIGNATION')
@@ -117,12 +124,7 @@ class SiteController extends Controller
 
                 $task->DEADLINE = new \yii\db\Expression("to_date('" . $deadline_formatted . "','{$this->dateFormat}')");
                 $task->TRACT_ID = $transactions->ID;
-                
-
-
-
-                //print_r($model->podr_list); die();
-
+                // сохраняем задание
                 if($task->save()) {
                     /*
                         Сохраняем модель PODR_TASKS
@@ -135,7 +137,7 @@ class SiteController extends Controller
                         $podr_task->save();
                     }
                     /*
-                        Сохраняем модель PERS_TASKS
+                        Сохраняем модель PERS_TASKS, если были выбраны конкретные исполнители
                     */
                     if(!empty($model->persons_list)) {
                         foreach(explode(',', $model->persons_list) as $person) {
@@ -149,7 +151,6 @@ class SiteController extends Controller
                     \Yii::$app->getSession()->setFlash('flash_message_success', 'Задание выдано');
                     return $this->redirect(['index']);
                 } else {
-                    //print_r($task->errors); die();
                     \Yii::$app->getSession()->setFlash('flash_message_error', 'Что-то пошло не так. Обратитесь к администратору.');
                     return $this->redirect(['index']);
                 }
@@ -159,10 +160,12 @@ class SiteController extends Controller
             }
         }        
 
+        // формируем модель фильтрации заданий и объект, содержащий список заданий, а так же указываем количество страниц в пейджере
         $searchModel = new \app\models\SearchTasks;
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
         $dataProvider->pagination->pageSize=15;
 
+        // обработчики для правильного заполнения полей поиска фильтрации, в случае, если в этих полях отсуттсвуют данные
         if(!is_array($searchModel->ORDERNUM))
             $searchModel->ORDERNUM = [];
         if(!is_array($searchModel->PEOORDERNUM))
@@ -171,7 +174,7 @@ class SiteController extends Controller
             $searchModel->documentation = [];
        
 
-
+        // рендерим шаблон
         return $this->render('index', [
             'podr_data' => $this->_multidemensional_podr,
             'podr_data_filter' => $this->_multidemensional_podr_filter,
@@ -183,12 +186,24 @@ class SiteController extends Controller
         ]);
     }
 
+    /*
+        Метод, проверяющий есть ли вложенные подразделения у текущего, в зависимости от результата возвращает true или false
+    */
     public function _checkNextPodrTree($parent_id) {
         if (isset($this->_podr_data_array[$parent_id])) { 
             return true;
         }
     }
 
+
+    /*
+        Метод формирования html-кода для дерева подразделений
+        Возвращает код вида 
+        <ul>
+            <li>...</li>
+            ...
+        </ul> с данными для вставки в поле в зависимости от переменной $checkbox_link, в которой содержится значение, для какого типа поля формировать код
+    */  
     public function _createPodrTree($parent_id, $level, $checkbox_link) {
         if (isset($this->_podr_data_array[$parent_id])) { 
             switch ($checkbox_link) {
@@ -544,6 +559,7 @@ class SiteController extends Controller
                 }
             } else {
                 $pers_list = self::_UNDEFINED;
+                $persons_array = [];
             }
 
             $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
