@@ -7,7 +7,7 @@ $config = [
     'basePath' => dirname(__DIR__),
     'language' => 'ru',
     //'charset' => 'windows-1251',
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log'], // 'assetsAutoCompress'
     'modules' => [
        'gridview' =>  [
             'class' => '\kartik\grid\Module'
@@ -19,6 +19,14 @@ $config = [
         ]
     ],
     'components' => [
+        // 'assetsAutoCompress' =>
+        // [
+        //     'class'             => '\skeeks\yii2\assetsAuto\AssetsAutoCompressComponent',
+        //     'enabled'           => true,
+        //     'jsCompress'        => true,
+        //     'cssFileCompile'    => true,
+        //     'jsFileCompile'     => true,
+        // ],
         'assetManager' => [
             'bundles' => [
                 'yii\bootstrap\BootstrapAsset' => [

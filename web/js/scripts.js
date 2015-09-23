@@ -36,6 +36,8 @@ $(document).ready(function(){
 	});
 	
 	$(".issue-row").click(function(){
+		$("#issue-view-preloader").css('display', 'block');
+		$(".kv-grid-table").css('opacity', '0.5');
 		//console.log($(this).attr('id'));
 		//get data and create modal
 		$.ajax({
@@ -44,9 +46,12 @@ $(document).ready(function(){
         	url: "index.php?r=site/getissuedata",
         	data: "id="+$(this).attr('id'),
         	success: function(data,status){
-        		$("#myModalLabel-issue").html('Просмотр задания '+data.issue_designation);	
+        		$("#myModalLabel-issue").html('Задание '+data.issue_designation);	
         		$("#issue-view-table").html(data.result_table);
+        		$("#issue-view-preloader").css('display', 'none');
+        		$(".kv-grid-table").css('opacity', '1.0');
         		$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+        		$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
         		$("#update-issue-button").attr('data-id', data.issue_id);
         		$("#issue-view-modal").modal();	
 

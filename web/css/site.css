@@ -254,3 +254,6 @@ form[role=login] .form-control + .glyphicon {
 .panel-title a {
     font-size: 12px;
 }  
+#issue-update-table .form-group {
+    margin-bottom: 3px;
+}

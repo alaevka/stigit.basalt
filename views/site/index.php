@@ -37,8 +37,9 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>
-</nav>
 
+</nav>
+<div id="issue-view-preloader" style="z-index: 999;width: 90px; height: 90px; position: fixed; left: 45%; top: 30%; display: none;"><img src="/images/preloader.gif" /></div>
 <div id="wrapper" style="padding-top: 53px;">
 
 	<!-- Sidebar -->
@@ -59,6 +60,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			
 			<div class="row">
 				<div class="col-md-8">
+
 					<?php
 						echo GridView::widget([
 						    'dataProvider' => $dataProvider,
@@ -1068,11 +1070,13 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 
 
 <div class="modal fade" id="issue-view-modal" role="dialog" data-backdrop="static"  data-keyboard="false" aria-labelledby="podr-select-modal-label">
-	<div class="modal-dialog" role="document">
+	<div class="modal-dialog" role="document" style="width: 800px;">
 		<div class="modal-content">
 			<div class="modal-header">
+				
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel-issue">Просмотр задания</h4>
+				<a href="" target="_blank" id="update-issue-top-button" style="margin-right: 10px;" class="close"><span alt="редактировать" title="редактировать" class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+				<h4 class="modal-title" id="myModalLabel-issue"></h4>
 			</div>
 			<div class="modal-body" id="issue-view-table">
 				

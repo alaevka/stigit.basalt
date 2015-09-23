@@ -20,7 +20,7 @@ class AppAsset extends AssetBundle
     public $css = [
         'todc-bootstrap/css/bootstrap.min.css',
         'todc-bootstrap/css/todc-bootstrap.min.css',
-        'http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css',
+        'css/jquery-ui.css',
         'css/jgrowl.css',
         'css/select2.css',
         'css/bootstrap-tokenfield.min.css',
@@ -29,7 +29,7 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-        'http://code.jquery.com/ui/1.10.1/jquery-ui.js',
+        'js/jquery-ui.js',
         'js/jgrowl.min.js',
         'js/bootstrap-tokenfield.min.js',
         'js/jquery.tree.min.js',
