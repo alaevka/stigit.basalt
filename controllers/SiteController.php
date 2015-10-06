@@ -173,10 +173,6 @@ class SiteController extends Controller
         if(!is_array($searchModel->documentation))
             $searchModel->documentation = [];
        
-
-        // echo '<pre>';
-        // print_r($this->_multidemensional_podr); die();
-
         // рендерим шаблон
         return $this->render('index', [
             'podr_data' => $this->_multidemensional_podr,

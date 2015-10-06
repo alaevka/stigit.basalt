@@ -113,6 +113,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							    	'value' => function ($model, $key, $index, $widget) {
 							    		return '
 							    			Заказ: <b>'.$model->ORDERNUM.'</b><br>
+							    			Заказ ПЭО: <b>'.$model->PEOORDERNUM.'</b><br>
 							    			Входящий: <b>'.$model->SOURCENUM.'</b><br>
 							    			Исходящий: <b>'.$model->TASK_NUMBER.'</b>
 							    		';
@@ -140,13 +141,21 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						        	'attribute' => 'TASK_TEXT',
 						        	'enableSorting' => false
 						        ],
-						        // [
-						        // 	'value' => function ($model, $key, $index, $widget) {
-						        // 		if(isset($model->datetype4->TASK_TYPE_DATE))
-						        // 			return $model->datetype4->TASK_TYPE_DATE;
-						        // 	},
-						        // 	'label' => 'Дата 4 тест'
-						        // ]
+						        [
+
+						        	'value' => function ($model, $key, $index, $widget) {
+						        		$old_task_date_2 = \app\models\TaskDates::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 2])->one();
+							            if(!$old_task_date_2) {
+							                $transactions_for_date = \app\models\Transactions::findOne($model->TRACT_ID);
+							                $group_date_for_table = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');
+							            } else {
+							                $group_date_for_table = \Yii::$app->formatter->asDate($old_task_date_2->TASK_TYPE_DATE, 'php:d-m-Y');
+							            }
+							            return $group_date_for_table;
+						        	},
+						        	'label' => 'Дата выдачи',
+						        	'contentOptions' => ['style' => 'width: 90px; text-align: center;']
+						        ]
 						        // 'DEADLINE',
 						        // 'TRACT_ID'
 						    ],
