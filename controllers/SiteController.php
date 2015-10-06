@@ -466,7 +466,7 @@ class SiteController extends Controller
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $persons_list = '<ul>';
             foreach(json_decode($post_data) as $kodzifr => $value) {
-                $persons_list .= "<li class=\"collapsed\"><span style=\"font-weight: normal; font-size: 12px;\">".$value."</span>";
+                $persons_list .= "<li class=\"expanded\"><span style=\"font-weight: normal; font-size: 12px;\">".$value."</span>";
                 //get persons names
                 $query = new \yii\db\Query;
                 $query->select('*')

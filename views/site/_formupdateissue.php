@@ -457,6 +457,7 @@
 			        	success: function(data,status){
 			        		$('#persons-check-list-update').html(data);
 			        		$('#persons-check-list-update').tree({checkbox: false});
+			        		".$chk_pers_list."
 			        	}
 			        });
 			    }
