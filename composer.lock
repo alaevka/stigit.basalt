@@ -323,12 +323,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
-                "reference": "883d8b623579d6ec2ec4ca28b6b8cc51ececd9ac"
+                "reference": "629ec209db306e3838f5c829e3488ff96a8040d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/040a27011beb6a0d14ecaf362782f2eeb3e1a5e3",
-                "reference": "883d8b623579d6ec2ec4ca28b6b8cc51ececd9ac",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/629ec209db306e3838f5c829e3488ff96a8040d8",
+                "reference": "629ec209db306e3838f5c829e3488ff96a8040d8",
                 "shasum": ""
             },
             "type": "library",
@@ -363,7 +363,7 @@
                 "progress",
                 "upload"
             ],
-            "time": "2015-09-14 15:42:34"
+            "time": "2015-09-29 07:48:34"
         },
         {
             "name": "kartik-v/mpdf",
@@ -414,12 +414,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-grid.git",
-                "reference": "913fde8fbe41bf998d53a88d0443e25e1e696194"
+                "reference": "75165239b4fe5abfcc361965f8e93c0cca5b1698"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/913fde8fbe41bf998d53a88d0443e25e1e696194",
-                "reference": "913fde8fbe41bf998d53a88d0443e25e1e696194",
+                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/75165239b4fe5abfcc361965f8e93c0cca5b1698",
+                "reference": "75165239b4fe5abfcc361965f8e93c0cca5b1698",
                 "shasum": ""
             },
             "require": {
@@ -450,7 +450,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-09-12 19:41:22"
+            "time": "2015-09-29 18:37:35"
         },
         {
             "name": "kartik-v/yii2-krajee-base",
@@ -650,12 +650,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-select2.git",
-                "reference": "e72880e7e8dfc845c112ed7df275bf1c929be6db"
+                "reference": "fa0175d936012eac3f7a382792cbb13948015c4e"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/fa0175d936012eac3f7a382792cbb13948015c4e",
-                "reference": "e72880e7e8dfc845c112ed7df275bf1c929be6db",
+                "reference": "fa0175d936012eac3f7a382792cbb13948015c4e",
                 "shasum": ""
             },
             "require": {
@@ -690,7 +690,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-09-12 19:56:48"
+            "time": "2015-09-22 03:10:57"
         },
         {
             "name": "mrclay/minify",
@@ -739,16 +739,16 @@
         },
         {
             "name": "natxet/CssMin",
-            "version": "3.0.3",
+            "version": "v3.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/natxet/CssMin.git",
-                "reference": "f076e41392b0008efb47074a133ec1d90dc8c99f"
+                "reference": "92de3fe3ccb4f8298d31952490ef7d5395855c39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/natxet/CssMin/zipball/f076e41392b0008efb47074a133ec1d90dc8c99f",
-                "reference": "f076e41392b0008efb47074a133ec1d90dc8c99f",
+                "url": "https://api.github.com/repos/natxet/CssMin/zipball/92de3fe3ccb4f8298d31952490ef7d5395855c39",
+                "reference": "92de3fe3ccb4f8298d31952490ef7d5395855c39",
                 "shasum": ""
             },
             "require": {
@@ -782,7 +782,7 @@
                 "css",
                 "minify"
             ],
-            "time": "2015-05-21 16:53:45"
+            "time": "2015-09-25 11:13:11"
         },
         {
             "name": "skeeks/yii2-assets-auto-compress",
@@ -1024,21 +1024,21 @@
         },
         {
             "name": "yiisoft/yii2-bootstrap",
-            "version": "2.0.4",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-bootstrap.git",
-                "reference": "1b6b1e61cf91c3cdd517d6a7e71d30bb212e4af0"
+                "reference": "1464f93834b1d5edb1f5625f7ffd6c3723fa4923"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/1b6b1e61cf91c3cdd517d6a7e71d30bb212e4af0",
-                "reference": "1b6b1e61cf91c3cdd517d6a7e71d30bb212e4af0",
+                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/1464f93834b1d5edb1f5625f7ffd6c3723fa4923",
+                "reference": "1464f93834b1d5edb1f5625f7ffd6c3723fa4923",
                 "shasum": ""
             },
             "require": {
                 "bower-asset/bootstrap": "3.3.* | 3.2.* | 3.1.*",
-                "yiisoft/yii2": ">=2.0.4"
+                "yiisoft/yii2": ">=2.0.6"
             },
             "type": "yii2-extension",
             "extra": {
@@ -1070,7 +1070,7 @@
                 "bootstrap",
                 "yii2"
             ],
-            "time": "2015-05-10 22:08:17"
+            "time": "2015-09-23 17:48:24"
         },
         {
             "name": "yiisoft/yii2-composer",

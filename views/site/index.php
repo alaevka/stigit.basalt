@@ -76,14 +76,14 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						    	[
 							        'class' => '\kartik\grid\CheckboxColumn'
 							    ],
-							    [
-							    	'attribute' => 'STATUS',
-							    	'label' => '',
-							    	'format' => 'html',
-							    	'value' => function ($model, $key, $index, $widget) {
-							    		return $model->_getLastTaskStatus($model->ID);
-							    	}
-							    ],
+							    // [
+							    // 	'attribute' => 'STATUS',
+							    // 	'label' => '',
+							    // 	'format' => 'html',
+							    // 	'value' => function ($model, $key, $index, $widget) {
+							    // 		return $model->_getLastTaskStatus($model->ID);
+							    // 	}
+							    // ],
 							    [
 							    	'attribute' => 'persons_list',
 							    	'label' => 'Исполнитель',
@@ -100,7 +100,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								                $command = $query->createCommand();
 								                $data = $command->queryOne();
 							    				//$list .= '<nobr><a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FAM'].' '.mb_substr($data['IMJ'], 0, 1, 'UTF-8').'. '.mb_substr($data['OTCH'], 0, 1, 'UTF-8').'.</a></nobr><br>';
-								                $list .= '<nobr><a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
+								                $list .= '<nobr>state_ <a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
 							    			}
 							    			return $list;
 							    		}
@@ -108,7 +108,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							    	'contentOptions' => ['style' => 'width: 250px;']
 							    ],
 							    [
-							    	'label' => 'Номера',
+							    	'label' => 'Основание',
 							    	'format' => 'html',
 							    	'value' => function ($model, $key, $index, $widget) {
 							    		return '
@@ -164,8 +164,8 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 				</div>
 				<div class="col-md-4">
 					<div class="row">
-						<div class="panel-group fixed" id="accordion" role="tablist" aria-multiselectable="true">
-							<div class="filters-header">Фильтры</div>
+						<div class="panel-group fixed" style="height: 600px; overflow: auto;" id="accordion" role="tablist" aria-multiselectable="true">
+							<div class="filters-header fixed" style="z-index: 99;">Фильтры</div>
 							
 							<?php $form_filter = ActiveForm::begin([
 					                'id' => 'filter-form',
@@ -173,7 +173,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 					                'action' => ['index'],
 					                'options' => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
 					        ]); ?>
-							<div class="panel panel-default">
+							<div class="panel panel-default" style="margin-top: 30px;">
 								<div class="panel-heading" role="tab" id="headingOne">
 									<h4 class="panel-title">
 										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">

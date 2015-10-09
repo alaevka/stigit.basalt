@@ -329,6 +329,7 @@
 
 				    <?php
 				    	$this->registerJs('function format(state) {return state.text;}', View::POS_HEAD);
+				    	$this->registerJs('function format_selection(state) {return "<b>"+state.text+"</b>";}', View::POS_HEAD);
 				    ?>
 				    <?= $form->field($model, 'state', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
@@ -341,8 +342,8 @@
 					    'pluginOptions' => [
 					        'allowClear' => true,
 					        'templateResult' => new JsExpression('format'),
-					        'escapeMarkup' => new JsExpression("function(m) { return m; }")
-        					//'templateSelection' => new JsExpression('format'),
+					        'escapeMarkup' => new JsExpression("function(m) { return m; }"),
+        					'templateSelection' => new JsExpression('format_selection'),
 					        //'templateSelection' => new JsExpression('function (designation) { return state.text; }'),
 					    ],
 					]);
