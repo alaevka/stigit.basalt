@@ -76,14 +76,15 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						    	[
 							        'class' => '\kartik\grid\CheckboxColumn'
 							    ],
-							    // [
-							    // 	'attribute' => 'STATUS',
-							    // 	'label' => '',
-							    // 	'format' => 'html',
-							    // 	'value' => function ($model, $key, $index, $widget) {
-							    // 		return $model->_getLastTaskStatus($model->ID);
-							    // 	}
-							    // ],
+							    [
+							    	'attribute' => 'STATUS',
+							    	'label' => '',
+							    	'format' => 'html',
+							    	'value' => function ($model, $key, $index, $widget) {
+							    		//return $model->_getLastTaskStatus($model->ID);
+							    		return $model->_getCurrentTaskStatus($model->ID);
+							    	}
+							    ],
 							    [
 							    	'attribute' => 'persons_list',
 							    	'label' => 'Исполнитель',
@@ -100,9 +101,34 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								                $command = $query->createCommand();
 								                $data = $command->queryOne();
 							    				//$list .= '<nobr><a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FAM'].' '.mb_substr($data['IMJ'], 0, 1, 'UTF-8').'. '.mb_substr($data['OTCH'], 0, 1, 'UTF-8').'.</a></nobr><br>';
-								                $list .= '<nobr>state_ <a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
+								                //get current state	
+								                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $model->ID])->one();
+								                if($task_state) {
+								                	$state = $task_state->getState_name_state_colour_without_text();
+								                } else {
+								                	$state = '';
+								                }
+
+								                $list .= '<nobr>'.$state.'  <a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
 							    			}
 							    			return $list;
+							    		} else {
+							    			$podr = \app\models\PodrTasks::find()->where(['TASK_ID' => $model->ID])->all();
+							    			if($podr) {
+							    				$list = '';
+							    				foreach($podr as $task) {
+								                    $query = new \yii\db\Query;
+								                    $query->select('*')
+								                        ->from('STIGIT.V_F_PODR')
+								                        ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
+								                    $command = $query->createCommand();
+								                    $data = $command->queryOne();
+								                    if(isset($data['NAIMPODR']))
+								                        $list .= $data['NAIMPODR']."<br>";
+								                }
+								                return $list;
+							    			}
+
 							    		}
 							    	},
 							    	'contentOptions' => ['style' => 'width: 250px;']
@@ -151,9 +177,10 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							            } else {
 							                $group_date_for_table = \Yii::$app->formatter->asDate($old_task_date_2->TASK_TYPE_DATE, 'php:d-m-Y');
 							            }
-							            return $group_date_for_table;
+							            return $group_date_for_table.'<br>'.\Yii::$app->formatter->asDate($model->DEADLINE, 'php:d-m-Y');
 						        	},
-						        	'label' => 'Дата выдачи',
+						        	'label' => 'Выдано Срок',
+						        	'format' => 'html',
 						        	'contentOptions' => ['style' => 'width: 90px; text-align: center;']
 						        ]
 						        // 'DEADLINE',

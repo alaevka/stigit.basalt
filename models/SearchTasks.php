@@ -68,10 +68,15 @@ class SearchTasks extends Tasks
 
     public function search($params)
     {
-        $query = Tasks::find();
+        $query = Tasks::find();//->joinWith('datetype2');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['ID'=> SORT_DESC]]
         ]);
+
+        //$dataProvider->sort->defaultOrder = ['TASK_DATES.TASK_TYPE_DATE' => SORT_DESC];
+
+
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }

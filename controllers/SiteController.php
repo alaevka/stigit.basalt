@@ -237,19 +237,19 @@ class SiteController extends Controller
                 
                 switch ($checkbox_link) {
                     case 'checkbox-podr-link':
-                        $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
                         break;
                     case 'checkbox-podr-link-agreed':
-                        $this->_multidemensional_podr_agreed .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        $this->_multidemensional_podr_agreed .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
                         break;
                     case 'checkbox-podr-link-transmitted':
-                        $this->_multidemensional_podr_transmitted .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        $this->_multidemensional_podr_transmitted .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
                         break;
                     case 'checkbox-podr-link-filter':
-                        $this->_multidemensional_podr_filter .= "<li ".$class."><input id=\"checkbox_filter_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        $this->_multidemensional_podr_filter .= "<li ".$class."><input id=\"checkbox_filter_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
                         break;
                     case 'checkbox-agreed-link-filter':
-                        $this->_multidemensional_agreed_filter .= "<li ".$class."><input id=\"checkbox_filter_agreed_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['name']."</a></span>";
+                        $this->_multidemensional_agreed_filter .= "<li ".$class."><input id=\"checkbox_filter_agreed_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
                         break;
                 }
 
@@ -339,7 +339,7 @@ class SiteController extends Controller
 
     public function _getPodrData($parent = 1, $i = 0) {
         $query = new \yii\db\Query;
-        $query->select('NAIMPODR AS name, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+        $query->select('NAIMPODR AS name, VIDPODR as vid, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
                 ->from('STIGIT.V_F_PODR')
                 ->orderBy('NAIMPODR asc');
         $command = $query->createCommand();
@@ -491,10 +491,12 @@ class SiteController extends Controller
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             
             $issue = \app\models\Tasks::findOne($issue_id);
+            $user_have_permission = 0;
 
             $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
             if($podr_tasks) {
                 $podr_list = '';
+                $podr_list_kodzifr_array = [];
                 foreach($podr_tasks as $task) {
                     $query = new \yii\db\Query;
                     $query->select('*')
@@ -502,8 +504,10 @@ class SiteController extends Controller
                         ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
                     $command = $query->createCommand();
                     $data = $command->queryOne();
-                    if(isset($data['NAIMPODR']))
+                    if(isset($data['NAIMPODR'])) {
                         $podr_list .= $data['NAIMPODR']."<br>";
+                        $podr_list_kodzifr_array[] = $data['KODZIFR'];
+                    }
                 }
                
             }
@@ -565,7 +569,7 @@ class SiteController extends Controller
             //save date for person if his owner this issue
             if(in_array(\Yii::$app->user->id, $persons_array)) {
 
-                //check if window opened first time
+                //check if window opened first time for date
                 $old_task_date_1 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 1])->one();
                 if(!$old_task_date_1) {
                     
@@ -575,8 +579,43 @@ class SiteController extends Controller
                     $task_date_1->DATE_TYPE_ID = 1;
                     $task_date_1->TRACT_ID = $transactions->ID;
                     $task_date_1->save();
+
+                }
+
+                //check if window opened first time for user
+                $task_states_user = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => \Yii::$app->user->id, 'TASK_ID' => $issue_id])->one();
+                if(!$task_states_user) {
+                    //set state for this person
+                    $task_states = new \app\models\TaskStates;
+                    $task_states->TASK_ID = $issue_id;
+                    $task_states->STATE_ID = 1;
+                    $task_states->TRACT_ID = $transactions->ID;
+                    $task_states->IS_CURRENT = 1;
+                    $task_states->PERS_TASKS_ID = \Yii::$app->user->id;
+                    $task_states->save();
+                }
+
+                $user_have_permission = 1;
+            }
+
+
+            //check if user in podr
+            if(empty($persons_array)) {
+                $ids = join(',', $podr_list_kodzifr_array); 
+                $query = new \yii\db\Query;
+                $query->select('*')
+                    ->from('STIGIT.V_F_PERS')
+                    ->where('TN = \'' . \Yii::$app->user->id .'\' and KODZIFR in ('.$ids.')');
+                $command = $query->createCommand();
+                $data = $command->queryAll();
+                if(!empty($data)) {
+                    $user_have_permission = 1;
+                } else {
+                    $user_have_permission = 0;
                 }
             }
+
+
 
             //group date
             $old_task_date_2 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 2])->one();
@@ -649,10 +688,9 @@ class SiteController extends Controller
                 $task_docs_list = self::_UNDEFINED;
             }
 
-            $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $issue->ID])->orderBy('ID DESC')->LIMIT(1)->one();
-            if($task_state) {
-                $tasks = \app\models\States::findOne($task_state->STATE_ID);
-                $task_states_list = $tasks->state_name_state_colour;
+            $task_state = $issue->_getCurrentTaskStatusWithText($issue->ID);
+            if($task_state != '') {
+                $task_states_list = $task_state;
             } else {
                 $task_states_list = self::_UNDEFINED;
             }
@@ -735,7 +773,9 @@ class SiteController extends Controller
             ';
             $result_table .= '</table>';
 
-            $items = ['issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
+
+
+            $items = ['user_have_permission' => $user_have_permission, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
             return $items;
         }
     }
@@ -840,7 +880,7 @@ class SiteController extends Controller
         $transactions_for_date = \app\models\Transactions::findOne($model->TRACT_ID);
         $model->transactions_tract_datetime = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');  
 
-        $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $model->ID])->orderBy('ID DESC')->LIMIT(1)->one();
+        $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $model->ID, 'PERS_TASKS_ID' => \Yii::$app->user->id, 'IS_CURRENT' => 1])->one();
         if($task_state) {
             $model->state = $task_state->STATE_ID;
             $last_state = $task_state->STATE_ID;
@@ -1092,6 +1132,7 @@ class SiteController extends Controller
                         $new_state->STATE_ID = $model->state;
                         $new_state->TRACT_ID = $transactions->ID;
                         $new_state->IS_CURRENT = 1;
+                        $new_state->PERS_TASKS_ID = \Yii::$app->user->id;
                         $new_state->save();
 
                         //обновление поля IS_CURRENT для предыдущего состояния

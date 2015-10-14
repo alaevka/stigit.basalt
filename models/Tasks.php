@@ -129,5 +129,58 @@ class Tasks extends \yii\db\ActiveRecord
             return '';
         }
     }
+
+
+    public function _getCurrentTaskStatus($id) {
+        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id])->all();
+        if($persons) {
+            $states_array = [];
+            foreach($persons as $person) {
+                $query = new \yii\db\Query;
+                $query->select('*')
+                ->from('STIGIT.V_F_PERS')
+                ->where('TN = \'' . $person->TN .'\'');
+                $command = $query->createCommand();
+                $data = $command->queryOne();
+               
+                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $id])->one();
+                if($task_state) {
+                    $states_array[] = $task_state->STATE_ID;
+                } else {
+                    return '(не задано)';
+                }
+            }
+            if(!empty($states_array)) {
+                $min_state = min($states_array);
+                $state = \app\models\States::findOne($min_state);
+                return $state->getState_name_state_colour_without_text();
+            }
+        }
+    }
+
+    public function _getCurrentTaskStatusWithText($id) {
+        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id])->all();
+        if($persons) {
+            $states_array = [];
+            foreach($persons as $person) {
+                $query = new \yii\db\Query;
+                $query->select('*')
+                ->from('STIGIT.V_F_PERS')
+                ->where('TN = \'' . $person->TN .'\'');
+                $command = $query->createCommand();
+                $data = $command->queryOne();
+               
+                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $id])->one();
+                if($task_state) {
+                    $states_array[] = $task_state->STATE_ID;
+                }
+            }
+            if(!empty($states_array)) {
+                $min_state = min($states_array);
+                $state = \app\models\States::findOne($min_state);
+                return $state->getState_name_state_colour();
+            }
+        }
+    }
     
 }

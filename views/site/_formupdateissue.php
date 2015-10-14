@@ -331,14 +331,14 @@
 				    	$this->registerJs('function format(state) {return state.text;}', View::POS_HEAD);
 				    	$this->registerJs('function format_selection(state) {return "<b>"+state.text+"</b>";}', View::POS_HEAD);
 				    ?>
-				    <?= $form->field($model, 'state', [
+				    <?php echo $form->field($model, 'state', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
 				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
 				        'inputOptions'=>['class'=>'form-control input-sm']
 				    ])->widget(\kartik\select2\Select2::classname(), [
 					    'options' => ['placeholder' => ''],
 					    'hideSearch' => true,
-					    'data' => yii\helpers\ArrayHelper::map(app\models\States::find()->orderBy('ID')->all(), 'ID', 'state_name_state_colour'),
+					    'data' => yii\helpers\ArrayHelper::map(app\models\States::find()->where(['ID' => [1,2,3]])->orderBy('ID')->all(), 'ID', 'state_name_state_colour'),
 					    'pluginOptions' => [
 					        'allowClear' => true,
 					        'templateResult' => new JsExpression('format'),
@@ -490,13 +490,15 @@
 				".$chk_podr_list."
 
 		    	$('#tasks-podr_list').on('tokenfield:removetoken', function (e) {
+		    		$('#tasks-persons_list').val('');
 		    		$('#tasks-persons_list').tokenfield('setTokens', []);
+		    		$(\"#persons-check-list-update\").find('input[type=checkbox]').removeAttr('checked');
 		    		$(\"#persons-check-list-update\").html('<div class=\"alert alert-warning\" role=\"alert\">Пожалуйста, сначала укажите подразделения</div>');
 		        	
 		    	});
 				$('#tasks-podr_list').on('tokenfield:removedtoken', function (e) {
 					$(\"#podr-check-list-update\").find('#checkbox_'+e.attrs.value).removeAttr('checked');
-					_selectPodrUpdate();
+					//_selectPodrUpdate();
 				});
 				
 
