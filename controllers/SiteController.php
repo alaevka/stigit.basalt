@@ -967,6 +967,11 @@ class SiteController extends Controller
                         $pers_task = \app\models\PersTasks::findOne($key_id);
                         $pers_task->DEL_TRACT_ID = $transactions->ID;
                         $pers_task->save();
+
+                        //удаляем (IS_CURRENT = 0) состояние задания для пользователя
+                        $task_states = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'TASK_ID' => $model->ID, 'PERS_TASKS_ID' => $pers_task->TN])->one();
+                        $task_states->IS_CURRENT = 0;
+                        $task_states->save();
                     }
                 }
                 foreach($new_pers_tasks_array as $tn) {

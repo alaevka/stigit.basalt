@@ -132,7 +132,7 @@ class Tasks extends \yii\db\ActiveRecord
 
 
     public function _getCurrentTaskStatus($id) {
-        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id])->all();
+        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
         if($persons) {
             $states_array = [];
             foreach($persons as $person) {
@@ -159,7 +159,7 @@ class Tasks extends \yii\db\ActiveRecord
     }
 
     public function _getCurrentTaskStatusWithText($id) {
-        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id])->all();
+        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
         if($persons) {
             $states_array = [];
             foreach($persons as $person) {
@@ -173,6 +173,8 @@ class Tasks extends \yii\db\ActiveRecord
                 $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $id])->one();
                 if($task_state) {
                     $states_array[] = $task_state->STATE_ID;
+                } else {
+                    return '';
                 }
             }
             if(!empty($states_array)) {

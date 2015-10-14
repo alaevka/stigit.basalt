@@ -90,7 +90,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							    	'label' => 'Исполнитель',
 							    	'format' => 'html',
 							    	'value' => function ($model, $key, $index, $widget) {
-							    		$persons = \app\models\PersTasks::find()->where(['TASK_ID' => $model->ID])->all();
+							    		$persons = \app\models\PersTasks::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0])->all();
 							    		if($persons) {
 							    			$list = '';
 							    			foreach($persons as $person) {
