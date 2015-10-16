@@ -109,7 +109,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								                	$state = '';
 								                }
 
-								                $list .= '<nobr>'.$state.'  <a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
+								                $list .= '<nobr>'.$state.'&nbsp;<a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
 							    			}
 							    			return $list;
 							    		} else {

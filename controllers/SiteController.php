@@ -224,15 +224,15 @@ class SiteController extends Controller
             }
             
             foreach ($this->_podr_data_array[$parent_id] as $value) {
-                if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
+               // if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
                     if($this->_checkNextPodrTree($value['id'])) {
                         $class = "class=\"collapsed\"";
                     } else {
                         $class = '';
                     }
-                } else {
-                    $class = 'not-collapsed-for-filter';
-                }
+                //} else {
+                //    $class = 'not-collapsed-for-filter';
+                //}
                 
                 
                 switch ($checkbox_link) {
@@ -254,9 +254,9 @@ class SiteController extends Controller
                 }
 
                 $level++;
-                if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
+                //if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
                     $this->_createPodrTree($value['id'], $level, $checkbox_link);
-                }
+                //}
                 $level--; 
             }
             switch ($checkbox_link) {
@@ -466,7 +466,15 @@ class SiteController extends Controller
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $persons_list = '<ul>';
             foreach(json_decode($post_data) as $kodzifr => $value) {
-                $persons_list .= "<li class=\"expanded\"><span style=\"font-weight: normal; font-size: 12px;\">".$value."</span>";
+                $query = new \yii\db\Query;
+                $query->select('NAIMPODR AS name, VIDPODR as vid, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
+                        ->from('STIGIT.V_F_PODR')
+                        ->where('KODZIFR = \''.$kodzifr.'\'');
+                $command = $query->createCommand();
+                $data = $command->queryOne();
+                
+
+                $persons_list .= "<li class=\"expanded\"><span style=\"font-weight: normal; font-size: 12px;\">".$data['vid']." ".$data['code'].". ".$data['name']."</span>";
                 //get persons names
                 $query = new \yii\db\Query;
                 $query->select('*')
