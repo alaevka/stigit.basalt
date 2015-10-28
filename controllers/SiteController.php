@@ -1272,10 +1272,37 @@ class SiteController extends Controller
             $parent_value = $_POST['parent_value'];
             $status = $_POST['status'];
 
-            
+            $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return [];
+            if($status == 'checked') {
+                $next_state = new \app\models\StatesNext;
+                $next_state->STATE_ID = $parent_value;
+                $next_state->NEXT_STATE_ID = $this_value;
+                $next_state->TRACT_ID = $transactions->ID;
+                if($next_state->save()) {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 0];
+                } else {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 1];
+                }
+
+            } else {
+                //update DEL_TRACT_ID for old value
+                $next_state_old = \app\models\StatesNext::find()->where(['STATE_ID' => $parent_value, 'NEXT_STATE_ID' => $this_value])->one();
+                $next_state_old->DEL_TRACT_ID = $transactions->ID;
+                if($next_state_old->save()) {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 0];
+                } else {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 1];
+                }
+
+            }
+
+
+            
         }
 
     }

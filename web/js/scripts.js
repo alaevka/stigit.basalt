@@ -283,13 +283,25 @@ $(document).ready(function(){
         	url: "index.php?r=site/setstatenext",
         	data: "this_value="+this_value+"&parent_value="+parent_value+"&status="+status,
         	success: function(data,status){
-        		
+        		if(data.error == 0) {
+        			//success saved
+        			console.log('success');
+        			$(this).removeClass('set-checkbox-state');
+
+        		} else {
+        			//unsuccess saved
+        			console.log('unsuccess');
+        			$(this).prop('checked', false);
+        		}
         	}
         });
 
 	}
 
 	$(".states-change-checkbox").change(function() {
+
+		$(this).addClass('set-checkbox-state');
+
 		var this_value = $(this).val();
 		var parent_value = $(this).attr('data-parent');
 		//console.log(this_value+'-'+parent_value);

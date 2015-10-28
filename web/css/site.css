@@ -273,3 +273,6 @@ form[role=login] .form-control + .glyphicon {
     font-size: 20px;
     width: 12px;
 }*/
+.set-checkbox-state:after {
+    opacity: 0.3;
+}

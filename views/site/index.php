@@ -190,7 +190,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 				</div>
 				<div class="col-md-4">
 					<div class="row">
-						<div class="panel-group fixed" style="height: 600px; overflow: auto;" id="accordion" role="tablist" aria-multiselectable="true">
+						<div class="panel-group fixed" style="height: 580px; overflow: auto;" id="accordion" role="tablist" aria-multiselectable="true">
 							<div class="filters-header fixed" style="z-index: 99;">Фильтры</div>
 							
 							<?php $form_filter = ActiveForm::begin([
