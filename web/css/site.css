@@ -315,7 +315,7 @@ ul.simple_with_no_drag {
 
 }
 .sortable-placeholder {
-    height: 50px;
+    height: 30px;
     border: dashed lightgrey;
     border-radius: 5px;
     position: relative;

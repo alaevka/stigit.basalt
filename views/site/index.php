@@ -1200,7 +1200,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											?>
 											<li class="collapsed">
 												<span><?= $v_f_shra['name']; ?></span>
-												<ul class="simple_with_no_drag">
+												<ul class="simple_with_no_drag" data-id="<?= $v_f_shra['id'] ?>" id="v_f_srha_<?= $v_f_shra['id'] ?>">
 																				
 												</ul>
 
@@ -1260,7 +1260,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<?php 
 												foreach($actions as $action) {
 											?>
-											<li><?= $action->ACTION_DESC; ?></li>
+											<li id="action<?= $action->ID; ?>" data-id="<?= $action->ID; ?>"><?= $action->ACTION_DESC; ?></li>
 											<?php } ?>
 										</ol>
 									</div>

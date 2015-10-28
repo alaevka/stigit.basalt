@@ -336,14 +336,81 @@ $(document).ready(function(){
 		    if(!container.options.drop) 
 		    	$item.clone().insertAfter($item);
 		    	_super($item, container);
+		},
+		// isValidTarget: function ($item, container) {
+		//   return true
+		// }
+		onDrop: function ($item, container, _super, event) {
+			//var dataToSend = $("ul.simple_with_no_drag").sortable("serialize").get();
+			$item.context.innerHTML = $item.context.innerHTML+' icons'
+			var v_f_shra = $item.context['parentElement']['id']
+			var action_id = $item.context.id
+			//console.log(container.items)
+
+		  	$item.removeClass(container.group.options.draggedClass).removeAttr("style")
+		  	$("body").removeClass(container.group.options.bodyClass)
 		}
 	});
 
 	$("ul.simple_with_no_drag").sortable({
 	  	group: 'no-drop',
 	  	drag: false,
-	  	
+
 	});
+
+	// var selectedClass = 'highlight-action',
+ //        clickDelay = 600,
+ //        // click time (milliseconds)
+ //        lastClick, diffClick; // timestamps
+
+
+	// $("#draggable-actions li")
+ //    // Script to deferentiate a click from a mousedown for drag event
+ //    .bind('mousedown mouseup', function(e) {
+ //        if (e.type == "mousedown") {
+ //            lastClick = e.timeStamp; // get mousedown time
+ //        } else {
+ //            diffClick = e.timeStamp - lastClick;
+ //            if (diffClick < clickDelay) {
+ //                // add selected class to group draggable objects
+ //                $(this).toggleClass(selectedClass);
+ //            }
+ //        }
+ //    })
+ //    .draggable({
+ //        revertDuration: 10,
+ //        // grouped items animate separately, so leave this number low
+ //        containment: '#permissions-modal-body',
+ //        start: function(e, ui) {
+ //            ui.helper.addClass(selectedClass);
+ //        },
+ //        stop: function(e, ui) {
+ //            // reset group positions
+ //            $('.' + selectedClass).css({
+ //                top: 0,
+ //                left: 0
+ //            });
+ //        },
+ //        drag: function(e, ui) {
+ //            // set selected group position to main dragged object
+ //            // this works because the position is relative to the starting position
+ //            $('.' + selectedClass).css({
+ //                top: ui.position.top,
+ //                left: ui.position.left
+ //            });
+ //        }
+ //    });
+
+ //    $(".droppable-actions").droppable({
+ //        drop: function(e, ui) {
+ //            $(ui.draggable).clone().appendTo($(this)).removeClass(selectedClass).css({
+ //                top: 0,
+ //                left: 0
+ //            });
+
+ //        }
+ //    });
+    
 
 	
 
