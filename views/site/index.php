@@ -1201,7 +1201,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<li class="collapsed">
 												<span><?= $v_f_shra['name']; ?></span>
 												<ul class="simple_with_no_drag">
-																							
+																				
 												</ul>
 
 											</li>
