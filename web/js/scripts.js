@@ -328,15 +328,15 @@ $(document).ready(function(){
 		group: 'no-drop',
 		drop: false,
 		itemSelector: 'li',
-	    pullPlaceholder: false,
-	    placeholderClass: 'sortable-placeholder',
-	    placeholder: '<li class="sortable-placeholder"></li>',
+	 //    pullPlaceholder: false,
+	 	placeholderClass: 'sortable-placeholder',
+	 	placeholder: '<li class="sortable-placeholder"></li>',
 		onDragStart: function ($item, container, _super) {
-	    // Duplicate items of the no drop area
-	    if(!container.options.drop)
-	    	$item.clone().insertAfter($item);
-	    _super($item, container);
-	}
+		    // Duplicate items of the no drop area
+		    if(!container.options.drop) 
+		    	$item.clone().insertAfter($item);
+		    	_super($item, container);
+		}
 	});
 
 	$("ul.simple_with_no_drag").sortable({
