@@ -30,6 +30,7 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'js/jquery-ui.js',
+        'js/jquery-sortable.js',
         'js/jgrowl.min.js',
         'js/bootstrap-tokenfield.min.js',
         'js/jquery.tree.min.js',
@@ -37,6 +38,7 @@ class AppAsset extends AssetBundle
         'js/fileinput.min.js',
         'js/fileinput_locale_ru.js',
         'js/scripts.js',
+
     ];
     public $depends = [
         'yii\web\YiiAsset',

@@ -321,8 +321,35 @@ $(document).ready(function(){
 		return false;
 	});
 
+	$('#v_f_tree-v_f_shras, #v_f_tree-v_f_pers').tree({checkbox: false, expandUiIcon: 'ui-icon-minus', collapseUiIcon: 'ui-icon-plus'});
+
+		
+	$("ol.permissions-actions").sortable({
+		group: 'no-drop',
+		drop: false,
+		itemSelector: 'li',
+	    pullPlaceholder: false,
+	    placeholderClass: 'sortable-placeholder',
+	    placeholder: '<li class="sortable-placeholder"></li>',
+		onDragStart: function ($item, container, _super) {
+	    // Duplicate items of the no drop area
+	    if(!container.options.drop)
+	    	$item.clone().insertAfter($item);
+	    _super($item, container);
+	}
+	});
+
+	$("ul.simple_with_no_drag").sortable({
+	  	group: 'no-drop',
+	  	drag: false,
+	  	
+	});
+
+	
+
+
 	//for develop
-	$("#states-change-modal").modal();
+	$("#permissions-modal").modal();
 
 });
 

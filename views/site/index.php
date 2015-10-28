@@ -1180,8 +1180,111 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			</div>
 			<div class="modal-body" id="permissions-modal-body">
 				<div class="row">
-					<div class="col-md-6">1</div>
-					<div class="col-md-6">2</div>
+					<div class="col-md-6">
+						
+						<div class="panel-group" id="accordion-permisssions-left" role="tablist" aria-multiselectable="true">
+							
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="permisssions-left-headingOne">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-left-headingOne" href="#collapse-permisssions-left-One" aria-expanded="false" aria-controls="collapse-permisssions-left-One">
+											Должности
+										</a>
+									</h4>
+								</div>
+								<div id="collapse-permisssions-left-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-left-headingOne">
+									<div class="panel-body" id="v_f_tree-v_f_shras">
+										<ul>
+											<?php 
+												foreach($v_f_shras as $v_f_shra) {
+											?>
+											<li class="collapsed">
+												<span><?= $v_f_shra['name']; ?></span>
+												<ul class="simple_with_no_drag">
+																							
+												</ul>
+
+											</li>
+											<?php } ?>
+										</ul>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="permisssions-left-headingTwo">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-left-headingTwo" href="#collapse-permisssions-left-Two" aria-expanded="false" aria-controls="collapse-permisssions-left-Two">
+											Сотрудники
+										</a>
+									</h4>
+								</div>
+								<div id="collapse-permisssions-left-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-left-headingTwo">
+									<div class="panel-body" id="v_f_tree-v_f_pers">
+										<ul>
+											<?php 
+												foreach($v_f_pers as $v_f_per) {
+											?>
+											<li class="collapsed">
+												<span><?= $v_f_per['fio']; ?></span>
+												<ul>
+													<li>test 1</li>
+													<li>test 2</li>
+												</ul>
+
+											</li>
+											<?php } ?>
+										</ul>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+					<div class="col-md-6">
+						
+						<div class="panel-group" id="accordion-permisssions-right" role="tablist" aria-multiselectable="true">
+							
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="permisssions-right-headingOne">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-right-headingOne" href="#collapse-permisssions-right-One" aria-expanded="false" aria-controls="collapse-permisssions-right-One">
+											Действия
+										</a>
+									</h4>
+								</div>
+								<div id="collapse-permisssions-right-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-right-headingOne">
+									<div class="panel-body">
+										<ol class="permissions-actions">
+											<?php 
+												foreach($actions as $action) {
+											?>
+											<li><?= $action->ACTION_DESC; ?></li>
+											<?php } ?>
+										</ol>
+									</div>
+								</div>
+							</div>
+
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="permisssions-right-headingTwo">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-right-headingTwo" href="#collapse-permisssions-right-Two" aria-expanded="false" aria-controls="collapse-permisssions-right-Two">
+											Состояния
+										</a>
+									</h4>
+								</div>
+								<div id="collapse-permisssions-right-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-right-headingTwo">
+									<div class="panel-body">
+										2
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
 				</div>
 			</div>
 			<div class="modal-footer">

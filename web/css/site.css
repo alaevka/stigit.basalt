@@ -276,3 +276,64 @@ form[role=login] .form-control + .glyphicon {
 .set-checkbox-state:after {
     opacity: 0.3;
 }
+#v_f_tree-v_f_shras ul li span, #v_f_tree-v_f_shras li, #v_f_tree-v_f_pers ul li span, #v_f_tree-v_f_pers li {
+    font-size: 11px;
+}
+.permissions-actions li {
+    padding: 3px;
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    margin-bottom: 3px;
+    font-size: 11px;
+}
+.permissions-actions {
+    list-style-type: none;
+    margin-left: 0px;
+    padding-left: 0px;
+}
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+ol.permissions-actions li.placeholder {
+  position: relative;
+  /** More li styles **/
+}
+ol.permissions-actions li.placeholder:before {
+  position: absolute;
+  /** Define arrowhead **/
+}
+ul.simple_with_no_drag {
+    background-color: #eeeeee;
+    padding: 10px;
+
+}
+.sortable-placeholder {
+    height: 50px;
+    border: dashed lightgrey;
+    border-radius: 5px;
+    position: relative;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.sortable-placeholder:before {
+    position: absolute;
+    content: "";
+    width: 0;
+    height: 0;
+    margin-top: -5px;
+    left: -5px;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left-color: red;
+    border-right: none;
+}
