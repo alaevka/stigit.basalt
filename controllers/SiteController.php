@@ -172,6 +172,8 @@ class SiteController extends Controller
             $searchModel->PEOORDERNUM = [];
         if(!is_array($searchModel->documentation))
             $searchModel->documentation = [];
+
+        $states_list = \app\models\States::find()->all();
        
         // рендерим шаблон
         return $this->render('index', [
@@ -181,6 +183,7 @@ class SiteController extends Controller
             'model' => $model,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
+            'states_list' => $states_list,
             
         ]);
     }
@@ -1262,6 +1265,20 @@ class SiteController extends Controller
     }
 
 
+    public function actionSetstatenext() {
+
+        if (Yii::$app->request->isAjax) {
+            $this_value = $_POST['this_value'];
+            $parent_value = $_POST['parent_value'];
+            $status = $_POST['status'];
+
+            
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return [];
+        }
+
+    }
 
     
 }

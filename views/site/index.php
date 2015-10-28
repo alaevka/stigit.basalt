@@ -26,10 +26,9 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			<a class="navbar-brand" href="<?= Url::to(['site/index']); ?>"><img src="/images/logo_fullsize.png" height="40"></a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav">
-				<!-- <li class="active"><a href="#">menu 1</a></li>
-				<li><a href="#">menu 2</a></li>
-				<li><a href="#">menu 3</a></li> -->
+			<ul class="nav navbar-nav ">
+				<li style="padding-top: 12px;"><a id="permissions-link" href="#">Права доступа</a></li>
+				<li style="padding-top: 12px;"><a id="states-change-link" href="#">Смена состояний</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="user-info">Вы авторизованны как: <?= \Yii::$app->user->identity->LOGIN; ?> (номер транзакции: <?= $transactions->ID;  ?>)</li>
@@ -181,7 +180,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						        	},
 						        	'label' => 'Выдано Срок',
 						        	'format' => 'html',
-						        	'contentOptions' => ['style' => 'width: 90px; text-align: center;']
+						        	'contentOptions' => ['style' => 'width: 110px; text-align: center;']
 						        ]
 						        // 'DEADLINE',
 						        // 'TRACT_ID'
@@ -1167,6 +1166,80 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			<div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
 				<button type="button" id="select-persons-filter" class="btn btn-primary">Выбрать указанных исполнителей</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="permissions-modal" role="dialog" aria-labelledby="permissions-modal-label">
+	<div class="modal-dialog" role="document" style="width: 800px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-permissions">Настройка прав доступа</h4>
+			</div>
+			<div class="modal-body" id="permissions-modal-body">
+				<div class="row">
+					<div class="col-md-6">1</div>
+					<div class="col-md-6">2</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="states-change-modal" role="dialog" aria-labelledby="states-change-modal-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel-states-change">Смена состояний</h4>
+			</div>
+			<div class="modal-body" id="states-change-modal-body">
+				<div class="row">
+					<div class="col-md-12">
+						
+						<div class="panel-group" id="accordion-states" role="tablist" aria-multiselectable="true">
+							<?php
+								if($states_list) {
+									foreach($states_list as $state) {
+							?>
+							<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="state-list-item-<?= $state->ID ?>">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" href="#collapse-state-item-<?= $state->ID ?>" aria-expanded="false" aria-controls="collapse-state-item-<?= $state->ID ?>">
+											<?= $state->getState_name_state_colour_without_text().' '.$state->STATE_NAME; ?>
+										</a>
+									</h4>
+								</div>
+								<div id="collapse-state-item-<?= $state->ID ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="state-list-item-<?= $state->ID ?>">
+									<div class="panel-body">
+										<?php
+											$inner_states = \app\models\States::find()->where(['!=','ID', $state->ID])->all();
+											foreach($inner_states as $inner_state) {
+										?>
+											<div class="checkbox"><label><input type="checkbox" class="states-change-checkbox" data-parent="<?= $state->ID; ?>" name="States[<?= $state->ID; ?>][]" value="<?= $inner_state->ID; ?>"> <?= $inner_state->STATE_NAME ?></label></div>
+										<?php
+											}
+										?>
+									</div>
+								</div>
+							</div>
+							<?php 
+									}
+								}
+							?>
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
 			</div>
 		</div>
 	</div>

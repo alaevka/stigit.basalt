@@ -257,3 +257,19 @@ form[role=login] .form-control + .glyphicon {
 #issue-update-table .form-group {
     margin-bottom: 3px;
 }
+
+
+/*#accordion-states .panel-heading a.collapsed:before {
+    margin-right: 7px;
+    content: "+";
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; 
+    font-size: 20px;
+    width: 12px;
+}
+#accordion-states .panel-heading a:before {
+    margin-right: 7px;
+    content: "-";
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; 
+    font-size: 20px;
+    width: 12px;
+}*/

@@ -269,7 +269,48 @@ $(document).ready(function(){
 		$("#persons-check-list-filter").find('#checkbox_'+e.attrs.value).removeAttr('checked');
 	});
 	
+    //states change modal
+    $("#states-change-link").click(function(){
+		$("#states-change-modal").modal();
+		return false;
+	});
+
+	function _setStateInDb(this_value, parent_value, status) {
+
+		$.ajax({
+        	type: "POST",
+        	dataType: 'json',
+        	url: "index.php?r=site/setstatenext",
+        	data: "this_value="+this_value+"&parent_value="+parent_value+"&status="+status,
+        	success: function(data,status){
+        		
+        	}
+        });
+
+	}
+
+	$(".states-change-checkbox").change(function() {
+		var this_value = $(this).val();
+		var parent_value = $(this).attr('data-parent');
+		//console.log(this_value+'-'+parent_value);
+		if($(this).prop('checked') == true){
+			//console.log(this_value+'-'+parent_value+'-checked');
+			_setStateInDb(this_value, parent_value, 'checked');
+		} else {
+			//console.log(this_value+'-'+parent_value+'-unchecked');
+			_setStateInDb(this_value, parent_value, 'unchecked');
+		}
+	});
 		
+
+	//permissions modal
+	$("#permissions-link").click(function(){
+		$("#permissions-modal").modal();
+		return false;
+	});
+
+	//for develop
+	$("#states-change-modal").modal();
 
 });
 
