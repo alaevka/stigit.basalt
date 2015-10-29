@@ -1302,7 +1302,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											if($states_list) {
 												foreach($states_list as $state) {
 										?>
-											<li id="state<?= $state->ID; ?>" data-id="<?= $state->ID; ?>" style="padding-top: 5px; font-size: 11px; background: url('<?= $state->getState_name_state_colour_css() ?>');"><?= $state->STATE_NAME; ?></li>
+											<li id="state<?= $state->ID; ?>" data-id="<?= $state->ID; ?>" style="padding-top: 5px; font-size: 11px;"><?= $state->STATE_NAME; ?></li>
 										<?php 
 												}
 											}

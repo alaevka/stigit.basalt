@@ -343,10 +343,16 @@ $(document).ready(function(){
 		//   return true
 		// }
 		onDrop: function ($item, container, _super, event) {
-			//var dataToSend = $("ul.simple_with_no_drag").sortable("serialize").get();
-			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><a href=""><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="удалить" title="удалить" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div></div>'
+
 			var v_f_shra = $item.context['parentElement']['id']
 			var action_id = $item.context.id
+			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span>&nbsp;<span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span>&nbsp;<span alt="удалить" title="удалить" data-id="'+v_f_shra+'" class="glyphicon glyphicon-remove action-remove"></span></div></div>'
+			
+			//init action for delete icon
+			$(".action-remove").click(function(){
+				var data_id = $(this).attr('data-id');
+				$(this).closest('li').remove();
+			});
 
 			//check if already exist
 			if(container.items.length > 0) {
@@ -381,6 +387,9 @@ $(document).ready(function(){
 
 	});
 
+	
+
+
 	//for states
 
 	$("ol.permissions-states").sortable({
@@ -402,9 +411,10 @@ $(document).ready(function(){
 		// }
 		onDrop: function ($item, container, _super, event) {
 			//var dataToSend = $("ul.simple_with_no_drag").sortable("serialize").get();
-			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><a href=""><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="удалить" title="удалить" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div></div>'
 			var v_f_shra = $item.context['parentElement']['id']
 			var state_id = $item.context.id
+			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><a href=""><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="удалить" title="удалить" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div></div>'
+			
 			//console.log($item);
 			//check if already exist
 			if(container.items.length > 0) {

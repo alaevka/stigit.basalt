@@ -353,3 +353,6 @@ ul.simple_with_no_drag, ul.simple_with_no_drag-states {
 span.not-active {
     color: #cccccc;
 }
+.action-remove {
+    cursor: pointer;
+}
