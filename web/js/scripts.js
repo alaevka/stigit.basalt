@@ -275,7 +275,7 @@ $(document).ready(function(){
 		return false;
 	});
 
-	function _setStateInDb(this_value, parent_value, status) {
+	function _setStateInDb(this_value, parent_value, status, object) {
 
 		$.ajax({
         	type: "POST",
@@ -285,13 +285,14 @@ $(document).ready(function(){
         	success: function(data,status){
         		if(data.error == 0) {
         			//success saved
-        			console.log('success');
-        			$(this).removeClass('set-checkbox-state');
+        			//console.log('success');
+        			$(object).removeClass('set-checkbox-state');
 
         		} else {
         			//unsuccess saved
-        			console.log('unsuccess');
+        			//console.log('unsuccess');
         			$(this).prop('checked', false);
+        			$(object).removeClass('set-checkbox-state');
         		}
         	}
         });
@@ -307,10 +308,10 @@ $(document).ready(function(){
 		//console.log(this_value+'-'+parent_value);
 		if($(this).prop('checked') == true){
 			//console.log(this_value+'-'+parent_value+'-checked');
-			_setStateInDb(this_value, parent_value, 'checked');
+			_setStateInDb(this_value, parent_value, 'checked', this);
 		} else {
 			//console.log(this_value+'-'+parent_value+'-unchecked');
-			_setStateInDb(this_value, parent_value, 'unchecked');
+			_setStateInDb(this_value, parent_value, 'unchecked', this);
 		}
 	});
 		
@@ -327,8 +328,9 @@ $(document).ready(function(){
 	$("ol.permissions-actions").sortable({
 		group: 'no-drop',
 		drop: false,
+		nested: false,
 		itemSelector: 'li',
-	 //    pullPlaceholder: false,
+	 	// pullPlaceholder: false,
 	 	placeholderClass: 'sortable-placeholder',
 	 	placeholder: '<li class="sortable-placeholder"></li>',
 		onDragStart: function ($item, container, _super) {
@@ -342,10 +344,30 @@ $(document).ready(function(){
 		// }
 		onDrop: function ($item, container, _super, event) {
 			//var dataToSend = $("ul.simple_with_no_drag").sortable("serialize").get();
-			$item.context.innerHTML = $item.context.innerHTML+' icons'
+			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><a href=""><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="удалить" title="удалить" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div></div>'
 			var v_f_shra = $item.context['parentElement']['id']
 			var action_id = $item.context.id
-			//console.log(container.items)
+
+			//check if already exist
+			if(container.items.length > 0) {
+				for(var i=0; i< container.items.length; i++) {
+					if(container.items[i]['id'] == action_id) {
+						console.log('isset as this');
+						$item.remove()
+					} else {
+						//store in db
+						$.ajax({
+				        	type: "POST",
+				        	dataType: 'json',
+				        	url: "index.php?r=site/setpermissions",
+				        	data: "v_f_shra="+v_f_shra+"&action_id="+action_id,
+				        	success: function(data,status){
+				        		
+				        	}
+				        });
+					}
+				}
+			}
 
 		  	$item.removeClass(container.group.options.draggedClass).removeAttr("style")
 		  	$("body").removeClass(container.group.options.bodyClass)
@@ -355,8 +377,69 @@ $(document).ready(function(){
 	$("ul.simple_with_no_drag").sortable({
 	  	group: 'no-drop',
 	  	drag: false,
+	  	nested: false,
 
 	});
+
+	//for states
+
+	$("ol.permissions-states").sortable({
+		group: 'no-drop-states',
+		drop: false,
+		nested: false,
+		itemSelector: 'li',
+	 	// pullPlaceholder: false,
+	 	placeholderClass: 'sortable-placeholder',
+	 	placeholder: '<li class="sortable-placeholder"></li>',
+		onDragStart: function ($item, container, _super) {
+		    // Duplicate items of the no drop area
+		    if(!container.options.drop) 
+		    	$item.clone().insertAfter($item);
+		    	_super($item, container);
+		},
+		// isValidTarget: function ($item, container) {
+		//   return true
+		// }
+		onDrop: function ($item, container, _super, event) {
+			//var dataToSend = $("ul.simple_with_no_drag").sortable("serialize").get();
+			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><a href=""><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="удалить" title="удалить" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div></div>'
+			var v_f_shra = $item.context['parentElement']['id']
+			var state_id = $item.context.id
+			//console.log($item);
+			//check if already exist
+			if(container.items.length > 0) {
+				for(var i=0; i< container.items.length; i++) {
+					if(container.items[i]['id'] == state_id) {
+						console.log('isset as this');
+						$item.remove()
+					} else {
+						//store in db
+						// $.ajax({
+				  //       	type: "POST",
+				  //       	dataType: 'json',
+				  //       	url: "index.php?r=site/setpermissions",
+				  //       	data: "v_f_shra="+v_f_shra+"&action_id="+action_id,
+				  //       	success: function(data,status){
+				        		
+				  //       	}
+				  //       });
+					}
+				}
+			}
+
+		  	$item.removeClass(container.group.options.draggedClass).removeAttr("style")
+		  	$("body").removeClass(container.group.options.bodyClass)
+		}
+	});
+
+	$("ul.simple_with_no_drag-states").sortable({
+	  	group: 'no-drop-states',
+	  	drag: false,
+	  	nested: false,
+
+	});
+
+
 
 	// var selectedClass = 'highlight-action',
  //        clickDelay = 600,
@@ -410,10 +493,7 @@ $(document).ready(function(){
 
  //        }
  //    });
-    
-
 	
-
 
 	//for develop
 	$("#permissions-modal").modal();

@@ -1172,7 +1172,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 </div>
 
 <div class="modal fade" id="permissions-modal" role="dialog" aria-labelledby="permissions-modal-label">
-	<div class="modal-dialog" role="document" style="width: 800px;">
+	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -1187,22 +1187,33 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<div class="panel panel-default">
 								<div class="panel-heading" role="tab" id="permisssions-left-headingOne">
 									<h4 class="panel-title">
-										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-left-headingOne" href="#collapse-permisssions-left-One" aria-expanded="false" aria-controls="collapse-permisssions-left-One">
+										<a role="button" data-toggle="collapse" data-parent="#permisssions-left-headingOne" href="#collapse-permisssions-left-One" aria-expanded="false" aria-controls="collapse-permisssions-left-One">
 											Должности
 										</a>
 									</h4>
 								</div>
 								<div id="collapse-permisssions-left-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-left-headingOne">
 									<div class="panel-body" id="v_f_tree-v_f_shras">
-										<ul>
+										<ul style="margin-left: 0px;">
 											<?php 
 												foreach($v_f_shras as $v_f_shra) {
 											?>
 											<li class="collapsed">
 												<span><?= $v_f_shra['name']; ?></span>
-												<ul class="simple_with_no_drag" data-id="<?= $v_f_shra['id'] ?>" id="v_f_srha_<?= $v_f_shra['id'] ?>">
-																				
+												<ul>
+													<li><span>Доступные действия</span>
+														<ul class="simple_with_no_drag" data-id="<?= $v_f_shra['id'] ?>" id="v_f_srha_<?= $v_f_shra['id'] ?>">
+																						
+														</ul>
+													</li>
+													<li>
+														<span>Доступные состояния</span>
+														<ul class="simple_with_no_drag-states" data-id="<?= $v_f_shra['id'] ?>" id="v_f_srha_<?= $v_f_shra['id'] ?>">
+																						
+														</ul>
+													</li>
 												</ul>
+												
 
 											</li>
 											<?php } ?>
@@ -1214,24 +1225,33 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<div class="panel panel-default">
 								<div class="panel-heading" role="tab" id="permisssions-left-headingTwo">
 									<h4 class="panel-title">
-										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-left-headingTwo" href="#collapse-permisssions-left-Two" aria-expanded="false" aria-controls="collapse-permisssions-left-Two">
+										<a role="button" data-toggle="collapse" data-parent="#permisssions-left-headingTwo" href="#collapse-permisssions-left-Two" aria-expanded="false" aria-controls="collapse-permisssions-left-Two">
 											Сотрудники
 										</a>
 									</h4>
 								</div>
 								<div id="collapse-permisssions-left-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-left-headingTwo">
 									<div class="panel-body" id="v_f_tree-v_f_pers">
-										<ul>
+										<ul style="margin-left: 0px;">
 											<?php 
 												foreach($v_f_pers as $v_f_per) {
 											?>
 											<li class="collapsed">
 												<span><?= $v_f_per['fio']; ?></span>
+												
 												<ul>
-													<li>test 1</li>
-													<li>test 2</li>
+													<li><span>Доступные действия</span>
+														<ul class="simple_with_no_drag" data-id="<?= $v_f_per['tn'] ?>" id="v_f_pers_<?= $v_f_per['tn'] ?>">
+																						
+														</ul>
+													</li>
+													<li>
+														<span>Доступные состояния</span>
+														<ul class="simple_with_no_drag-states" data-id="<?= $v_f_per['tn'] ?>" id="v_f_pers_<?= $v_f_per['tn'] ?>">
+																						
+														</ul>
+													</li>
 												</ul>
-
 											</li>
 											<?php } ?>
 										</ul>
@@ -1249,7 +1269,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<div class="panel panel-default">
 								<div class="panel-heading" role="tab" id="permisssions-right-headingOne">
 									<h4 class="panel-title">
-										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-right-headingOne" href="#collapse-permisssions-right-One" aria-expanded="false" aria-controls="collapse-permisssions-right-One">
+										<a role="button" data-toggle="collapse" data-parent="#permisssions-right-headingOne" href="#collapse-permisssions-right-One" aria-expanded="false" aria-controls="collapse-permisssions-right-One">
 											Действия
 										</a>
 									</h4>
@@ -1270,14 +1290,24 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<div class="panel panel-default">
 								<div class="panel-heading" role="tab" id="permisssions-right-headingTwo">
 									<h4 class="panel-title">
-										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#permisssions-right-headingTwo" href="#collapse-permisssions-right-Two" aria-expanded="false" aria-controls="collapse-permisssions-right-Two">
+										<a role="button" data-toggle="collapse" data-parent="#permisssions-right-headingTwo" href="#collapse-permisssions-right-Two" aria-expanded="false" aria-controls="collapse-permisssions-right-Two">
 											Состояния
 										</a>
 									</h4>
 								</div>
 								<div id="collapse-permisssions-right-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-right-headingTwo">
 									<div class="panel-body">
-										2
+										<ol class="permissions-states">
+										<?php
+											if($states_list) {
+												foreach($states_list as $state) {
+										?>
+											<li id="state<?= $state->ID; ?>" data-id="<?= $state->ID; ?>" style="padding-top: 5px; font-size: 11px; background: url('<?= $state->getState_name_state_colour_css() ?>');"><?= $state->STATE_NAME; ?></li>
+										<?php 
+												}
+											}
+										?>
+										</ul>
 									</div>
 								</div>
 							</div>
@@ -1323,8 +1353,10 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 										<?php
 											$inner_states = \app\models\States::find()->where(['!=','ID', $state->ID])->all();
 											foreach($inner_states as $inner_state) {
+												$state_next = \app\models\StatesNext::find()->where(['STATE_ID' => $state->ID, 'NEXT_STATE_ID'=>$inner_state->ID, 'DEL_TRACT_ID' => 0])->one();
+												//if($state_next) echo $state_next->NEXT_STATE_ID;
 										?>
-											<div class="checkbox"><label><input type="checkbox" class="states-change-checkbox" data-parent="<?= $state->ID; ?>" name="States[<?= $state->ID; ?>][]" value="<?= $inner_state->ID; ?>"> <?= $inner_state->STATE_NAME ?></label></div>
+											<div class="checkbox"><label><input type="checkbox" <?php if($state_next) { ?>checked<?php } ?> class="states-change-checkbox" data-parent="<?= $state->ID; ?>" name="States[<?= $state->ID; ?>][]" value="<?= $inner_state->ID; ?>"> <?= $inner_state->STATE_NAME ?></label></div>
 										<?php
 											}
 										?>
