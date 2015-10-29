@@ -178,7 +178,7 @@ class SiteController extends Controller
         $query = new \yii\db\Query;
         $query->select('NAIMDOLG AS name, IDDOLG AS id')
                 ->from('STIGIT.V_F_SHRAS')
-                ->limit(20)
+                //->limit(20)
                 ->orderBy('NAIMDOLG asc');
         $command = $query->createCommand();
         $v_f_shras = $command->queryAll();
@@ -186,7 +186,7 @@ class SiteController extends Controller
         $query = new \yii\db\Query;
         $query->select('TN AS tn, FIO AS fio')
                 ->from('STIGIT.V_F_PERS')
-                ->limit(20)
+                //->limit(20)
                 ->orderBy('FIO asc');
         $command = $query->createCommand();
         $v_f_pers = $command->queryAll();
@@ -1330,7 +1330,7 @@ class SiteController extends Controller
     }
 
 
-    public function actionSetpermissions() {
+    public function actionSetpermissionsactions() {
 
         if (Yii::$app->request->isAjax) {
             $v_f_shra = $_POST['v_f_shra'];
@@ -1338,7 +1338,10 @@ class SiteController extends Controller
 
             $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
-            echo $v_f_shra.'-'.$action_id;
+            //echo $v_f_shra.'-'.$action_id;
+            //$permissions = new \app\models\Permissions;
+
+
 
             
         }

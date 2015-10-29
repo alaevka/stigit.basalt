@@ -277,7 +277,7 @@ form[role=login] .form-control + .glyphicon {
     opacity: 0.3;
 }
 
-
+/*
 #v_f_tree-v_f_shras, #v_f_tree-v_f_pers {
     padding: 15px 0;
     height: 200px; overflow-y: auto; overflow-x: hidden;
@@ -313,12 +313,12 @@ body.dragging, body.dragging * {
 
 ol.permissions-actions li.placeholder, ol.permissions-states li.placeholder {
   position: relative;
-  /** More li styles **/
+  * More li styles *
 }
 ol.permissions-actions li.placeholder:before, ol.permissions-states li.placeholder:before {
   position: absolute;
   /** Define arrowhead **/
-}
+/*}
 ul.simple_with_no_drag, ul.simple_with_no_drag-states {
     background-color: #eeeeee;
     padding: 15px 5px;
@@ -355,4 +355,14 @@ span.not-active {
 }
 .action-remove {
     cursor: pointer;
+}*/
+
+.jstree-anchor {
+    font-size: 11px;
+}
+#jstree-v_f_shras {
+    height: 250px; overflow-y: auto; overflow-x: hidden;
+}
+#jstree-v_f_pers {
+    height: 250px; overflow-y: auto; overflow-x: hidden;
 }

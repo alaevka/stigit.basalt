@@ -25,6 +25,7 @@ class AppAsset extends AssetBundle
         'css/select2.css',
         'css/bootstrap-tokenfield.min.css',
         'css/jquery.tree.min.css',
+        'css/jstree.min.css',
         'css/fileinput.css',
         'css/site.css',
     ];
@@ -34,6 +35,7 @@ class AppAsset extends AssetBundle
         'js/jgrowl.min.js',
         'js/bootstrap-tokenfield.min.js',
         'js/jquery.tree.min.js',
+        'js/jstree.min.js',
         'js/bootbox.min.js',
         'js/fileinput.min.js',
         'js/fileinput_locale_ru.js',

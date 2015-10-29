@@ -1171,50 +1171,35 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	</div>
 </div>
 
-<div class="modal fade" id="permissions-modal" role="dialog" aria-labelledby="permissions-modal-label">
+<div class="modal fade" id="permissions-form-modal" role="dialog" aria-labelledby="permissions-modal-label">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel-permissions">Настройка прав доступа</h4>
+				<h4 class="modal-title" id="myModalLabel-permissions-form">Настройка прав доступа</h4>
 			</div>
-			<div class="modal-body" id="permissions-modal-body">
+			<div class="modal-body" id="permissions-form-modal-body">
 				<div class="row">
 					<div class="col-md-6">
 						
-						<div class="panel-group" id="accordion-permisssions-left" role="tablist" aria-multiselectable="true">
+						<div class="panel-group" id="accordion-permissions-form-form-left" role="tablist" aria-multiselectable="true">
 							
 							<div class="panel panel-default">
-								<div class="panel-heading" role="tab" id="permisssions-left-headingOne">
+								<div class="panel-heading" role="tab" id="permissions-form-left-headingOne">
 									<h4 class="panel-title">
-										<a role="button" data-toggle="collapse" data-parent="#permisssions-left-headingOne" href="#collapse-permisssions-left-One" aria-expanded="false" aria-controls="collapse-permisssions-left-One">
+										<a role="button" data-toggle="collapse" data-parent="#permissions-form-left-headingOne" href="#collapse-permissions-form-left-One" aria-expanded="false" aria-controls="collapse-permissions-form-left-One">
 											Должности
 										</a>
 									</h4>
 								</div>
-								<div id="collapse-permisssions-left-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-left-headingOne">
-									<div class="panel-body" id="v_f_tree-v_f_shras">
-										<ul style="margin-left: 0px;">
+								<div id="collapse-permissions-form-left-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permissions-form-left-headingOne">
+									<div class="panel-body" id="jstree-v_f_shras">
+										<ul>
 											<?php 
 												foreach($v_f_shras as $v_f_shra) {
 											?>
-											<li class="collapsed">
-												<span><?= $v_f_shra['name']; ?></span>
-												<ul>
-													<li><span>Доступные действия</span>
-														<ul class="simple_with_no_drag" data-id="<?= $v_f_shra['id'] ?>" id="v_f_srha_<?= $v_f_shra['id'] ?>">
-																						
-														</ul>
-													</li>
-													<li>
-														<span>Доступные состояния</span>
-														<ul class="simple_with_no_drag-states" data-id="<?= $v_f_shra['id'] ?>" id="v_f_srha_<?= $v_f_shra['id'] ?>">
-																						
-														</ul>
-													</li>
-												</ul>
+											<li data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_shra['name']; ?>
 												
-
 											</li>
 											<?php } ?>
 										</ul>
@@ -1223,36 +1208,20 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							</div>
 
 							<div class="panel panel-default">
-								<div class="panel-heading" role="tab" id="permisssions-left-headingTwo">
+								<div class="panel-heading" role="tab" id="permissions-form-left-headingTwo">
 									<h4 class="panel-title">
-										<a role="button" data-toggle="collapse" data-parent="#permisssions-left-headingTwo" href="#collapse-permisssions-left-Two" aria-expanded="false" aria-controls="collapse-permisssions-left-Two">
+										<a role="button" data-toggle="collapse" data-parent="#permissions-form-left-headingTwo" href="#collapse-permissions-form-left-Two" aria-expanded="false" aria-controls="collapse-permissions-form-left-Two">
 											Сотрудники
 										</a>
 									</h4>
 								</div>
-								<div id="collapse-permisssions-left-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-left-headingTwo">
-									<div class="panel-body" id="v_f_tree-v_f_pers">
-										<ul style="margin-left: 0px;">
+								<div id="collapse-permissions-form-left-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permissions-form-left-headingTwo">
+									<div class="panel-body" id="jstree-v_f_pers">
+										<ul>
 											<?php 
 												foreach($v_f_pers as $v_f_per) {
 											?>
-											<li class="collapsed">
-												<span><?= $v_f_per['fio']; ?></span>
-												
-												<ul>
-													<li><span>Доступные действия</span>
-														<ul class="simple_with_no_drag" data-id="<?= $v_f_per['tn'] ?>" id="v_f_pers_<?= $v_f_per['tn'] ?>">
-																						
-														</ul>
-													</li>
-													<li>
-														<span>Доступные состояния</span>
-														<ul class="simple_with_no_drag-states" data-id="<?= $v_f_per['tn'] ?>" id="v_f_pers_<?= $v_f_per['tn'] ?>">
-																						
-														</ul>
-													</li>
-												</ul>
-											</li>
+											<li data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_per['fio']; ?></li>
 											<?php } ?>
 										</ul>
 									</div>
@@ -1264,49 +1233,47 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 					</div>
 					<div class="col-md-6">
 						
-						<div class="panel-group" id="accordion-permisssions-right" role="tablist" aria-multiselectable="true">
+						<div class="panel-group" id="accordion-permissions-form-right" role="tablist" aria-multiselectable="true">
 							
 							<div class="panel panel-default">
-								<div class="panel-heading" role="tab" id="permisssions-right-headingOne">
+								<div class="panel-heading" role="tab" id="permissions-form-right-headingOne">
 									<h4 class="panel-title">
-										<a role="button" data-toggle="collapse" data-parent="#permisssions-right-headingOne" href="#collapse-permisssions-right-One" aria-expanded="false" aria-controls="collapse-permisssions-right-One">
+										<a role="button" data-toggle="collapse" data-parent="#permissions-form-right-headingOne" href="#collapse-permissions-form-right-One" aria-expanded="false" aria-controls="collapse-permissions-form-right-One">
 											Действия
 										</a>
 									</h4>
 								</div>
-								<div id="collapse-permisssions-right-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-right-headingOne">
-									<div class="panel-body">
-										<ol class="permissions-actions">
+								<div id="collapse-permissions-form-right-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permissions-form-right-headingOne">
+									<div class="panel-body" id="jstree-actions">
+										<ul>
 											<?php 
 												foreach($actions as $action) {
 											?>
-											<li id="action<?= $action->ID; ?>" data-id="<?= $action->ID; ?>"><?= $action->ACTION_DESC; ?></li>
+											<li data-jstree='{"icon":"glyphicon glyphicon-cog"}' data-id="<?= $action->ID; ?>"><?= $action->ACTION_DESC; ?></li>
 											<?php } ?>
-										</ol>
+										</ul>
 									</div>
 								</div>
 							</div>
 
 							<div class="panel panel-default">
-								<div class="panel-heading" role="tab" id="permisssions-right-headingTwo">
+								<div class="panel-heading" role="tab" id="permissions-form-right-headingTwo">
 									<h4 class="panel-title">
-										<a role="button" data-toggle="collapse" data-parent="#permisssions-right-headingTwo" href="#collapse-permisssions-right-Two" aria-expanded="false" aria-controls="collapse-permisssions-right-Two">
+										<a role="button" data-toggle="collapse" data-parent="#permissions-form-right-headingTwo" href="#collapse-permissions-form-right-Two" aria-expanded="false" aria-controls="collapse-permissions-form-right-Two">
 											Состояния
 										</a>
 									</h4>
 								</div>
-								<div id="collapse-permisssions-right-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permisssions-right-headingTwo">
-									<div class="panel-body">
-										<ol class="permissions-states">
-										<?php
-											if($states_list) {
+								<div id="collapse-permissions-form-right-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permissions-form-right-headingTwo">
+									<div class="panel-body" id="jstree-states">
+										<ul>
+											<?php
 												foreach($states_list as $state) {
-										?>
-											<li id="state<?= $state->ID; ?>" data-id="<?= $state->ID; ?>" style="padding-top: 5px; font-size: 11px;"><?= $state->STATE_NAME; ?></li>
-										<?php 
+											?>
+												<li data-jstree='{"icon":"glyphicon glyphicon-check"}' id="state<?= $state->ID; ?>" data-id="<?= $state->ID; ?>" style="padding-top: 5px; font-size: 11px;"><?= $state->STATE_NAME; ?></li>
+											<?php 
 												}
-											}
-										?>
+											?>
 										</ul>
 									</div>
 								</div>
@@ -1323,6 +1290,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 		</div>
 	</div>
 </div>
+
 
 <div class="modal fade" id="states-change-modal" role="dialog" aria-labelledby="states-change-modal-label">
 	<div class="modal-dialog" role="document">

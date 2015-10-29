@@ -318,195 +318,33 @@ $(document).ready(function(){
 
 	//permissions modal
 	$("#permissions-link").click(function(){
-		$("#permissions-modal").modal();
+		$("#permissions-form-modal").modal();
 		return false;
 	});
 
-	$('#v_f_tree-v_f_shras, #v_f_tree-v_f_pers').tree({checkbox: false, expandUiIcon: 'ui-icon-minus', collapseUiIcon: 'ui-icon-plus'});
+	//------------------------------------------------------------------------------------------------
 
-		
-	$("ol.permissions-actions").sortable({
-		group: 'no-drop',
-		drop: false,
-		nested: false,
-		itemSelector: 'li',
-	 	// pullPlaceholder: false,
-	 	placeholderClass: 'sortable-placeholder',
-	 	placeholder: '<li class="sortable-placeholder"></li>',
-		onDragStart: function ($item, container, _super) {
-		    // Duplicate items of the no drop area
-		    if(!container.options.drop) 
-		    	$item.clone().insertAfter($item);
-		    	_super($item, container);
-		},
-		// isValidTarget: function ($item, container) {
-		//   return true
-		// }
-		onDrop: function ($item, container, _super, event) {
+	$("#jstree-v_f_shras").jstree();
+	$("#jstree-v_f_pers").jstree();
+	$("#jstree-actions").jstree({
+		"plugins" : [
+		    "dnd",
+		]
 
-			var v_f_shra = $item.context['parentElement']['id']
-			var action_id = $item.context.id
-			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span>&nbsp;<span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span>&nbsp;<span alt="удалить" title="удалить" data-id="'+v_f_shra+'" class="glyphicon glyphicon-remove action-remove"></span></div></div>'
-			
-			//init action for delete icon
-			$(".action-remove").click(function(){
-				var data_id = $(this).attr('data-id');
-				$(this).closest('li').remove();
-			});
-
-			//check if already exist
-			if(container.items.length > 0) {
-				for(var i=0; i< container.items.length; i++) {
-					if(container.items[i]['id'] == action_id) {
-						console.log('isset as this');
-						$item.remove()
-					} else {
-						//store in db
-						$.ajax({
-				        	type: "POST",
-				        	dataType: 'json',
-				        	url: "index.php?r=site/setpermissions",
-				        	data: "v_f_shra="+v_f_shra+"&action_id="+action_id,
-				        	success: function(data,status){
-				        		
-				        	}
-				        });
-					}
-				}
-			}
-
-		  	$item.removeClass(container.group.options.draggedClass).removeAttr("style")
-		  	$("body").removeClass(container.group.options.bodyClass)
-		}
 	});
-
-	$("ul.simple_with_no_drag").sortable({
-	  	group: 'no-drop',
-	  	drag: false,
-	  	nested: false,
+	$("#jstree-states").jstree({
+		"plugins" : [
+		    "dnd",
+		]
 
 	});
 
-	
+	//------------------------------------------------------------------------------------------------
 
-
-	//for states
-
-	$("ol.permissions-states").sortable({
-		group: 'no-drop-states',
-		drop: false,
-		nested: false,
-		itemSelector: 'li',
-	 	// pullPlaceholder: false,
-	 	placeholderClass: 'sortable-placeholder',
-	 	placeholder: '<li class="sortable-placeholder"></li>',
-		onDragStart: function ($item, container, _super) {
-		    // Duplicate items of the no drop area
-		    if(!container.options.drop) 
-		    	$item.clone().insertAfter($item);
-		    	_super($item, container);
-		},
-		// isValidTarget: function ($item, container) {
-		//   return true
-		// }
-		onDrop: function ($item, container, _super, event) {
-			//var dataToSend = $("ul.simple_with_no_drag").sortable("serialize").get();
-			var v_f_shra = $item.context['parentElement']['id']
-			var state_id = $item.context.id
-			$item.context.innerHTML = '<div class="selected-action-element row"><div class="col-xs-9">'+$item.context.innerHTML+'</div><div class="col-xs-3"><a href=""><span alt="чтение" title="чтение" class="glyphicon glyphicon-eye-open not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="запись" title="запись" class="glyphicon glyphicon-floppy-save not-active" aria-hidden="true"></span></a>&nbsp;<a href=""><span alt="удалить" title="удалить" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div></div>'
-			
-			//console.log($item);
-			//check if already exist
-			if(container.items.length > 0) {
-				for(var i=0; i< container.items.length; i++) {
-					if(container.items[i]['id'] == state_id) {
-						console.log('isset as this');
-						$item.remove()
-					} else {
-						//store in db
-						// $.ajax({
-				  //       	type: "POST",
-				  //       	dataType: 'json',
-				  //       	url: "index.php?r=site/setpermissions",
-				  //       	data: "v_f_shra="+v_f_shra+"&action_id="+action_id,
-				  //       	success: function(data,status){
-				        		
-				  //       	}
-				  //       });
-					}
-				}
-			}
-
-		  	$item.removeClass(container.group.options.draggedClass).removeAttr("style")
-		  	$("body").removeClass(container.group.options.bodyClass)
-		}
-	});
-
-	$("ul.simple_with_no_drag-states").sortable({
-	  	group: 'no-drop-states',
-	  	drag: false,
-	  	nested: false,
-
-	});
-
-
-
-	// var selectedClass = 'highlight-action',
- //        clickDelay = 600,
- //        // click time (milliseconds)
- //        lastClick, diffClick; // timestamps
-
-
-	// $("#draggable-actions li")
- //    // Script to deferentiate a click from a mousedown for drag event
- //    .bind('mousedown mouseup', function(e) {
- //        if (e.type == "mousedown") {
- //            lastClick = e.timeStamp; // get mousedown time
- //        } else {
- //            diffClick = e.timeStamp - lastClick;
- //            if (diffClick < clickDelay) {
- //                // add selected class to group draggable objects
- //                $(this).toggleClass(selectedClass);
- //            }
- //        }
- //    })
- //    .draggable({
- //        revertDuration: 10,
- //        // grouped items animate separately, so leave this number low
- //        containment: '#permissions-modal-body',
- //        start: function(e, ui) {
- //            ui.helper.addClass(selectedClass);
- //        },
- //        stop: function(e, ui) {
- //            // reset group positions
- //            $('.' + selectedClass).css({
- //                top: 0,
- //                left: 0
- //            });
- //        },
- //        drag: function(e, ui) {
- //            // set selected group position to main dragged object
- //            // this works because the position is relative to the starting position
- //            $('.' + selectedClass).css({
- //                top: ui.position.top,
- //                left: ui.position.left
- //            });
- //        }
- //    });
-
- //    $(".droppable-actions").droppable({
- //        drop: function(e, ui) {
- //            $(ui.draggable).clone().appendTo($(this)).removeClass(selectedClass).css({
- //                top: 0,
- //                left: 0
- //            });
-
- //        }
- //    });
 	
 
 	//for develop
-	$("#permissions-modal").modal();
+	$("#permissions-form-modal").modal();
 
 });
 
