@@ -324,14 +324,43 @@ $(document).ready(function(){
 
 	//------------------------------------------------------------------------------------------------
 
-	$("#jstree-v_f_shras").jstree();
+	$("#jstree-v_f_shras").jstree({
+		"core": {
+            "check_callback": function(operation, node, node_parent, node_position, more) {
+                    // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
+                    // in case of 'rename_node' node_position is filled with the new node name
+
+                    //console.log(node_parent.parents.length);
+
+                    if(more && more.dnd && (operation === 'move_node' || operation === 'copy_node') && node_parent.id === '#' && parseInt(node_parent.parents.length) > 1) {
+					    return false;
+					}
+					return true;
+
+                    // if (operation === "move_node") {
+                    //     return node_parent.original.type === "Parent"; //only allow dropping inside nodes of type 'Parent'
+                    // }
+                    // return true;  //allow all other operations
+                }
+        },
+        "plugins" : [
+		    "dnd"
+		],
+		"dnd" : {
+            "is_draggable" : false,
+        }    
+
+	});
 	$("#jstree-v_f_pers").jstree();
 	$("#jstree-actions").jstree({
 		"plugins" : [
-		    "dnd",
-		]
+		    "dnd"
+		],
 
 	});
+
+
+
 	$("#jstree-states").jstree({
 		"plugins" : [
 		    "dnd",

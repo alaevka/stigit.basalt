@@ -1198,7 +1198,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<?php 
 												foreach($v_f_shras as $v_f_shra) {
 											?>
-											<li data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_shra['name']; ?>
+											<li class="v_f_shra_target" data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_shra['name']; ?>
 												
 											</li>
 											<?php } ?>
