@@ -1200,7 +1200,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											?>
 											<li class="v_f_shra_target" data-id="<?= $v_f_shra['id']; ?>" data-panel="v_f_shra" data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_shra['name']; ?>
 												<?php
-													$inner_list = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 1, 'SUBJECT_ID' => $v_f_shra['id']])->all();
+													$inner_list = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 1, 'SUBJECT_ID' => $v_f_shra['id'], 'DEL_TRACT_ID' => 0])->all();
 													if($inner_list) {
 														echo '<ul>';
 														foreach($inner_list as $li) {
@@ -1239,7 +1239,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											?>
 											<li data-jstree='{"icon":"glyphicon glyphicon-user"}' data-id="<?= $v_f_per['tn']; ?>" data-panel="v_f_pers"><?= $v_f_per['fio']; ?>
 												<?php
-													$inner_list = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 2, 'SUBJECT_ID' => $v_f_per['tn']])->all();
+													$inner_list = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 2, 'SUBJECT_ID' => $v_f_per['tn'], 'DEL_TRACT_ID' => 0])->all();
 													if($inner_list) {
 														echo '<ul>';
 														foreach($inner_list as $li) {
@@ -1270,12 +1270,13 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						<div class="panel-group" id="accordion-permissions-form-right" role="tablist" aria-multiselectable="true">
 							
 							<div class="panel panel-default">
-								<div class="panel-heading" role="tab" id="permissions-form-right-headingOne">
+								<div class="panel-heading" role="tab" id="permissions-form-right-headingOne" style="position: relative;">
 									<h4 class="panel-title">
 										<a role="button" data-toggle="collapse" data-parent="#permissions-form-right-headingOne" href="#collapse-permissions-form-right-One" aria-expanded="false" aria-controls="collapse-permissions-form-right-One">
 											Действия
 										</a>
 									</h4>
+									<div id="permissions-header-actions-filter"><span><i class="glyphicon glyphicon-search"></i> фильтр</span></div>
 								</div>
 								<div id="collapse-permissions-form-right-One" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permissions-form-right-headingOne">
 									<div class="panel-body" id="jstree-actions">
@@ -1291,12 +1292,13 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							</div>
 
 							<div class="panel panel-default">
-								<div class="panel-heading" role="tab" id="permissions-form-right-headingTwo">
+								<div class="panel-heading" role="tab" id="permissions-form-right-headingTwo" style="position: relative;">
 									<h4 class="panel-title">
 										<a role="button" data-toggle="collapse" data-parent="#permissions-form-right-headingTwo" href="#collapse-permissions-form-right-Two" aria-expanded="false" aria-controls="collapse-permissions-form-right-Two">
 											Состояния
 										</a>
 									</h4>
+									<div id="permissions-header-states-filter"><span><i class="glyphicon glyphicon-search"></i> фильтр</span></div>
 								</div>
 								<div id="collapse-permissions-form-right-Two" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="permissions-form-right-headingTwo">
 									<div class="panel-body" id="jstree-states">

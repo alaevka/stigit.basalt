@@ -366,3 +366,19 @@ span.not-active {
 #jstree-v_f_pers {
     height: 250px; overflow-y: auto; overflow-x: hidden;
 }
+.vakata-context { z-index:10052 !important; }
+
+.vakata-context, .vakata-context ul {
+    padding: 0 2px;
+    font-size: 11px;
+}
+#permissions-header-actions-filter span, #permissions-header-states-filter span {
+    cursor: pointer;
+    padding: 3px;
+    z-index:10052;
+    position: absolute;
+    top: 6px;
+    right: 0px;
+    text-decoration: underline;
+    font-size: 11px;
+}

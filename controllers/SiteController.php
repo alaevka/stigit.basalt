@@ -1372,6 +1372,30 @@ class SiteController extends Controller
 
     }
 
+
+    public function actionDeletepermissions() {
+
+        if (Yii::$app->request->isAjax) {
+            $permission_id = $_POST['permission_id'];
+            
+            $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+
+            $permissions = \app\models\Permissions::findOne($permission_id);
+            $permissions->DEL_TRACT_ID = $transactions->ID;
+
+            if($permissions->save()) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 0];
+            } else {
+                //print_r($permissions->errors); die();
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 1];
+            }
+            
+        }
+
+    }
+
     // public function actionTest() {
     //     $inner_list = \app\models\Permissions::find()->with(['permstatestype'])->where(['SUBJECT_TYPE' => 1, 'SUBJECT_ID' => 76])->all();
 

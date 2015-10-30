@@ -324,19 +324,78 @@ $(document).ready(function(){
 
 	//------------------------------------------------------------------------------------------------
 
+	$("#permissions-header-actions-filter span").click(function(){
+		
+		if($("#jstree-v_f_shras").jstree("get_selected").length > 0) {
+			//console.log('view for shra');
+			var selected_object = $("#jstree-v_f_shras").jstree(true).get_selected('full',true);
+			if(selected_object[0].parent == '#') {
+				var selected_object_id = selected_object[0].data.id;
+				
+			}
+		} else if($("#jstree-v_f_pers").jstree("get_selected").length > 0) {
+			//console.log('view for pers');
+		} 
+		return false;
+	});
+
 	$("#jstree-v_f_shras").jstree({
-		"plugins" : [
-		    "dnd"
-		],
 		"dnd" : {
             "is_draggable" : false,
         }, 
+        "contextmenu": {
+	        "items": function ($node) {
+	        	var tree = $("#jstree-v_f_shras").jstree(true);
+	            return {
+	                // "Create": {
+	                //     "label": "Create a new employee",
+	                //     "action": function (obj) {
+	                //         this.create(obj);
+	                //     }
+	                // },
+	                // "Rename": {
+	                //     "label": "Rename an employee",
+	                //     "action": function (obj) {
+	                //         this.rename(obj);
+	                //     }
+	                // },
+	                "Delete": {
+	                    "label": "Удалить",
+	                    "icon " : 'delete-icon',
+	                    "_disabled" : function (obj) { 
+	                    	if($node.parent == '#') {
+		                    	return true;
+		                    } else {
+		                    	return false;
+		                    }
+
+		                },
+	                    "action": function (obj) {
+	            			
+	            			$.ajax({
+					        	type: "POST",
+					        	dataType: 'json',
+					        	url: "index.php?r=site/deletepermissions",
+					        	data: "permission_id="+$node.id,
+					        	success: function(data_ajax,status){
+					        		tree.delete_node($node);
+					        	}
+					        });
+	                        
+	                    }
+	                }
+	            };
+	        }
+	    },
+        // "sort": function (a, b) {
+        // 	return -1;
+        // },
 		"core": {
             "check_callback": function(operation, node, node_parent, node_position, more) {
                     // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
                     // in case of 'rename_node' node_position is filled with the new node name
                    
-                   	console.log(node);
+                   	//console.log(node);
 
                     var isset_children = 'true';
                     for (var i = 0; i <= node_parent.children.length; i++) {
@@ -361,6 +420,10 @@ $(document).ready(function(){
                     //  return true;  //allow all other operations
                 }
         },
+        "plugins" : [
+		    "dnd",
+		    "contextmenu",
+		],
 	}).on("copy_node.jstree", function (e, data) {
 	  	//store in database
 	  	//console.log($('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]));
@@ -381,15 +444,64 @@ $(document).ready(function(){
         	}
         });
 	  	
-	});
+	}).on("select_node.jstree", function(evt, data){
+        $('#jstree-v_f_pers').jstree("deselect_all");   
+        $('#jstree-actions').jstree("deselect_all");   
+        $('#jstree-states').jstree("deselect_all");        
+    });
 	
 	$("#jstree-v_f_pers").jstree({
 		"plugins" : [
-		    "dnd"
+		    "dnd",
+		    "contextmenu"
 		],
 		"dnd" : {
             "is_draggable" : false,
         }, 
+        "contextmenu": {
+	        "items": function ($node) {
+	        	var tree = $("#jstree-v_f_pers").jstree(true);
+	            return {
+	                // "Create": {
+	                //     "label": "Create a new employee",
+	                //     "action": function (obj) {
+	                //         this.create(obj);
+	                //     }
+	                // },
+	                // "Rename": {
+	                //     "label": "Rename an employee",
+	                //     "action": function (obj) {
+	                //         this.rename(obj);
+	                //     }
+	                // },
+	                "Delete": {
+	                    "label": "Удалить",
+	                    "icon " : 'delete-icon',
+	                    "_disabled" : function (obj) { 
+	                    	if($node.parent == '#') {
+		                    	return true;
+		                    } else {
+		                    	return false;
+		                    }
+
+		                },
+	                    "action": function (obj) {
+	            			
+	            			$.ajax({
+					        	type: "POST",
+					        	dataType: 'json',
+					        	url: "index.php?r=site/deletepermissions",
+					        	data: "permission_id="+$node.id,
+					        	success: function(data_ajax,status){
+					        		tree.delete_node($node);
+					        	}
+					        });
+	                        
+	                    }
+	                }
+	            };
+	        }
+	    },
 		"core": {
             "check_callback": function(operation, node, node_parent, node_position, more) {
                     // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
@@ -427,7 +539,11 @@ $(document).ready(function(){
         	}
         });
 	  	
-	});
+	}).on("select_node.jstree", function(evt, data){
+        $('#jstree-v_f_shras').jstree("deselect_all"); 
+        $('#jstree-actions').jstree("deselect_all");   
+        $('#jstree-states').jstree("deselect_all");        
+    });
 
 
 	$("#jstree-actions").jstree({
