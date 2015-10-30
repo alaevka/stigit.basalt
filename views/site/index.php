@@ -1198,8 +1198,24 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<?php 
 												foreach($v_f_shras as $v_f_shra) {
 											?>
-											<li class="v_f_shra_target" data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_shra['name']; ?>
+											<li class="v_f_shra_target" data-id="<?= $v_f_shra['id']; ?>" data-panel="v_f_shra" data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_shra['name']; ?>
+												<?php
+													$inner_list = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 1, 'SUBJECT_ID' => $v_f_shra['id']])->all();
+													if($inner_list) {
+														echo '<ul>';
+														foreach($inner_list as $li) {
+															if($li->PERM_TYPE == 1) {
+																$result_li = \app\models\Actions::findOne($li->ACTION_ID);
+																echo '<li data-jstree=\'{"icon":"glyphicon glyphicon-cog"}\' id="'.$li->ID.'" data-id="'.$li->ID.'">'.$result_li->ACTION_DESC.'</li>';
+															} elseif($li->PERM_TYPE == 2) {
+																$result_li = \app\models\States::findOne($li->ACTION_ID);
+																echo '<li data-jstree=\'{"icon":"glyphicon glyphicon-check"}\' id="'.$li->ID.'" data-id="'.$li->ID.'">'.$result_li->STATE_NAME.'</li>';
+															}
 												
+														}
+														echo '</ul>';
+													}
+												?>
 											</li>
 											<?php } ?>
 										</ul>
@@ -1221,7 +1237,25 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<?php 
 												foreach($v_f_pers as $v_f_per) {
 											?>
-											<li data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_per['fio']; ?></li>
+											<li data-jstree='{"icon":"glyphicon glyphicon-user"}' data-id="<?= $v_f_per['tn']; ?>" data-panel="v_f_pers"><?= $v_f_per['fio']; ?>
+												<?php
+													$inner_list = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 2, 'SUBJECT_ID' => $v_f_per['tn']])->all();
+													if($inner_list) {
+														echo '<ul>';
+														foreach($inner_list as $li) {
+															if($li->PERM_TYPE == 1) {
+																$result_li = \app\models\Actions::findOne($li->ACTION_ID);
+																echo '<li data-jstree=\'{"icon":"glyphicon glyphicon-cog"}\' id="'.$li->ID.'" data-id="'.$li->ID.'">'.$result_li->ACTION_DESC.'</li>';
+															} elseif($li->PERM_TYPE == 2) {
+																$result_li = \app\models\States::findOne($li->ACTION_ID);
+																echo '<li data-jstree=\'{"icon":"glyphicon glyphicon-check"}\' id="'.$li->ID.'" data-id="'.$li->ID.'">'.$result_li->STATE_NAME.'</li>';
+															}
+												
+														}
+														echo '</ul>';
+													}
+												?>
+											</li>
 											<?php } ?>
 										</ul>
 									</div>
@@ -1249,7 +1283,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<?php 
 												foreach($actions as $action) {
 											?>
-											<li data-jstree='{"icon":"glyphicon glyphicon-cog"}' data-id="<?= $action->ID; ?>"><?= $action->ACTION_DESC; ?></li>
+											<li data-jstree='{"icon":"glyphicon glyphicon-cog"}' data-panel="actions" data-id="<?= $action->ID; ?>"><?= $action->ACTION_DESC; ?></li>
 											<?php } ?>
 										</ul>
 									</div>
@@ -1270,7 +1304,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<?php
 												foreach($states_list as $state) {
 											?>
-												<li data-jstree='{"icon":"glyphicon glyphicon-check"}' id="state<?= $state->ID; ?>" data-id="<?= $state->ID; ?>" style="padding-top: 5px; font-size: 11px;"><?= $state->STATE_NAME; ?></li>
+												<li data-jstree='{"icon":"glyphicon glyphicon-check"}' data-panel="states" id="state<?= $state->ID; ?>" data-id="<?= $state->ID; ?>" style="padding-top: 5px; font-size: 11px;"><?= $state->STATE_NAME; ?></li>
 											<?php 
 												}
 											?>

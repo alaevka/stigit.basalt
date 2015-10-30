@@ -325,38 +325,118 @@ $(document).ready(function(){
 	//------------------------------------------------------------------------------------------------
 
 	$("#jstree-v_f_shras").jstree({
+		"plugins" : [
+		    "dnd"
+		],
+		"dnd" : {
+            "is_draggable" : false,
+        }, 
 		"core": {
             "check_callback": function(operation, node, node_parent, node_position, more) {
                     // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
                     // in case of 'rename_node' node_position is filled with the new node name
+                   
+                   	console.log(node);
 
-                    //console.log(node_parent.parents.length);
+                    var isset_children = 'true';
+                    for (var i = 0; i <= node_parent.children.length; i++) {
+                    	if($('#jstree-v_f_shras').jstree(true).get_node(node_parent.children[i]).text === node.text) {
+                    		isset_children = 'false';
+                    	} 
+                    }
 
-                    if(more && more.dnd && (operation === 'move_node' || operation === 'copy_node') && node_parent.id === '#' && parseInt(node_parent.parents.length) > 1) {
+                    //console.log($('#jstree-v_f_shras').jstree(true).get_node(node_parent.children[0]));
+
+
+                    if(more && more.dnd && (operation === 'move_node' || operation === 'copy_node') && (node_parent.id === '#' || node_parent.parents.length != 1 || isset_children === 'false' )) {
+					    
+
 					    return false;
 					}
 					return true;
 
                     // if (operation === "move_node") {
-                    //     return node_parent.original.type === "Parent"; //only allow dropping inside nodes of type 'Parent'
+                    //      return node_parent.original.type === "Parent"; //only allow dropping inside nodes of type 'Parent'
                     // }
-                    // return true;  //allow all other operations
+                    //  return true;  //allow all other operations
                 }
         },
-        "plugins" : [
+	}).on("copy_node.jstree", function (e, data) {
+	  	//store in database
+	  	//console.log($('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]));
+
+	  	var parent_id = $('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]).data.id;
+	  	var parent_type = $('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]).data.panel;
+	  	var original_id = data.original.data.id;
+	  	var original_type = data.original.data.panel;
+
+	  	$.ajax({
+        	type: "POST",
+        	dataType: 'json',
+        	url: "index.php?r=site/setpermissions",
+        	data: "parent_id="+parent_id+"&parent_type="+parent_type+"&original_id="+original_id+"&original_type="+original_type,
+        	success: function(data_ajax,status){
+        		//console.log(data_ajax.inserted_id);
+        		$('#jstree-v_f_shras').jstree(true).set_id(data.node, data_ajax.inserted_id);
+        	}
+        });
+	  	
+	});
+	
+	$("#jstree-v_f_pers").jstree({
+		"plugins" : [
 		    "dnd"
 		],
 		"dnd" : {
             "is_draggable" : false,
-        }    
+        }, 
+		"core": {
+            "check_callback": function(operation, node, node_parent, node_position, more) {
+                    // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
+                    // in case of 'rename_node' node_position is filled with the new node name
 
+                    //console.log(node_parent);
+
+                    if(more && more.dnd && (operation === 'move_node' || operation === 'copy_node') && (node_parent.id === '#' || node_parent.parents.length != 1 )) {
+					    
+
+					    return false;
+					}
+					return true;
+
+                    // if (operation === "move_node") {
+                    //      return node_parent.original.type === "Parent"; //only allow dropping inside nodes of type 'Parent'
+                    // }
+                    //  return true;  //allow all other operations
+                }
+        },
+	}).on("copy_node.jstree", function (e, data) {
+	  	//store in database
+	  	var parent_id = $('#jstree-v_f_pers').jstree(true).get_node(data.node.parents[0]).data.id;
+	  	var parent_type = $('#jstree-v_f_pers').jstree(true).get_node(data.node.parents[0]).data.panel;
+	  	var original_id = data.original.data.id;
+	  	var original_type = data.original.data.panel;
+
+	  	$.ajax({
+        	type: "POST",
+        	dataType: 'json',
+        	url: "index.php?r=site/setpermissions",
+        	data: "parent_id="+parent_id+"&parent_type="+parent_type+"&original_id="+original_id+"&original_type="+original_type,
+        	success: function(data,status){
+        		
+        	}
+        });
+	  	
 	});
-	$("#jstree-v_f_pers").jstree();
+
+
 	$("#jstree-actions").jstree({
 		"plugins" : [
 		    "dnd"
 		],
-
+		"dnd" : {
+            "always_copy" : true,
+        }, 
 	});
 
 

@@ -1330,23 +1330,58 @@ class SiteController extends Controller
     }
 
 
-    public function actionSetpermissionsactions() {
+    public function actionSetpermissions() {
 
         if (Yii::$app->request->isAjax) {
-            $v_f_shra = $_POST['v_f_shra'];
-            $action_id = $_POST['action_id'];
+            $parent_id = $_POST['parent_id'];
+            $parent_type = $_POST['parent_type'];
+            $original_id = $_POST['original_id'];
+            $original_type = $_POST['original_type'];
+
+
 
             $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
-            //echo $v_f_shra.'-'.$action_id;
-            //$permissions = new \app\models\Permissions;
+            switch($original_type) {
+                case "actions": $perm_type = 1; break;
+                case "states": $perm_type = 2; break;
+            }
 
+            switch($parent_type) {
+                case "v_f_shra": $subject_type = 1; break;
+                case "v_f_pers": $subject_type = 2; break;
+            }
 
+            $permissions = new \app\models\Permissions;
+            $permissions->SUBJECT_ID = $parent_id;
+            $permissions->SUBJECT_TYPE = $subject_type;
+            $permissions->ACTION_ID = $original_id;
+            $permissions->TRACT_ID = $transactions->ID;
+            $permissions->PERM_TYPE = $perm_type;
 
+            if($permissions->save()) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 0, 'inserted_id' => $permissions->ID];
+            } else {
+                //print_r($permissions->errors); die();
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 1];
+            }
             
         }
 
     }
+
+    // public function actionTest() {
+    //     $inner_list = \app\models\Permissions::find()->with(['permstatestype'])->where(['SUBJECT_TYPE' => 1, 'SUBJECT_ID' => 76])->all();
+
+    //     echo '<pre>';
+    //     print_r($inner_list); die();
+
+    //     return $this->render('test', [
+            
+    //     ]);
+    // }
 
     
 }
