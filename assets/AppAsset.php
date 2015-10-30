@@ -36,6 +36,8 @@ class AppAsset extends AssetBundle
         'js/bootstrap-tokenfield.min.js',
         'js/jquery.tree.min.js',
         'js/jstree.min.js',
+        'js/jstree-actions.js',
+        'js/jstree-grid.js',
         'js/bootbox.min.js',
         'js/fileinput.min.js',
         'js/fileinput_locale_ru.js',

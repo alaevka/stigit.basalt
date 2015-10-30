@@ -550,8 +550,16 @@ $(document).ready(function(){
         },
         "plugins" : [
 		    "dnd",
+		    "actions",
 		    "contextmenu",
+		    //"grid",
 		],
+		// grid: {
+		// 	columns: [
+		// 		{width: 70, header: "Должность"},
+  //       		{width: 30, header: "Действия", value: "Действия"}
+		// 	]
+		// },
 	}).on("copy_node.jstree", function (e, data) {
 	  	//store in database
 	  	//console.log($('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]));
@@ -560,6 +568,32 @@ $(document).ready(function(){
 	  	var parent_type = $('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]).data.panel;
 	  	var original_id = data.original.data.id;
 	  	var original_type = data.original.data.panel;
+
+	  	//add actions to node
+	 //  	$('#jstree-v_f_shras').jstree(true).add_action(data.node.id, {
+		//     "id": "action_read",
+		//     "class": "glyphicon glyphicon-eye-open node-actions pull-right",
+		//     "text": "",
+		//     "after": true,
+		//     "selector": "a",
+		//     "event": "click",
+		//     "callback": function(node_id, node, action_id, action_el){
+		//         console.log("callback", node_id, action_id);
+		//     }
+		// });
+		// $('#jstree-v_f_shras').jstree(true).add_action(data.node.id, {
+		//     "id": "action_write",
+		//     "class": "glyphicon glyphicon-floppy-save node-actions node-action-right-padding pull-right",
+		//     "text": "",
+		//     "after": true,
+		//     "selector": "a",
+		//     "event": "click",
+		//     "callback": function(node_id, node, action_id, action_el){
+		//         console.log("callback", node_id, action_id);
+		//     }
+		// });
+
+
 
 	  	$.ajax({
         	type: "POST",
@@ -571,6 +605,8 @@ $(document).ready(function(){
         		$('#jstree-v_f_shras').jstree(true).set_id(data.node, data_ajax.inserted_id);
         	}
         });
+
+
 	  	
 	}).on("select_node.jstree", function(evt, data){
         $('#jstree-v_f_pers').jstree("deselect_all");   
