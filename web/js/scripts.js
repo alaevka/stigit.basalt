@@ -324,17 +324,145 @@ $(document).ready(function(){
 
 	//------------------------------------------------------------------------------------------------
 
+	function isInArray(value, array) {
+	  	return array.indexOf(value) > -1;
+	}
+
+	function _showActionsNodes() {
+		$('#jstree-actions li').each(function(){
+			$(this).show();
+		});
+	}
+
+	function _showStatesNodes() {
+		$('#jstree-states li').each(function(){
+			$(this).show();
+		});
+	}
+
 	$("#permissions-header-actions-filter span").click(function(){
-		
+
+		_showActionsNodes();
+			
 		if($("#jstree-v_f_shras").jstree("get_selected").length > 0) {
 			//console.log('view for shra');
 			var selected_object = $("#jstree-v_f_shras").jstree(true).get_selected('full',true);
 			if(selected_object[0].parent == '#') {
 				var selected_object_id = selected_object[0].data.id;
-				
+
+				//get selected element nodes text
+				var selected_text_array = [];
+				for (var i = 0; i <= selected_object[0].children.length; i++) {
+					if($('#jstree-v_f_shras').jstree(true).get_node(selected_object[0].children[i]) != false) {
+						selected_text_array.push($('#jstree-v_f_shras').jstree(true).get_node(selected_object[0].children[i]).text);
+					}
+					//$("#tree").jstree(true).hide_node(treeNode);
+
+				}
+				//console.log(selected_text_array);
+				//get root actions nodes text
+				var actions_text_array = [];
+				$('#jstree-actions li').each(function(){
+				 	//actions_text_array.push($(this).children('a').text());
+				 	//console.log(selected_text_array);
+				 	if(isInArray($(this).children('a').text(), selected_text_array)) {
+				 	 	$(this).hide();
+				 	}
+				});
+				//change filter link @maybetodo
+
 			}
 		} else if($("#jstree-v_f_pers").jstree("get_selected").length > 0) {
 			//console.log('view for pers');
+			var selected_object = $("#jstree-v_f_pers").jstree(true).get_selected('full',true);
+			if(selected_object[0].parent == '#') {
+				var selected_object_id = selected_object[0].data.id;
+
+				//get selected element nodes text
+				var selected_text_array = [];
+				for (var i = 0; i <= selected_object[0].children.length; i++) {
+					if($('#jstree-v_f_pers').jstree(true).get_node(selected_object[0].children[i]) != false) {
+						selected_text_array.push($('#jstree-v_f_pers').jstree(true).get_node(selected_object[0].children[i]).text);
+					}
+					//$("#tree").jstree(true).hide_node(treeNode);
+
+				}
+				//console.log(selected_text_array);
+				//get root actions nodes text
+				var actions_text_array = [];
+				$('#jstree-actions li').each(function(){
+				 	//actions_text_array.push($(this).children('a').text());
+				 	//console.log(selected_text_array);
+				 	if(isInArray($(this).children('a').text(), selected_text_array)) {
+				 	 	$(this).hide();
+				 	}
+				});
+				//change filter link @maybetodo
+			}
+		} 
+		return false;
+	});
+
+
+	$("#permissions-header-states-filter span").click(function(){
+
+		_showStatesNodes();
+			
+		if($("#jstree-v_f_shras").jstree("get_selected").length > 0) {
+			//console.log('view for shra');
+			var selected_object = $("#jstree-v_f_shras").jstree(true).get_selected('full',true);
+			if(selected_object[0].parent == '#') {
+				var selected_object_id = selected_object[0].data.id;
+
+				//get selected element nodes text
+				var selected_text_array = [];
+				for (var i = 0; i <= selected_object[0].children.length; i++) {
+					if($('#jstree-v_f_shras').jstree(true).get_node(selected_object[0].children[i]) != false) {
+						selected_text_array.push($('#jstree-v_f_shras').jstree(true).get_node(selected_object[0].children[i]).text);
+					}
+					//$("#tree").jstree(true).hide_node(treeNode);
+
+				}
+				//console.log(selected_text_array);
+				//get root actions nodes text
+				var actions_text_array = [];
+				$('#jstree-states li').each(function(){
+				 	//actions_text_array.push($(this).children('a').text());
+				 	//console.log(selected_text_array);
+				 	if(isInArray($(this).children('a').text(), selected_text_array)) {
+				 	 	$(this).hide();
+				 	}
+				});
+				//change filter link @maybetodo
+
+			}
+		} else if($("#jstree-v_f_pers").jstree("get_selected").length > 0) {
+			//console.log('view for pers');
+			var selected_object = $("#jstree-v_f_pers").jstree(true).get_selected('full',true);
+			if(selected_object[0].parent == '#') {
+				var selected_object_id = selected_object[0].data.id;
+
+				//get selected element nodes text
+				var selected_text_array = [];
+				for (var i = 0; i <= selected_object[0].children.length; i++) {
+					if($('#jstree-v_f_pers').jstree(true).get_node(selected_object[0].children[i]) != false) {
+						selected_text_array.push($('#jstree-v_f_pers').jstree(true).get_node(selected_object[0].children[i]).text);
+					}
+					//$("#tree").jstree(true).hide_node(treeNode);
+
+				}
+				//console.log(selected_text_array);
+				//get root actions nodes text
+				var actions_text_array = [];
+				$('#jstree-states li').each(function(){
+				 	//actions_text_array.push($(this).children('a').text());
+				 	//console.log(selected_text_array);
+				 	if(isInArray($(this).children('a').text(), selected_text_array)) {
+				 	 	$(this).hide();
+				 	}
+				});
+				//change filter link @maybetodo
+			}
 		} 
 		return false;
 	});
