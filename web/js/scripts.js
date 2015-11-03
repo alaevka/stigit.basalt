@@ -550,9 +550,9 @@ $(document).ready(function(){
         },
         "plugins" : [
 		    "dnd",
-		    "actions",
+		    //"actions",
 		    "contextmenu",
-		    //"grid",
+		   // "grid",
 		],
 		// grid: {
 		// 	columns: [

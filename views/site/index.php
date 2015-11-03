@@ -1198,7 +1198,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											<?php 
 												foreach($v_f_shras as $v_f_shra) {
 											?>
-											<li class="v_f_shra_target" data-id="<?= $v_f_shra['id']; ?>" data-panel="v_f_shra" data-jstree='{"icon":"glyphicon glyphicon-user"}'><?= $v_f_shra['name']; ?>
+											<li class="v_f_shra_target" data-id="<?= $v_f_shra['id']; ?>" data-panel="v_f_shra" data-jstree='{"icon":"glyphicon glyphicon-certificate"}'><?= $v_f_shra['name']; ?>
 												<?php
 													$inner_list = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 1, 'SUBJECT_ID' => $v_f_shra['id'], 'DEL_TRACT_ID' => 0])->all();
 													if($inner_list) {
