@@ -173,27 +173,7 @@ class SiteController extends Controller
         if(!is_array($searchModel->documentation))
             $searchModel->documentation = [];
 
-        $states_list = \app\models\States::find()->all();
-
-        $query = new \yii\db\Query;
-        $query->select('NAIMDOLG AS name, IDDOLG AS id')
-                ->from('STIGIT.V_F_SHRAS')
-                //->limit(20)
-                ->orderBy('NAIMDOLG asc');
-        $command = $query->createCommand();
-        $v_f_shras = $command->queryAll();
-
-        $query = new \yii\db\Query;
-        $query->select('TN AS tn, FIO AS fio')
-                ->from('STIGIT.V_F_PERS')
-                //->limit(20)
-                ->orderBy('FIO asc');
-        $command = $query->createCommand();
-        $v_f_pers = $command->queryAll();
-
-        $actions = \app\models\Actions::find()->orderBy('ACTION_DESC asc')->all();
-
-       
+        
 
         // рендерим шаблон
         return $this->render('index', [
@@ -203,10 +183,7 @@ class SiteController extends Controller
             'model' => $model,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
-            'states_list' => $states_list,
-            'v_f_shras' => $v_f_shras,
-            'v_f_pers' => $v_f_pers,
-            'actions' => $actions,
+            
         ]);
     }
 
@@ -1396,16 +1373,29 @@ class SiteController extends Controller
 
     }
 
-    // public function actionTest() {
-    //     $inner_list = \app\models\Permissions::find()->with(['permstatestype'])->where(['SUBJECT_TYPE' => 1, 'SUBJECT_ID' => 76])->all();
+    public function actionSetpermlevel() {
 
-    //     echo '<pre>';
-    //     print_r($inner_list); die();
-
-    //     return $this->render('test', [
+        if (Yii::$app->request->isAjax) {
+            $permission_id = $_POST['permission_id'];
+            $level = $_POST['level'];
             
-    //     ]);
-    // }
+            //$transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+
+            $permissions = \app\models\Permissions::findOne($permission_id);
+            $permissions->PERM_LEVEL = $level;
+
+            if($permissions->save()) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 0];
+            } else {
+                //print_r($permissions->errors); die();
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 1];
+            }
+            
+        }
+
+    }
 
     
 }

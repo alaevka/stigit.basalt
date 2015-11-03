@@ -268,10 +268,10 @@ form[role=login] .form-control + .glyphicon {
     font-size: 11px;
 }
 #jstree-v_f_shras {
-    height: 250px; overflow-y: auto; overflow-x: hidden;
+    height: 300px; overflow-y: auto; overflow-x: hidden;
 }
 #jstree-v_f_pers {
-    height: 250px; overflow-y: auto; overflow-x: hidden;
+    height: 300px; overflow-y: auto; overflow-x: hidden;
 }
 .vakata-context { z-index:10052 !important; }
 
@@ -295,4 +295,23 @@ form[role=login] .form-control + .glyphicon {
 }
 .node-action-right-padding {
     padding-left: 5px;
+}
+.jstree-grid-header {
+    display: none;
+}
+.actions-column {
+    text-align: center;
+    font-size: 11px;
+}
+.grid-left-column {
+    width: 80%;
+}
+.action-icon-not-active {
+    color: #cccccc;
+}
+.action-icon-write, .action-icon-read {
+    cursor: pointer;
+}
+.perm-level-0 {
+    background-color: #ff0000;
 }

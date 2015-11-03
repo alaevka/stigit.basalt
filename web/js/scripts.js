@@ -315,13 +315,6 @@ $(document).ready(function(){
 		}
 	});
 		
-
-	//permissions modal
-	$("#permissions-link").click(function(){
-		$("#permissions-form-modal").modal();
-		return false;
-	});
-
 	//------------------------------------------------------------------------------------------------
 
 	function isInArray(value, array) {
@@ -348,7 +341,7 @@ $(document).ready(function(){
 			//console.log('view for shra');
 			var selected_object = $("#jstree-v_f_shras").jstree(true).get_selected('full',true);
 			if(selected_object[0].parent == '#') {
-				var selected_object_id = selected_object[0].data.id;
+				//var selected_object_id = selected_object[0].data.id;
 
 				//get selected element nodes text
 				var selected_text_array = [];
@@ -376,7 +369,7 @@ $(document).ready(function(){
 			//console.log('view for pers');
 			var selected_object = $("#jstree-v_f_pers").jstree(true).get_selected('full',true);
 			if(selected_object[0].parent == '#') {
-				var selected_object_id = selected_object[0].data.id;
+				//var selected_object_id = selected_object[0].data.id;
 
 				//get selected element nodes text
 				var selected_text_array = [];
@@ -412,7 +405,7 @@ $(document).ready(function(){
 			//console.log('view for shra');
 			var selected_object = $("#jstree-v_f_shras").jstree(true).get_selected('full',true);
 			if(selected_object[0].parent == '#') {
-				var selected_object_id = selected_object[0].data.id;
+				//var selected_object_id = selected_object[0].data.id;
 
 				//get selected element nodes text
 				var selected_text_array = [];
@@ -440,7 +433,7 @@ $(document).ready(function(){
 			//console.log('view for pers');
 			var selected_object = $("#jstree-v_f_pers").jstree(true).get_selected('full',true);
 			if(selected_object[0].parent == '#') {
-				var selected_object_id = selected_object[0].data.id;
+				//var selected_object_id = selected_object[0].data.id;
 
 				//get selected element nodes text
 				var selected_text_array = [];
@@ -467,260 +460,9 @@ $(document).ready(function(){
 		return false;
 	});
 
-	$("#jstree-v_f_shras").jstree({
-		"dnd" : {
-            "is_draggable" : false,
-        }, 
-        "contextmenu": {
-	        "items": function ($node) {
-	        	var tree = $("#jstree-v_f_shras").jstree(true);
-	            return {
-	                // "Create": {
-	                //     "label": "Create a new employee",
-	                //     "action": function (obj) {
-	                //         this.create(obj);
-	                //     }
-	                // },
-	                // "Rename": {
-	                //     "label": "Rename an employee",
-	                //     "action": function (obj) {
-	                //         this.rename(obj);
-	                //     }
-	                // },
-	                "Delete": {
-	                    "label": "Удалить",
-	                    "icon " : 'delete-icon',
-	                    "_disabled" : function (obj) { 
-	                    	if($node.parent == '#') {
-		                    	return true;
-		                    } else {
-		                    	return false;
-		                    }
 
-		                },
-	                    "action": function (obj) {
-	            			
-	            			$.ajax({
-					        	type: "POST",
-					        	dataType: 'json',
-					        	url: "index.php?r=site/deletepermissions",
-					        	data: "permission_id="+$node.id,
-					        	success: function(data_ajax,status){
-					        		tree.delete_node($node);
-					        	}
-					        });
-	                        
-	                    }
-	                }
-	            };
-	        }
-	    },
-        // "sort": function (a, b) {
-        // 	return -1;
-        // },
-		"core": {
-            "check_callback": function(operation, node, node_parent, node_position, more) {
-                    // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
-                    // in case of 'rename_node' node_position is filled with the new node name
-                   
-                   	//console.log(node);
-
-                    var isset_children = 'true';
-                    for (var i = 0; i <= node_parent.children.length; i++) {
-                    	if($('#jstree-v_f_shras').jstree(true).get_node(node_parent.children[i]).text === node.text) {
-                    		isset_children = 'false';
-                    	} 
-                    }
-
-                    //console.log($('#jstree-v_f_shras').jstree(true).get_node(node_parent.children[0]));
-
-
-                    if(more && more.dnd && (operation === 'move_node' || operation === 'copy_node') && (node_parent.id === '#' || node_parent.parents.length != 1 || isset_children === 'false' )) {
-					    
-
-					    return false;
-					}
-					return true;
-
-                    // if (operation === "move_node") {
-                    //      return node_parent.original.type === "Parent"; //only allow dropping inside nodes of type 'Parent'
-                    // }
-                    //  return true;  //allow all other operations
-                }
-        },
-        "plugins" : [
-		    "dnd",
-		    //"actions",
-		    "contextmenu",
-		   // "grid",
-		],
-		// grid: {
-		// 	columns: [
-		// 		{width: 70, header: "Должность"},
-  //       		{width: 30, header: "Действия", value: "Действия"}
-		// 	]
-		// },
-	}).on("copy_node.jstree", function (e, data) {
-	  	//store in database
-	  	//console.log($('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]));
-
-	  	var parent_id = $('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]).data.id;
-	  	var parent_type = $('#jstree-v_f_shras').jstree(true).get_node(data.node.parents[0]).data.panel;
-	  	var original_id = data.original.data.id;
-	  	var original_type = data.original.data.panel;
-
-	  	//add actions to node
-	 //  	$('#jstree-v_f_shras').jstree(true).add_action(data.node.id, {
-		//     "id": "action_read",
-		//     "class": "glyphicon glyphicon-eye-open node-actions pull-right",
-		//     "text": "",
-		//     "after": true,
-		//     "selector": "a",
-		//     "event": "click",
-		//     "callback": function(node_id, node, action_id, action_el){
-		//         console.log("callback", node_id, action_id);
-		//     }
-		// });
-		// $('#jstree-v_f_shras').jstree(true).add_action(data.node.id, {
-		//     "id": "action_write",
-		//     "class": "glyphicon glyphicon-floppy-save node-actions node-action-right-padding pull-right",
-		//     "text": "",
-		//     "after": true,
-		//     "selector": "a",
-		//     "event": "click",
-		//     "callback": function(node_id, node, action_id, action_el){
-		//         console.log("callback", node_id, action_id);
-		//     }
-		// });
-
-
-
-	  	$.ajax({
-        	type: "POST",
-        	dataType: 'json',
-        	url: "index.php?r=site/setpermissions",
-        	data: "parent_id="+parent_id+"&parent_type="+parent_type+"&original_id="+original_id+"&original_type="+original_type,
-        	success: function(data_ajax,status){
-        		//console.log(data_ajax.inserted_id);
-        		$('#jstree-v_f_shras').jstree(true).set_id(data.node, data_ajax.inserted_id);
-        	}
-        });
-
-
-	  	
-	}).on("select_node.jstree", function(evt, data){
-        $('#jstree-v_f_pers').jstree("deselect_all");   
-        $('#jstree-actions').jstree("deselect_all");   
-        $('#jstree-states').jstree("deselect_all");        
-    });
 	
-	$("#jstree-v_f_pers").jstree({
-		"plugins" : [
-		    "dnd",
-		    "contextmenu"
-		],
-		"dnd" : {
-            "is_draggable" : false,
-        }, 
-        "contextmenu": {
-	        "items": function ($node) {
-	        	var tree = $("#jstree-v_f_pers").jstree(true);
-	            return {
-	                // "Create": {
-	                //     "label": "Create a new employee",
-	                //     "action": function (obj) {
-	                //         this.create(obj);
-	                //     }
-	                // },
-	                // "Rename": {
-	                //     "label": "Rename an employee",
-	                //     "action": function (obj) {
-	                //         this.rename(obj);
-	                //     }
-	                // },
-	                "Delete": {
-	                    "label": "Удалить",
-	                    "icon " : 'delete-icon',
-	                    "_disabled" : function (obj) { 
-	                    	if($node.parent == '#') {
-		                    	return true;
-		                    } else {
-		                    	return false;
-		                    }
-
-		                },
-	                    "action": function (obj) {
-	            			
-	            			$.ajax({
-					        	type: "POST",
-					        	dataType: 'json',
-					        	url: "index.php?r=site/deletepermissions",
-					        	data: "permission_id="+$node.id,
-					        	success: function(data_ajax,status){
-					        		tree.delete_node($node);
-					        	}
-					        });
-	                        
-	                    }
-	                }
-	            };
-	        }
-	    },
-		"core": {
-            "check_callback": function(operation, node, node_parent, node_position, more) {
-                    // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
-                    // in case of 'rename_node' node_position is filled with the new node name
-
-                    //console.log(node_parent);
-
-                    if(more && more.dnd && (operation === 'move_node' || operation === 'copy_node') && (node_parent.id === '#' || node_parent.parents.length != 1 )) {
-					    
-
-					    return false;
-					}
-					return true;
-
-                    // if (operation === "move_node") {
-                    //      return node_parent.original.type === "Parent"; //only allow dropping inside nodes of type 'Parent'
-                    // }
-                    //  return true;  //allow all other operations
-                }
-        },
-	}).on("copy_node.jstree", function (e, data) {
-	  	//store in database
-	  	var parent_id = $('#jstree-v_f_pers').jstree(true).get_node(data.node.parents[0]).data.id;
-	  	var parent_type = $('#jstree-v_f_pers').jstree(true).get_node(data.node.parents[0]).data.panel;
-	  	var original_id = data.original.data.id;
-	  	var original_type = data.original.data.panel;
-
-	  	$.ajax({
-        	type: "POST",
-        	dataType: 'json',
-        	url: "index.php?r=site/setpermissions",
-        	data: "parent_id="+parent_id+"&parent_type="+parent_type+"&original_id="+original_id+"&original_type="+original_type,
-        	success: function(data,status){
-        		
-        	}
-        });
-	  	
-	}).on("select_node.jstree", function(evt, data){
-        $('#jstree-v_f_shras').jstree("deselect_all"); 
-        $('#jstree-actions').jstree("deselect_all");   
-        $('#jstree-states').jstree("deselect_all");        
-    });
-
-
-	$("#jstree-actions").jstree({
-		"plugins" : [
-		    "dnd"
-		],
-		"dnd" : {
-            "always_copy" : true,
-        }, 
-	});
-
-
-
+	
 	$("#jstree-states").jstree({
 		"plugins" : [
 		    "dnd",
@@ -733,7 +475,7 @@ $(document).ready(function(){
 	
 
 	//for develop
-	$("#permissions-form-modal").modal();
+	//$("#permissions-form-modal").modal();
 
 });
 

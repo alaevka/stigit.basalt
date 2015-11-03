@@ -58,6 +58,8 @@
 				node_id === "all" ? Object.keys(this._actions).concat('all') :
 					[node_id];
 
+
+
 			for (var i = 0; i < node_ids.length; i++) {
 				node_id = node_ids[i];
 				var actions = self._actions[node_id] || [];
@@ -141,6 +143,7 @@
 		this.redraw_node = function (obj, deep, callback, force_draw) {
 			var self = this;
 			var node_id = obj;
+			
 			var el = parent.redraw_node.call(this, obj, deep, callback, force_draw);
 			if (el) {
 				//Check if we have any specific actions for this node
