@@ -315,3 +315,6 @@ form[role=login] .form-control + .glyphicon {
 .perm-level-0 {
     background-color: #ff0000;
 }
+.inner-node-state-action {
+    font-size: 11px;
+}

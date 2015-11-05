@@ -28,6 +28,7 @@
 		 * - the selector has access to all children on nodes with leafs/children, so most probably you'd want to use :first or similar
 		 */
 		this.add_action = function (node_id, action) {
+
 			var self = this;
 			node_id = typeof node_id === Object ? node_id : [node_id];
 
@@ -79,6 +80,7 @@
 		};
 
 		this._create_action = function (node_id, action_id) {
+			
 			var self = this;
 			var action = this._get_action(node_id, action_id);
 			if (action === null) return null;
@@ -143,13 +145,15 @@
 		this.redraw_node = function (obj, deep, callback, force_draw) {
 			var self = this;
 			var node_id = obj;
-			
+
+
 			var el = parent.redraw_node.call(this, obj, deep, callback, force_draw);
 			if (el) {
 				//Check if we have any specific actions for this node
 				var actions = this._actions[node_id] || [];
 
 				for (var i = 0; i < actions.length; i++) {
+
 					var _action = self._create_action(node_id, actions[i].id);
 					self._set_action(node_id, el, _action);
 				}

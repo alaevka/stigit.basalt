@@ -59,4 +59,13 @@ class PermissionsController extends Controller
             'states_list' => $states_list,
         ]);
     }
+
+    public function actionStates()
+    {
+        $states_list = \app\models\States::find()->all();
+
+        return $this->render('states', [
+            'states_list' => $states_list
+        ]);
+    }
 }

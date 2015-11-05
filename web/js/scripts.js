@@ -270,11 +270,6 @@ $(document).ready(function(){
 	});
 	
     //states change modal
-    $("#states-change-link").click(function(){
-		$("#states-change-modal").modal();
-		return false;
-	});
-
 	function _setStateInDb(this_value, parent_value, status, object) {
 
 		$.ajax({

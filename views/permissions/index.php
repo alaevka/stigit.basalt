@@ -31,6 +31,12 @@
 								        	success: function(data_ajax, status){
 								        		$('#'+tree).jstree('get_node', node_id).li_attr['data-perm-level'] = level;
 								        		$('#'+tree).jstree(true).refresh_node(node_id);
+
+								        		var li_node_id = $('#'+tree).jstree('get_node', node_id).id;
+
+								        		$('#'+tree).find('#'+li_node_id).find('.action_read').html('read '+level);
+								        		$('#'+tree).find('#'+li_node_id).find('.action_write').html('write '+level);
+
 								        	}
 								        });
 									}
@@ -245,10 +251,10 @@
 															foreach($inner_list as $li) {
 																if($li->PERM_TYPE == 1) {
 																	$result_li = \app\models\Actions::findOne($li->ACTION_ID);
-																	echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-cog", "parent" : "v_f_shra_'.$v_f_shra['id'].'", "text" : "'.$result_li->ACTION_DESC.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'"}},';
+																	echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-cog", "parent" : "v_f_shra_'.$v_f_shra['id'].'", "text" : "'.$result_li->ACTION_DESC.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'", "class" : "inner-node-state"}},';
 																} elseif($li->PERM_TYPE == 2) {
 																	$result_li = \app\models\States::findOne($li->ACTION_ID);
-																	echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-check", "parent" : "v_f_shra_'.$v_f_shra['id'].'", "text" : "'.$result_li->STATE_NAME.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'"}},';
+																	echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-check", "parent" : "v_f_shra_'.$v_f_shra['id'].'", "text" : "'.$result_li->STATE_NAME.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'", "class" : "inner-node-state"}},';
 																}
 															}
 									        			}
@@ -287,6 +293,32 @@
 								        $('#jstree-v_f_pers').jstree("deselect_all");   
 								        $('#jstree-actions').jstree("deselect_all");   
 								        $('#jstree-states').jstree("deselect_all");        
+								    }).on("open_node.jstree", function(e, data) {
+								    	// $("#jstree-v_f_shras").jstree(true).add_action("all", {
+									    //     "id": "action_remove",
+										   //  "class": "action_remove pull-right",
+										   //  "text": "action",
+										   //  "after": true,
+										   //  "selector": "a",
+										   //  "event": "click",
+										   //  "callback": function(node_id, node, action_id, action_el){
+										   //      console.log("callback", node_id, action_id);
+										   //  }
+									    // });
+								    	//console.log('open');
+								    	$('#jstree-v_f_shras li.inner-node-state').each(function(){
+								    		if ($(this).find("i.action_read").length == 0) {
+								    			var perm_level = $(this).attr('data-perm-level');
+								    			$(this).append(' <i class="action_read pull-right inner-node-state-action">read '+perm_level+'</i> ');
+								    		}
+								    		if ($(this).find("i.action_write").length == 0) {
+								    			var perm_level = $(this).attr('data-perm-level');
+								    			$(this).append(' <i class="action_write pull-right inner-node-state-action">write '+perm_level+'</i> ');
+								    		}
+								    		
+								    		
+										    //console.log(this);
+										});
 								    });
 
 								    
