@@ -22,6 +22,26 @@
 								<div id="jstree-v_f_shras"></div>
 
 								<script type="text/javascript">
+									function _deleteNode(node, tree) {
+										var tree = $("#"+tree).jstree(true);
+										tree.delete_node(node);
+										$('#jstree-v_f_shras li.inner-node-state').each(function(){
+								    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
+								    			var perm_level = $(this).attr('data-perm-level');
+								    			if(perm_level == 0) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
+								    			} else if(perm_level == 1) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+								    			} else if(perm_level == 2) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+								    			}
+								    		}
+								    		
+										});
+									}
 									function _setPermLevel(node_id, level, tree) {
 										$.ajax({
 								        	type: "POST",
@@ -34,8 +54,18 @@
 
 								        		var li_node_id = $('#'+tree).jstree('get_node', node_id).id;
 
-								        		$('#'+tree).find('#'+li_node_id).find('.action_read').html('read '+level);
-								        		$('#'+tree).find('#'+li_node_id).find('.action_write').html('write '+level);
+								        		//$('#'+tree).find('#'+li_node_id).find('.action_read').html('read '+level);
+								        		//$('#'+tree).find('#'+li_node_id).find('.action_write').html('write '+level);
+								        		if(level == 0) {
+								        			$('#'+tree).find('#'+li_node_id).find('.action_read').css('color', "#ff0000").removeClass("glyphicon-eye-open").addClass("glyphicon-eye-close");
+								        			$('#'+tree).find('#'+li_node_id).find('.action_write').css('color', "#ff0000").removeClass("glyphicon-floppy-save").addClass("glyphicon-floppy-remove");
+								    			} else if(level == 1) {
+								    				$('#'+tree).find('#'+li_node_id).find('.action_read').css('color', "#1AC94F").removeClass("glyphicon-eye-close").addClass("glyphicon-eye-open");
+								        			$('#'+tree).find('#'+li_node_id).find('.action_write').css('color', "#ff0000").removeClass("glyphicon-floppy-save").addClass("glyphicon-floppy-remove");
+								    			} else if(level == 2) {
+								    				$('#'+tree).find('#'+li_node_id).find('.action_read').css('color', "#1AC94F").removeClass("glyphicon-eye-close").addClass("glyphicon-eye-open");
+								        			$('#'+tree).find('#'+li_node_id).find('.action_write').css('color', "#1AC94F").removeClass("glyphicon-floppy-remove").addClass("glyphicon-floppy-save");
+								    			}
 
 								        	}
 								        });
@@ -99,7 +129,8 @@
 														        	url: "index.php?r=site/deletepermissions",
 														        	data: "permission_id="+$node.id,
 														        	success: function(data_ajax,status){
-														        		tree.delete_node($node);
+														        		_deleteNode($node, 'jstree-v_f_shras');
+														        		
 														        	}
 														        });
 										                        
@@ -158,7 +189,7 @@
 														        	url: "index.php?r=site/deletepermissions",
 														        	data: "permission_id="+$node.id,
 														        	success: function(data_ajax,status){
-														        		tree.delete_node($node);
+														        		_deleteNode($node, 'jstree-v_f_shras');
 														        	}
 														        });
 										                        
@@ -217,7 +248,7 @@
 														        	url: "index.php?r=site/deletepermissions",
 														        	data: "permission_id="+$node.id,
 														        	success: function(data_ajax,status){
-														        		tree.delete_node($node);
+														        		_deleteNode($node, 'jstree-v_f_shras');
 														        	}
 														        });
 										                        
@@ -277,6 +308,23 @@
 									  	var original_id = data.original.li_attr['data-id'];
 									  	var original_type = data.original.li_attr['data-panel'];
 
+									  	$('#jstree-v_f_shras li.inner-node-state').each(function(){
+								    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
+								    			var perm_level = $(this).attr('data-perm-level');
+								    			if(perm_level == 0) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
+								    			} else if(perm_level == 1) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+								    			} else if(perm_level == 2) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+								    			}
+								    		}
+								    		
+										});
+
 									  	$.ajax({
 								        	type: "POST",
 								        	dataType: 'json',
@@ -286,6 +334,10 @@
 								        		$('#jstree-v_f_shras').jstree(true).set_id(data.node, data_ajax.inserted_id);
 								        		$('#jstree-v_f_shras').jstree('get_node', data.node).li_attr['data-perm-level'] = 1;
 								        		//$("#jstree-v_f_shras").jstree(true).refresh_node(data.node);
+
+								        		//$('#'+data_ajax.inserted_id).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    			//$('#'+data_ajax.inserted_id).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+
 								        	}
 								        });
 									})
@@ -294,30 +346,22 @@
 								        $('#jstree-actions').jstree("deselect_all");   
 								        $('#jstree-states').jstree("deselect_all");        
 								    }).on("open_node.jstree", function(e, data) {
-								    	// $("#jstree-v_f_shras").jstree(true).add_action("all", {
-									    //     "id": "action_remove",
-										   //  "class": "action_remove pull-right",
-										   //  "text": "action",
-										   //  "after": true,
-										   //  "selector": "a",
-										   //  "event": "click",
-										   //  "callback": function(node_id, node, action_id, action_el){
-										   //      console.log("callback", node_id, action_id);
-										   //  }
-									    // });
-								    	//console.log('open');
+								    	
 								    	$('#jstree-v_f_shras li.inner-node-state').each(function(){
-								    		if ($(this).find("i.action_read").length == 0) {
+								    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
 								    			var perm_level = $(this).attr('data-perm-level');
-								    			$(this).append(' <i class="action_read pull-right inner-node-state-action">read '+perm_level+'</i> ');
-								    		}
-								    		if ($(this).find("i.action_write").length == 0) {
-								    			var perm_level = $(this).attr('data-perm-level');
-								    			$(this).append(' <i class="action_write pull-right inner-node-state-action">write '+perm_level+'</i> ');
+								    			if(perm_level == 0) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
+								    			} else if(perm_level == 1) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+								    			} else if(perm_level == 2) {
+								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
+								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+								    			}
 								    		}
 								    		
-								    		
-										    //console.log(this);
 										});
 								    });
 

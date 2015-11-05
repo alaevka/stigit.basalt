@@ -317,4 +317,5 @@ form[role=login] .form-control + .glyphicon {
 }
 .inner-node-state-action {
     font-size: 11px;
+    padding: 5px 5px 0 0;
 }
