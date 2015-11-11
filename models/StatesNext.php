@@ -25,5 +25,16 @@ class StatesNext extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getState()
+    {
+        return $this->hasOne(\app\models\States::className(), ['ID' => 'NEXT_STATE_ID'])->where(['DEL_TRACT_ID' => 0]);
+    }
+
+    public function getState_name_state_colour()
+    {
+        //$this->STATE_ID;
+        return '<img height="16" src="/images/items_status/'.$this->state->STATE_COLOUR.'.png"> '.$this->state->STATE_NAME;
+    }
+
     
 }

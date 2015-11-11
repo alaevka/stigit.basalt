@@ -46,25 +46,47 @@ $(document).ready(function(){
         	url: "index.php?r=site/getissuedata",
         	data: "id="+$(this).attr('id'),
         	success: function(data,status){
-        		$("#myModalLabel-issue").html('Задание '+data.issue_designation);	
-        		$("#issue-view-table").html(data.result_table);
 
-        		//check permissions to view edit button
-        		if(data.user_have_permission != 1) {
+
+        		$("#myModalLabel-issue").html('Задание '+data.issue_designation);
+
+        		if(data.permissons_for_read == 0) {
+        			$("#issue-view-table").html('<div class="alert alert-danger" role="alert">У Вас нет прав на просмотр "Форма свойств задания"</div>');
         			$("#update-issue-button-new-tab").hide();
         			$("#update-issue-button-new-tab").attr('href', '#');
+        			$("#update-issue-top-button").hide();
+        			$("#update-issue-top-button").attr('href', '#');
         		} else {
-        			$("#update-issue-button-new-tab").show();
-        			$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+        			$("#issue-view-table").html(data.result_table);
+        			if(data.permissions_for_write == 0) {
+        				$("#update-issue-button-new-tab").hide();
+	        			$("#update-issue-button-new-tab").attr('href', '#');
+	        			$("#update-issue-top-button").hide();
+	        			$("#update-issue-top-button").attr('href', '#');
+        			} else {
+        				$("#update-issue-button-new-tab").show();
+        				$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+        				$("#update-issue-top-button").show();
+	        			$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+        			}
         		}
-
 
         		$("#issue-view-preloader").css('display', 'none');
         		$(".kv-grid-table").css('opacity', '1.0');
-        		
-        		$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
-        		$("#update-issue-button").attr('data-id', data.issue_id);
         		$("#issue-view-modal").modal();	
+
+        		//check permissions to view edit button
+        		// if(data.user_have_permission != 1) {
+        		// 	$("#update-issue-button-new-tab").hide();
+        		// 	$("#update-issue-button-new-tab").attr('href', '#');
+        		// } else {
+        		// 	$("#update-issue-button-new-tab").show();
+        		// 	$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+        		// }
+
+        		//$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+        		//$("#update-issue-button").attr('data-id', data.issue_id);
+        		
 
         	}
         });

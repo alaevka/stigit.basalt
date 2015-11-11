@@ -1068,7 +1068,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 			<div class="modal-header">
 				
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<a href="" target="_blank" id="update-issue-top-button" style="margin-right: 10px;" class="close"><span alt="редактировать" title="редактировать" class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+				<a href="" target="_blank" id="update-issue-top-button" style="margin-right: 10px; font-size: 13px; padding-top: 1px;" class="close"><span alt="редактировать" title="редактировать" class="glyphicon glyphicon-edit" aria-hidden="true"></span> редактировать</a>
 				<h4 class="modal-title" id="myModalLabel-issue"></h4>
 			</div>
 			<div class="modal-body" id="issue-view-table">

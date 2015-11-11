@@ -130,6 +130,16 @@ class Tasks extends \yii\db\ActiveRecord
         }
     }
 
+    public function _getLastTaskStatusWithText($id) {
+        $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $id])->orderBy('ID DESC')->LIMIT(1)->one();
+        if($task_state) {
+            $this_task_state = \app\models\States::findOne($task_state->STATE_ID);
+            return $this_task_state->getState_name_state_colour();
+        } else {
+            return '';
+        }
+    }
+
 
     public function _getCurrentTaskStatus($id) {
         $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
@@ -182,6 +192,37 @@ class Tasks extends \yii\db\ActiveRecord
                 $state = \app\models\States::findOne($min_state);
                 return $state->getState_name_state_colour();
             }
+        }
+    }
+
+    public function _getCurrentTaskStatusWithId($id) {
+        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
+        if($persons) {
+            $states_array = [];
+            foreach($persons as $person) {
+                $query = new \yii\db\Query;
+                $query->select('*')
+                ->from('STIGIT.V_F_PERS')
+                ->where('TN = \'' . $person->TN .'\'');
+                $command = $query->createCommand();
+                $data = $command->queryOne();
+               
+                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $id])->one();
+                if($task_state) {
+                    $states_array[] = $task_state->STATE_ID;
+                } else {
+                    return '';
+                }
+            }
+            if(!empty($states_array)) {
+                $min_state = min($states_array);
+                $state = \app\models\States::findOne($min_state);
+                return $state->ID;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
     }
     
