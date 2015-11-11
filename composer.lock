@@ -182,16 +182,16 @@
         },
         {
             "name": "bower-asset/yii2-pjax",
-            "version": "v2.0.4",
+            "version": "v2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/jquery-pjax.git",
-                "reference": "3f20897307cca046fca5323b318475ae9dac0ca0"
+                "reference": "6818718408086db6bdcf33649cecb86b6b4f9b67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/jquery-pjax/zipball/3f20897307cca046fca5323b318475ae9dac0ca0",
-                "reference": "3f20897307cca046fca5323b318475ae9dac0ca0",
+                "url": "https://api.github.com/repos/yiisoft/jquery-pjax/zipball/6818718408086db6bdcf33649cecb86b6b4f9b67",
+                "reference": "6818718408086db6bdcf33649cecb86b6b4f9b67",
                 "shasum": ""
             },
             "require": {
@@ -323,12 +323,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
-                "reference": "629ec209db306e3838f5c829e3488ff96a8040d8"
+                "reference": "cdf32abb5272d2dabd0d9ee566e2d818b0d1d4bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/629ec209db306e3838f5c829e3488ff96a8040d8",
-                "reference": "629ec209db306e3838f5c829e3488ff96a8040d8",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/cdf32abb5272d2dabd0d9ee566e2d818b0d1d4bf",
+                "reference": "cdf32abb5272d2dabd0d9ee566e2d818b0d1d4bf",
                 "shasum": ""
             },
             "type": "library",
@@ -363,7 +363,7 @@
                 "progress",
                 "upload"
             ],
-            "time": "2015-09-29 07:48:34"
+            "time": "2015-11-05 03:46:29"
         },
         {
             "name": "kartik-v/mpdf",
@@ -414,12 +414,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-grid.git",
-                "reference": "75165239b4fe5abfcc361965f8e93c0cca5b1698"
+                "reference": "cbb3ce2fa20171fd5ae13525621f60ea2caebd20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/75165239b4fe5abfcc361965f8e93c0cca5b1698",
-                "reference": "75165239b4fe5abfcc361965f8e93c0cca5b1698",
+                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/cbb3ce2fa20171fd5ae13525621f60ea2caebd20",
+                "reference": "cbb3ce2fa20171fd5ae13525621f60ea2caebd20",
                 "shasum": ""
             },
             "require": {
@@ -450,7 +450,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-09-29 18:37:35"
+            "time": "2015-11-02 10:51:01"
         },
         {
             "name": "kartik-v/yii2-krajee-base",

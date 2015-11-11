@@ -63,6 +63,10 @@ AppAsset::register($this);
 				  	Выдать задание
 				</button>
 			</li>
+			<hr>
+			<li class="submenu-li"><a href="#">Задания мне</a></li>
+			<li class="submenu-li"><a href="#">Задания моему подразделению</a></li>
+			<li class="submenu-li"><a href="#">Выданные мной</a></li>
 		</ul>
 		<?php } ?>
 	</div>

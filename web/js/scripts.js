@@ -75,19 +75,6 @@ $(document).ready(function(){
         		$(".kv-grid-table").css('opacity', '1.0');
         		$("#issue-view-modal").modal();	
 
-        		//check permissions to view edit button
-        		// if(data.user_have_permission != 1) {
-        		// 	$("#update-issue-button-new-tab").hide();
-        		// 	$("#update-issue-button-new-tab").attr('href', '#');
-        		// } else {
-        		// 	$("#update-issue-button-new-tab").show();
-        		// 	$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
-        		// }
-
-        		//$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
-        		//$("#update-issue-button").attr('data-id', data.issue_id);
-        		
-
         	}
         });
 
