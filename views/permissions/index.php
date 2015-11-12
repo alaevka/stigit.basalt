@@ -53,9 +53,7 @@
 								        		$('#'+tree).jstree(true).refresh_node(node_id);
 
 								        		var li_node_id = $('#'+tree).jstree('get_node', node_id).id;
-
-								        		//$('#'+tree).find('#'+li_node_id).find('.action_read').html('read '+level);
-								        		//$('#'+tree).find('#'+li_node_id).find('.action_write').html('write '+level);
+								        		
 								        		if(level == 0) {
 								        			$('#'+tree).find('#'+li_node_id).find('.action_read').css('color', "#ff0000").removeClass("glyphicon-eye-open").addClass("glyphicon-eye-close");
 								        			$('#'+tree).find('#'+li_node_id).find('.action_write').css('color', "#ff0000").removeClass("glyphicon-floppy-save").addClass("glyphicon-floppy-remove");
@@ -308,23 +306,6 @@
 									  	var original_id = data.original.li_attr['data-id'];
 									  	var original_type = data.original.li_attr['data-panel'];
 
-									  	$('#jstree-v_f_shras li.inner-node-state').each(function(){
-								    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
-								    			var perm_level = $(this).attr('data-perm-level');
-								    			if(perm_level == 0) {
-								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
-								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
-								    			} else if(perm_level == 1) {
-								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
-								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
-								    			} else if(perm_level == 2) {
-								    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
-								    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
-								    			}
-								    		}
-								    		
-										});
-
 									  	$.ajax({
 								        	type: "POST",
 								        	dataType: 'json',
@@ -335,8 +316,28 @@
 								        		$('#jstree-v_f_shras').jstree('get_node', data.node).li_attr['data-perm-level'] = 1;
 								        		//$("#jstree-v_f_shras").jstree(true).refresh_node(data.node);
 
-								        		//$('#'+data_ajax.inserted_id).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
-								    			//$('#'+data_ajax.inserted_id).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+								        		$("#jstree-v_f_shras").jstree(true).get_node(data_ajax.inserted_id).li_attr.class = "inner-node-state";
+												$("#jstree-v_f_shras").jstree(true).redraw_node(data_ajax.inserted_id, true);
+
+								        		$('#'+data_ajax.inserted_id).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+								    			$('#'+data_ajax.inserted_id).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+
+								    			$('#jstree-v_f_shras li.inner-node-state').each(function(){
+										    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
+										    			var perm_level = $(this).attr('data-perm-level');
+										    			if(perm_level == 0) {
+										    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+										    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
+										    			} else if(perm_level == 1) {
+										    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+										    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+										    			} else if(perm_level == 2) {
+										    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
+										    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+										    			}
+										    		}
+										    		
+												});
 
 								        	}
 								        });
@@ -383,6 +384,26 @@
 								<div class="panel-body" style="padding: 10px 0;">
 									<div id="jstree-v_f_pers"></div>
 									<script type="text/javascript">
+										function _deleteNodePers(node, tree) {
+											var tree = $("#"+tree).jstree(true);
+											tree.delete_node(node);
+											$('#jstree-v_f_pers li.inner-node-state').each(function(){
+									    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
+									    			var perm_level = $(this).attr('data-perm-level');
+									    			if(perm_level == 0) {
+									    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+									    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
+									    			} else if(perm_level == 1) {
+									    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+									    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+									    			} else if(perm_level == 2) {
+									    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
+									    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+									    			}
+									    		}
+									    		
+											});
+										}
 										$("#jstree-v_f_pers").jstree({
 											"plugins" : [
 											    "dnd",
@@ -445,7 +466,7 @@
 															        	url: "index.php?r=site/deletepermissions",
 															        	data: "permission_id="+$node.id,
 															        	success: function(data_ajax,status){
-															        		tree.delete_node($node);
+															        		_deleteNodePers($node, 'jstree-v_f_pers');
 															        	}
 															        });
 											                        
@@ -504,7 +525,7 @@
 															        	url: "index.php?r=site/deletepermissions",
 															        	data: "permission_id="+$node.id,
 															        	success: function(data_ajax,status){
-															        		tree.delete_node($node);
+															        		_deleteNodePers($node, 'jstree-v_f_pers');
 															        	}
 															        });
 											                        
@@ -563,7 +584,7 @@
 															        	url: "index.php?r=site/deletepermissions",
 															        	data: "permission_id="+$node.id,
 															        	success: function(data_ajax,status){
-															        		tree.delete_node($node);
+															        		_deleteNodePers($node, 'jstree-v_f_pers');
 															        	}
 															        });
 											                        
@@ -596,10 +617,10 @@
 																foreach($inner_list as $li) {
 																	if($li->PERM_TYPE == 1) {
 																		$result_li = \app\models\Actions::findOne($li->ACTION_ID);
-																		echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-cog", "parent" : "v_f_per_'.$v_f_per['tn'].'", "text" : "'.$result_li->ACTION_DESC.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'"}},';
+																		echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-cog", "parent" : "v_f_per_'.$v_f_per['tn'].'", "text" : "'.$result_li->ACTION_DESC.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'", "class" : "inner-node-state"}},';
 																	} elseif($li->PERM_TYPE == 2) {
 																		$result_li = \app\models\States::findOne($li->ACTION_ID);
-																		echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-check", "parent" : "v_f_per_'.$v_f_per['tn'].'", "text" : "'.$result_li->STATE_NAME.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'"}},';
+																		echo '{"id" : "'.$li->ID.'", "icon" : "glyphicon glyphicon-check", "parent" : "v_f_per_'.$v_f_per['tn'].'", "text" : "'.$result_li->STATE_NAME.'", "li_attr" : { "data-id" : "'.$li->ID.'", "data-perm-level" : "'.$li->PERM_LEVEL.'", "class" : "inner-node-state"}},';
 																	}
 																}
 										        			}
@@ -622,6 +643,30 @@
 									        	success: function(data_ajax,status){
 									        		$('#jstree-v_f_pers').jstree(true).set_id(data.node, data_ajax.inserted_id);
 									        		$('#jstree-v_f_pers').jstree('get_node', data.node).li_attr['data-perm-level'] = 1;
+
+									        		$("#jstree-v_f_pers").jstree(true).get_node(data_ajax.inserted_id).li_attr.class = "inner-node-state";
+													$("#jstree-v_f_pers").jstree(true).redraw_node(data_ajax.inserted_id, true);
+
+									        		$('#'+data_ajax.inserted_id).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+									    			$('#'+data_ajax.inserted_id).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+
+									    			$('#jstree-v_f_pers li.inner-node-state').each(function(){
+											    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
+											    			var perm_level = $(this).attr('data-perm-level');
+											    			if(perm_level == 0) {
+											    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+											    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
+											    			} else if(perm_level == 1) {
+											    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+											    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+											    			} else if(perm_level == 2) {
+											    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
+											    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+											    			}
+											    		}
+											    		
+													});
+
 									        	}
 									        });
 										  	
@@ -629,6 +674,24 @@
 									        $('#jstree-v_f_shras').jstree("deselect_all"); 
 									        $('#jstree-actions').jstree("deselect_all");   
 									        $('#jstree-states').jstree("deselect_all");        
+									    }).on("open_node.jstree", function(e, data) {
+								    	
+									    	$('#jstree-v_f_pers li.inner-node-state').each(function(){
+									    		if ($(this).find("i.action_write").length == 0 && $(this).find("i.action_read").length == 0) {
+									    			var perm_level = $(this).attr('data-perm-level');
+									    			if(perm_level == 0) {
+									    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+									    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-close" style="color: #ff0000;"></i> ');
+									    			} else if(perm_level == 1) {
+									    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-remove" style="color: #ff0000;"></i> ');
+									    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+									    			} else if(perm_level == 2) {
+									    				$(this).append(' <i class="action_write pull-right inner-node-state-action glyphicon glyphicon-floppy-save" style="color: #1AC94F;"></i> ');
+									    				$(this).append(' <i class="action_read pull-right inner-node-state-action glyphicon glyphicon-eye-open" style="color: #1AC94F;"></i> ');
+									    			}
+									    		}
+									    		
+											});
 									    });
 									</script>
 								</div>
