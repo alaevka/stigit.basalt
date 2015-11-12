@@ -21,6 +21,7 @@ class SearchTasks extends Tasks
     public $task_type_date_2_from;
     public $task_type_date_2_to;
     private $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
+   
 
 
     public function rules()
@@ -71,15 +72,76 @@ class SearchTasks extends Tasks
         $query = Tasks::find();//->joinWith('datetype2');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['ID'=> SORT_DESC]]
+            //'sort'=> ['defaultOrder' => ['ID'=> SORT_DESC]]
         ]);
 
-        //$dataProvider->sort->defaultOrder = ['TASK_DATES.TASK_TYPE_DATE' => SORT_DESC];
+        $dataProvider->sort->attributes = ['TASKS.ID' => [
+            'asc' => ['TASKS.ID' => SORT_ASC],
+            'desc' => ['TASKS.ID' => SORT_DESC],
+        ]];
+
+        $dataProvider->sort->defaultOrder = ['TASKS.ID' => SORT_DESC];
+
+        //own issues filter
+        if(isset($params['own_issues']) && $params['own_issues'] == 1) {
+            $query->joinWith('perstasks'); 
+            $query->andFilterWhere(['PERS_TASKS.TN' => \Yii::$app->user->id]);
+        }
+
+        //podr issues filter
+        if(isset($params['podr_issues']) && $params['podr_issues'] == 1) {
+
+            //check permission
+            $permissions_podr_tasks_my = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action', ['action' => 21, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
+            if($permissions_podr_tasks_my) {
+                if($permissions_podr_tasks_my->PERM_LEVEL == 1 || $permissions_podr_tasks_my->PERM_LEVEL == 2) {
+
+                    //get podr id of this user
+                    $query_dao = new \yii\db\Query;
+                    $query_dao->select('*')
+                        ->from('STIGIT.V_F_PERS')
+                        ->where('TN = \'' . \Yii::$app->user->id .'\'');
+                    $command = $query_dao->createCommand();
+                    $data = $command->queryOne();
+                    $query->joinWith('podrtasks'); 
+                    $query->andFilterWhere(['PODR_TASKS.KODZIFR' => trim($data['KODZIFR'])]);
+                } else {
+                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вашему подразделению'); 
+                }
+            } else {
+                throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вашему подразделению'); 
+            }
+        }
+
+        //tasks my filter
+        if(isset($params['tasks_my']) && $params['tasks_my'] == 1) {
+            //check permission
+            $permissions_podr_tasks_my = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action', ['action' => 23, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
+                if($permissions_podr_tasks_my) {
+                    if($permissions_podr_tasks_my->PERM_LEVEL == 1 || $permissions_podr_tasks_my->PERM_LEVEL == 2) {
+                        //get all current user transactions
+                        $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id])->all();
+                        if($transactions) {
+                            $transactions_array = [];
+                            foreach($transactions as $transaction) {
+                                $transactions_array[] = $transaction->ID;
+                            }
+                            $query->andFilterWhere(['TRACT_ID' => $transactions_array]);
+                        } 
+                    } else {
+                        throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вами'); 
+                    }
+                } else {
+                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вами'); 
+                }
+            
+        }
 
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }
+
         if(!empty($this->states)) {
             $query->joinWith('taskstates'); 
             $query->andFilterWhere(['TASK_STATES.STATE_ID' => $this->states]);
@@ -195,6 +257,8 @@ class SearchTasks extends Tasks
             $task_type_date_2_to_formatted = $task_type_date_2_to[2].'-'.$task_type_date_2_to[1].'-'.$task_type_date_2_to[0];
             $query->andFilterWhere(['<=', 'TASK_DATES.TASK_TYPE_DATE', new \yii\db\Expression("to_date('" . $task_type_date_2_to_formatted . "','{$this->dateFormat}')")]);
         }
+
+
         $query->andFilterWhere(['like', 'SOURCENUM', $this->SOURCENUM]);
         $query->andFilterWhere(['like', 'TASK_TEXT', $this->TASK_TEXT]);
         $query->andFilterWhere(['or like', 'PEOORDERNUM', $this->PEOORDERNUM]);

@@ -64,9 +64,29 @@ AppAsset::register($this);
 				</button>
 			</li>
 			<hr>
-			<li class="submenu-li"><a href="#">Задания мне</a></li>
-			<li class="submenu-li"><a href="#">Задания моему подразделению</a></li>
-			<li class="submenu-li"><a href="#">Выданные мной</a></li>
+
+			<li class="submenu-li"><a href="<?= Url::to(['site/index']); ?>">Все задания</a> <?php if(!isset(Yii::$app->request->getQueryParams()['own_issues']) && !isset(Yii::$app->request->getQueryParams()['podr_issues']) && !isset(Yii::$app->request->getQueryParams()['tasks_my'])) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
+			<li class="submenu-li"><a href="<?= Url::to(['/site/index', 'own_issues' => 1]); ?>">Задания мне</a> <?php if(isset(Yii::$app->request->getQueryParams()['own_issues']) && Yii::$app->request->getQueryParams()['own_issues'] == 1) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
+			<?php
+				$permissions_podr_tasks_my = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action', ['action' => 21, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
+				if($permissions_podr_tasks_my) {
+					if($permissions_podr_tasks_my->PERM_LEVEL == 1 || $permissions_podr_tasks_my->PERM_LEVEL == 2) {
+			?>
+			<li class="submenu-li"><a href="<?= Url::to(['/site/index', 'podr_issues' => 1]); ?>">Задания моему подразделению</a> <?php if(isset(Yii::$app->request->getQueryParams()['podr_issues']) && Yii::$app->request->getQueryParams()['podr_issues'] == 1) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
+			<?php
+					}
+				}
+			?>
+			<?php
+				$permissions_podr_tasks_my = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action', ['action' => 23, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
+				if($permissions_podr_tasks_my) {
+					if($permissions_podr_tasks_my->PERM_LEVEL == 1 || $permissions_podr_tasks_my->PERM_LEVEL == 2) {
+			?>
+			<li class="submenu-li"><a href="<?= Url::to(['/site/index', 'tasks_my' => 1]); ?>">Выданные мной</a> <?php if(isset(Yii::$app->request->getQueryParams()['tasks_my']) && Yii::$app->request->getQueryParams()['tasks_my'] == 1) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
+			<?php
+					}
+				}
+			?>
 		</ul>
 		<?php } ?>
 	</div>

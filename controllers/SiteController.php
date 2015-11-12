@@ -76,6 +76,8 @@ class SiteController extends Controller
     */
     public function actionIndex()
     {
+
+        
        
         $model = new \app\models\IssueForm;
         
@@ -162,6 +164,7 @@ class SiteController extends Controller
 
         // формируем модель фильтрации заданий и объект, содержащий список заданий, а так же указываем количество страниц в пейджере
         $searchModel = new \app\models\SearchTasks;
+        //print_r(Yii::$app->request->getQueryParams()); die();
         $dataProvider = $searchModel->search(Yii::$app->request->getQueryParams());
         $dataProvider->pagination->pageSize=15;
 
@@ -501,12 +504,12 @@ class SiteController extends Controller
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $issue = \app\models\Tasks::findOne($issue_id);
             //check permissons for view issue to current user
-            $permissions_for_read_and_write = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 2, 'SUBJECT_ID' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->where(['!=', 'PERM_LEVEL', 0])->one();
+            $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level', ['subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
             
             if($permissions_for_read_and_write) {
 
                 
-                //$user_have_permission = 0;
+                $user_have_permission = 0;
 
                 $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
                 if($podr_tasks) {
@@ -610,25 +613,25 @@ class SiteController extends Controller
                         $task_states->save();
                     }
 
-                    //$user_have_permission = 1;
+                    $user_have_permission = 1;
                 }
 
 
                 //check if user in podr
-                // if(empty($persons_array)) {
-                //     $ids = join(',', $podr_list_kodzifr_array); 
-                //     $query = new \yii\db\Query;
-                //     $query->select('*')
-                //         ->from('STIGIT.V_F_PERS')
-                //         ->where('TN = \'' . \Yii::$app->user->id .'\' and KODZIFR in ('.$ids.')');
-                //     $command = $query->createCommand();
-                //     $data = $command->queryAll();
-                //     if(!empty($data)) {
-                //         $user_have_permission = 1;
-                //     } else {
-                //         $user_have_permission = 0;
-                //     }
-                // }
+                if(empty($persons_array)) {
+                    $ids = join(',', $podr_list_kodzifr_array); 
+                    $query = new \yii\db\Query;
+                    $query->select('*')
+                        ->from('STIGIT.V_F_PERS')
+                        ->where('TN = \'' . \Yii::$app->user->id .'\' and KODZIFR in ('.$ids.')');
+                    $command = $query->createCommand();
+                    $data = $command->queryAll();
+                    if(!empty($data)) {
+                        $user_have_permission = 1;
+                    } else {
+                        $user_have_permission = 0;
+                    }
+                }
 
 
 
@@ -797,7 +800,7 @@ class SiteController extends Controller
                 }
 
 
-                $items = ['permissons_for_read' => 1, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
+                $items = ['permissons_for_read' => 1, 'user_have_permission' => $user_have_permission, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
                 return $items;
             } else {
                 $items = ['permissons_for_read' => 0, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER];
@@ -870,7 +873,7 @@ class SiteController extends Controller
         /*
             проверка на доступ к заданию пользователя
         */
-        $permissions_for_read_and_write = \app\models\Permissions::find()->where(['SUBJECT_TYPE' => 2, 'SUBJECT_ID' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->where(['!=', 'PERM_LEVEL', 0])->one();
+        $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level', ['subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
         if($permissions_for_read_and_write) {    
             if($permissions_for_read_and_write->PERM_LEVEL == 2) {
 

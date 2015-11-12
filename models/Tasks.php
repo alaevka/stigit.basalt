@@ -21,6 +21,7 @@ class Tasks extends \yii\db\ActiveRecord
 
     public $hidden_ordernum;
     public $hidden_peoordernum;
+    
 
     /**
      * @inheritdoc
