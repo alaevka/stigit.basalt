@@ -323,12 +323,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
-                "reference": "cdf32abb5272d2dabd0d9ee566e2d818b0d1d4bf"
+                "reference": "c828dbb70f5bac2ff68167c537e90dece4591156"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/cdf32abb5272d2dabd0d9ee566e2d818b0d1d4bf",
-                "reference": "cdf32abb5272d2dabd0d9ee566e2d818b0d1d4bf",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/c828dbb70f5bac2ff68167c537e90dece4591156",
+                "reference": "c828dbb70f5bac2ff68167c537e90dece4591156",
                 "shasum": ""
             },
             "type": "library",
@@ -363,7 +363,7 @@
                 "progress",
                 "upload"
             ],
-            "time": "2015-11-05 03:46:29"
+            "time": "2015-11-13 16:04:11"
         },
         {
             "name": "kartik-v/mpdf",
@@ -551,12 +551,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-datepicker.git",
-                "reference": "f9ee0fda46ec4188d42b1187053c4536e03b1c5f"
+                "reference": "520ba281f592d6bbbf2be33386a03423bccc8cd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datepicker/zipball/f9ee0fda46ec4188d42b1187053c4536e03b1c5f",
-                "reference": "f9ee0fda46ec4188d42b1187053c4536e03b1c5f",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datepicker/zipball/520ba281f592d6bbbf2be33386a03423bccc8cd0",
+                "reference": "520ba281f592d6bbbf2be33386a03423bccc8cd0",
                 "shasum": ""
             },
             "require": {
@@ -592,7 +592,7 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2015-08-14 13:47:10"
+            "time": "2015-11-14 12:47:50"
         },
         {
             "name": "kartik-v/yii2-widget-fileinput",

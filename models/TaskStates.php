@@ -21,6 +21,7 @@ class TaskStates extends \yii\db\ActiveRecord
     {
         return [
             [['TASK_ID', 'STATE_ID', 'TRACT_ID', 'IS_CURRENT'], 'required'],
+            [['PERS_TASKS_ID'], 'safe']
         ];
     }
 

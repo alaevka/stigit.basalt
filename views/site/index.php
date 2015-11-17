@@ -60,7 +60,9 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								                $data = $command->queryOne();
 							    				//$list .= '<nobr><a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FAM'].' '.mb_substr($data['IMJ'], 0, 1, 'UTF-8').'. '.mb_substr($data['OTCH'], 0, 1, 'UTF-8').'.</a></nobr><br>';
 								                //get current state	
-								                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $model->ID])->one();
+								                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$model->ID, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
+
+								                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $model->ID])->one();
 								                if($task_state) {
 								                	$state = $task_state->getState_name_state_colour_without_text();
 								                } else {

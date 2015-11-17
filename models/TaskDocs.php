@@ -22,7 +22,7 @@ class TaskDocs extends \yii\db\ActiveRecord
         return [
             [['TASK_ID', 'DOC_CODE', 'TRACT_ID', 'FORMAT_QUANTITY'], 'required'],
             [['DOC_CODE'], 'unique'],
-            [['DEL_TRACT_ID'], 'safe'],
+            [['DEL_TRACT_ID', 'PERS_TASKS_ID'], 'safe'],
             [['FORMAT_QUANTITY'], 'number'],
         ];
     }

@@ -503,10 +503,20 @@ class SiteController extends Controller
             $issue_id = $_POST['id'];
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $issue = \app\models\Tasks::findOne($issue_id);
+
+            //get current issue status for this user
+            $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+            $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
+            if($task_state) {
+                $check_permissions_for_status = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type', ['perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
+            } else {
+                $check_permissions_for_status = true;
+            }
+
             //check permissons for view issue to current user
-            $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level', ['subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
+            $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type', ['perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
             
-            if($permissions_for_read_and_write) {
+            if($permissions_for_read_and_write && $check_permissions_for_status) {
 
                 
                 $user_have_permission = 0;
@@ -601,7 +611,11 @@ class SiteController extends Controller
                     }
 
                     //check if window opened first time for user
-                    $task_states_user = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => \Yii::$app->user->id, 'TASK_ID' => $issue_id])->one();
+
+                    //get pers_task_id for current user and issue
+                    $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+
+                    $task_states_user = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks->ID])->one();
                     if(!$task_states_user) {
                         //set state for this person
                         $task_states = new \app\models\TaskStates;
@@ -609,7 +623,9 @@ class SiteController extends Controller
                         $task_states->STATE_ID = 1;
                         $task_states->TRACT_ID = $transactions->ID;
                         $task_states->IS_CURRENT = 1;
-                        $task_states->PERS_TASKS_ID = \Yii::$app->user->id;
+                        if($pers_tasks->ID) {
+                            $task_states->PERS_TASKS_ID = $pers_tasks->ID;
+                        }
                         $task_states->save();
                     }
 
@@ -800,10 +816,20 @@ class SiteController extends Controller
                 }
 
 
+
+
+
                 $items = ['permissons_for_read' => 1, 'user_have_permission' => $user_have_permission, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
                 return $items;
             } else {
-                $items = ['permissons_for_read' => 0, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER];
+                if(!$check_permissions_for_status) {
+                    $error_message = 'У Вас нет прав на просмотр заданий в текущем статусе';
+                }
+                if(!$permissions_for_read_and_write) {
+                    $error_message = 'У Вас нет прав на просмотр "Форма свойств задания"';
+                }
+
+                $items = ['permissons_for_read' => 0, 'error_message' => $error_message, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER];
                 return $items;
             }
         }
@@ -824,6 +850,8 @@ class SiteController extends Controller
                     $model->TASK_ID = $task_id;
                     $model->TRACT_ID = $transactions->ID;
                     $model->FORMAT_QUANTITY = $formats[$key];
+                    $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$task_id, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+                    $model->PERS_TASKS_ID = $pers_tasks->ID;
 
                     if($model->validate()) {
                         //загрузка файлов
@@ -873,9 +901,18 @@ class SiteController extends Controller
         /*
             проверка на доступ к заданию пользователя
         */
-        $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level', ['subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
-        if($permissions_for_read_and_write) {    
-            if($permissions_for_read_and_write->PERM_LEVEL == 2) {
+        $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+        $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
+        if($task_state) {
+            $check_permissions_for_status = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type', ['perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
+        } else {
+            $check_permissions_for_status = true;
+        }   
+
+
+        $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type', ['perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
+        if($permissions_for_read_and_write && $check_permissions_for_status) {    
+            if($permissions_for_read_and_write->PERM_LEVEL == 2 && $check_permissions_for_status->PERM_LEVEL == 2) {
 
                 $model = $this->findModel($id);
                 $model->scenario = \app\models\Tasks::SCENARIO_UPDATE;
@@ -912,7 +949,10 @@ class SiteController extends Controller
                 $transactions_for_date = \app\models\Transactions::findOne($model->TRACT_ID);
                 $model->transactions_tract_datetime = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');  
 
-                $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $model->ID, 'PERS_TASKS_ID' => \Yii::$app->user->id, 'IS_CURRENT' => 1])->one();
+
+
+                $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$model->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+                $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
                 if($task_state) {
                     $model->state = $task_state->STATE_ID;
                     $last_state = $task_state->STATE_ID;
@@ -1003,7 +1043,8 @@ class SiteController extends Controller
                                 $pers_task->save();
 
                                 //удаляем (IS_CURRENT = 0) состояние задания для пользователя
-                                $task_states = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'TASK_ID' => $model->ID, 'PERS_TASKS_ID' => $pers_task->TN])->one();
+                                $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$model->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+                                $task_states = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks_this->ID])->one();
                                 //проверяем, есть ли статусы у пользователя
                                 if($task_states) {
                                     $task_states->IS_CURRENT = 0;
@@ -1169,12 +1210,14 @@ class SiteController extends Controller
                             Обработка состояния задания
                         */
                             if($last_state != $model->state) {
+
                                 $new_state = new \app\models\TaskStates;
                                 $new_state->TASK_ID = $model->ID;
                                 $new_state->STATE_ID = $model->state;
                                 $new_state->TRACT_ID = $transactions->ID;
                                 $new_state->IS_CURRENT = 1;
-                                $new_state->PERS_TASKS_ID = \Yii::$app->user->id;
+                                $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$model->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+                                $new_state->PERS_TASKS_ID = $pers_tasks_this->ID;
                                 $new_state->save();
 
                                 //обновление поля IS_CURRENT для предыдущего состояния

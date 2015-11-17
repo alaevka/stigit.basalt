@@ -122,6 +122,7 @@ class Tasks extends \yii\db\ActiveRecord
     }
 
     public function _getLastTaskStatus($id) {
+
         $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $id])->orderBy('ID DESC')->LIMIT(1)->one();
         if($task_state) {
             $this_task_state = \app\models\States::findOne($task_state->STATE_ID);
@@ -132,10 +133,15 @@ class Tasks extends \yii\db\ActiveRecord
     }
 
     public function _getLastTaskStatusWithText($id) {
-        $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $id])->orderBy('ID DESC')->LIMIT(1)->one();
-        if($task_state) {
-            $this_task_state = \app\models\States::findOne($task_state->STATE_ID);
-            return $this_task_state->getState_name_state_colour();
+        $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+        if($pers_tasks) {
+            $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks->ID])->orderBy('ID DESC')->LIMIT(1)->one();
+            if($task_state) {
+                $this_task_state = \app\models\States::findOne($task_state->STATE_ID);
+                return $this_task_state->getState_name_state_colour();
+            } else {
+                return '';
+            }
         } else {
             return '';
         }

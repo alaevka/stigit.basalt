@@ -51,7 +51,7 @@ $(document).ready(function(){
         		$("#myModalLabel-issue").html('Задание '+data.issue_designation);
 
         		if(data.permissons_for_read == 0) {
-        			$("#issue-view-table").html('<div class="alert alert-danger" role="alert">У Вас нет прав на просмотр "Форма свойств задания"</div>');
+        			$("#issue-view-table").html('<div class="alert alert-danger" role="alert">'+data.error_message+'</div>');
         			$("#update-issue-button-new-tab").hide();
         			$("#update-issue-button-new-tab").attr('href', '#');
         			$("#update-issue-top-button").hide();

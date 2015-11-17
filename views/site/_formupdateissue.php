@@ -332,27 +332,30 @@
 				    	$this->registerJs('function format_selection(state) {return "<b>"+state.text+"</b>";}', View::POS_HEAD);
 				    ?>
 				    <?php
-				    	$states_list = yii\helpers\ArrayHelper::map(\app\models\StatesNext::find()->where(['STATE_ID' => $model->state, 'DEL_TRACT_ID' => 0])->all(), 'NEXT_STATE_ID', 'state_name_state_colour');
+
+				    	$states_list = yii\helpers\ArrayHelper::map(\app\models\StatesNext::find()->where(['STATE_ID' => $model->state, 'DEL_TRACT_ID' => 0])->orderBy('ID ASC')->all(), 'NEXT_STATE_ID', 'state_name_state_colour');
 				        $current_status = \app\models\States::findOne($model->state)->getState_name_state_colour();
-				        $states_list[$model->state] = $current_status;
+				        $states_list = [ $model->state => $current_status ] + $states_list;
 
 				    ?>
-				    <?php echo $form->field($model, 'state', [
-				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
-				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
-				        'inputOptions'=>['class'=>'form-control input-sm']
-				    ])->widget(\kartik\select2\Select2::classname(), [
-					    'options' => ['placeholder' => ''],
-					    'hideSearch' => true,
-					    'data' => $states_list,
-					    'pluginOptions' => [
-					        'allowClear' => true,
-					        'templateResult' => new JsExpression('format'),
-					        'escapeMarkup' => new JsExpression("function(m) { return m; }"),
-        					'templateSelection' => new JsExpression('format_selection'),
-					        //'templateSelection' => new JsExpression('function (designation) { return state.text; }'),
-					    ],
-					]);
+				    <?php 
+
+				    	echo $form->field($model, 'state', [
+					        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+					        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+					        'inputOptions'=>['class'=>'form-control input-sm']
+					    ])->widget(\kartik\select2\Select2::classname(), [
+						    'options' => ['placeholder' => ''],
+						    'hideSearch' => true,
+						    'data' => $states_list,
+						    'pluginOptions' => [
+						        'allowClear' => true,
+						        'templateResult' => new JsExpression('format'),
+						        'escapeMarkup' => new JsExpression("function(m) { return m; }"),
+	        					'templateSelection' => new JsExpression('format_selection'),
+						        //'templateSelection' => new JsExpression('function (designation) { return state.text; }'),
+						    ],
+						]);
 				    ?>
 
 </div>
