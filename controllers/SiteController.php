@@ -39,12 +39,12 @@ class SiteController extends Controller
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
+            // 'verbs' => [
+            //     'class' => VerbFilter::className(),
+            //     'actions' => [
+            //         'logout' => ['post'],
+            //     ],
+            // ],
         ];
     }
 
@@ -506,329 +506,335 @@ class SiteController extends Controller
 
             //get current issue status for this user
             $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
-            $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
-            if($task_state) {
-                $check_permissions_for_status = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type', ['perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
-            } else {
-                $check_permissions_for_status = true;
-            }
+            if($pers_tasks_this) {
+                $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
+                if($task_state) {
+                    $check_permissions_for_status = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type', ['perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
+                } else {
+                    $check_permissions_for_status = true;
+                }
 
-            //check permissons for view issue to current user
-            $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type', ['perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
-            
-            if($permissions_for_read_and_write && $check_permissions_for_status) {
-
+                //check permissons for view issue to current user
+                $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type', ['perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
                 
-                $user_have_permission = 0;
+                if($permissions_for_read_and_write && $check_permissions_for_status) {
 
-                $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
-                if($podr_tasks) {
-                    $podr_list = '';
-                    $podr_list_kodzifr_array = [];
-                    foreach($podr_tasks as $task) {
-                        $query = new \yii\db\Query;
-                        $query->select('*')
-                            ->from('STIGIT.V_F_PODR')
-                            ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
-                        $command = $query->createCommand();
-                        $data = $command->queryOne();
-                        if(isset($data['NAIMPODR'])) {
-                            $podr_list .= $data['NAIMPODR']."<br>";
-                            $podr_list_kodzifr_array[] = $data['KODZIFR'];
+                    
+                    $user_have_permission = 0;
+
+                    $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
+                    if($podr_tasks) {
+                        $podr_list = '';
+                        $podr_list_kodzifr_array = [];
+                        foreach($podr_tasks as $task) {
+                            $query = new \yii\db\Query;
+                            $query->select('*')
+                                ->from('STIGIT.V_F_PODR')
+                                ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
+                            $command = $query->createCommand();
+                            $data = $command->queryOne();
+                            if(isset($data['NAIMPODR'])) {
+                                $podr_list .= $data['NAIMPODR']."<br>";
+                                $podr_list_kodzifr_array[] = $data['KODZIFR'];
+                            }
                         }
+                       
                     }
-                   
-                }
 
-                $tasks_confirms = \app\models\TaskConfirms::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
-                if($tasks_confirms) {
-                    $task_confirms_list = '';
-                    foreach($tasks_confirms as $task) {
-                        $query = new \yii\db\Query;
-                        $query->select('*')
-                            ->from('STIGIT.V_F_PODR')
-                            ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
-                        $command = $query->createCommand();
-                        $data = $command->queryOne();
-                        if(isset($data['NAIMPODR']))
-                            $task_confirms_list .= $data['NAIMPODR']."<br>";
+                    $tasks_confirms = \app\models\TaskConfirms::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
+                    if($tasks_confirms) {
+                        $task_confirms_list = '';
+                        foreach($tasks_confirms as $task) {
+                            $query = new \yii\db\Query;
+                            $query->select('*')
+                                ->from('STIGIT.V_F_PODR')
+                                ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
+                            $command = $query->createCommand();
+                            $data = $command->queryOne();
+                            if(isset($data['NAIMPODR']))
+                                $task_confirms_list .= $data['NAIMPODR']."<br>";
+                        }
+                    } else {
+                        $task_confirms_list = self::_UNDEFINED;
                     }
-                } else {
-                    $task_confirms_list = self::_UNDEFINED;
-                }
 
-                $tasks_docs_recvrs = \app\models\TaskDocsRecvrs::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
-                if($tasks_docs_recvrs) {
-                    $task_docs_recvrs_list = '';
-                    foreach($tasks_docs_recvrs as $task) {
-                        $query = new \yii\db\Query;
-                        $query->select('*')
-                            ->from('STIGIT.V_F_PODR')
-                            ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
-                        $command = $query->createCommand();
-                        $data = $command->queryOne();
-                        if(isset($data['NAIMPODR']))
-                            $task_docs_recvrs_list .= $data['NAIMPODR']."<br>";
+                    $tasks_docs_recvrs = \app\models\TaskDocsRecvrs::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
+                    if($tasks_docs_recvrs) {
+                        $task_docs_recvrs_list = '';
+                        foreach($tasks_docs_recvrs as $task) {
+                            $query = new \yii\db\Query;
+                            $query->select('*')
+                                ->from('STIGIT.V_F_PODR')
+                                ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
+                            $command = $query->createCommand();
+                            $data = $command->queryOne();
+                            if(isset($data['NAIMPODR']))
+                                $task_docs_recvrs_list .= $data['NAIMPODR']."<br>";
+                        }
+                    } else {
+                        $task_docs_recvrs_list = self::_UNDEFINED;
                     }
-                } else {
-                    $task_docs_recvrs_list = self::_UNDEFINED;
-                }
 
-                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
-                $pers_list = '';
-                if($pers_tasks) {
-                    $persons_array = [];
-                    foreach($pers_tasks as $task) {
+                    $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
+                    $pers_list = '';
+                    if($pers_tasks) {
+                        $persons_array = [];
+                        foreach($pers_tasks as $task) {
+                            $query = new \yii\db\Query;
+                            $query->select('*')
+                                ->from('STIGIT.V_F_PERS')
+                                ->where('TN = \'' . $task->TN .'\'');
+                            $command = $query->createCommand();
+                            $data = $command->queryOne();
+                            $pers_list .= $data['FIO']."<br>";
+                            $persons_array[] = $data['TN'];
+                        }
+                    } else {
+                        $pers_list = self::_UNDEFINED;
+                        $persons_array = [];
+                    }
+
+                    $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+                    //save date for person if his owner this issue
+                    if(in_array(\Yii::$app->user->id, $persons_array)) {
+
+                        //check if window opened first time for date
+                        $old_task_date_1 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 1])->one();
+                        if(!$old_task_date_1) {
+                            
+                            $task_date_1 = new \app\models\TaskDates;
+                            $task_date_1->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . date("Y-m-d H:i:s") . "','{$this->dateFormat}')");
+                            $task_date_1->TASK_ID = $issue_id;
+                            $task_date_1->DATE_TYPE_ID = 1;
+                            $task_date_1->TRACT_ID = $transactions->ID;
+                            $task_date_1->save();
+
+                        }
+
+                        //check if window opened first time for user
+
+                        //get pers_task_id for current user and issue
+                        $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+
+                        $task_states_user = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks->ID])->one();
+                        if(!$task_states_user) {
+                            //set state for this person
+                            $task_states = new \app\models\TaskStates;
+                            $task_states->TASK_ID = $issue_id;
+                            $task_states->STATE_ID = 1;
+                            $task_states->TRACT_ID = $transactions->ID;
+                            $task_states->IS_CURRENT = 1;
+                            if($pers_tasks->ID) {
+                                $task_states->PERS_TASKS_ID = $pers_tasks->ID;
+                            }
+                            $task_states->save();
+                        }
+
+                        $user_have_permission = 1;
+                    }
+
+
+                    //check if user in podr
+                    if(empty($persons_array)) {
+                        $ids = join(',', $podr_list_kodzifr_array); 
                         $query = new \yii\db\Query;
                         $query->select('*')
                             ->from('STIGIT.V_F_PERS')
-                            ->where('TN = \'' . $task->TN .'\'');
+                            ->where('TN = \'' . \Yii::$app->user->id .'\' and KODZIFR in ('.$ids.')');
                         $command = $query->createCommand();
-                        $data = $command->queryOne();
-                        $pers_list .= $data['FIO']."<br>";
-                        $persons_array[] = $data['TN'];
-                    }
-                } else {
-                    $pers_list = self::_UNDEFINED;
-                    $persons_array = [];
-                }
-
-                $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
-                //save date for person if his owner this issue
-                if(in_array(\Yii::$app->user->id, $persons_array)) {
-
-                    //check if window opened first time for date
-                    $old_task_date_1 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 1])->one();
-                    if(!$old_task_date_1) {
-                        
-                        $task_date_1 = new \app\models\TaskDates;
-                        $task_date_1->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . date("Y-m-d H:i:s") . "','{$this->dateFormat}')");
-                        $task_date_1->TASK_ID = $issue_id;
-                        $task_date_1->DATE_TYPE_ID = 1;
-                        $task_date_1->TRACT_ID = $transactions->ID;
-                        $task_date_1->save();
-
-                    }
-
-                    //check if window opened first time for user
-
-                    //get pers_task_id for current user and issue
-                    $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
-
-                    $task_states_user = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks->ID])->one();
-                    if(!$task_states_user) {
-                        //set state for this person
-                        $task_states = new \app\models\TaskStates;
-                        $task_states->TASK_ID = $issue_id;
-                        $task_states->STATE_ID = 1;
-                        $task_states->TRACT_ID = $transactions->ID;
-                        $task_states->IS_CURRENT = 1;
-                        if($pers_tasks->ID) {
-                            $task_states->PERS_TASKS_ID = $pers_tasks->ID;
+                        $data = $command->queryAll();
+                        if(!empty($data)) {
+                            $user_have_permission = 1;
+                        } else {
+                            $user_have_permission = 0;
                         }
-                        $task_states->save();
                     }
 
-                    $user_have_permission = 1;
-                }
 
 
-                //check if user in podr
-                if(empty($persons_array)) {
-                    $ids = join(',', $podr_list_kodzifr_array); 
-                    $query = new \yii\db\Query;
-                    $query->select('*')
-                        ->from('STIGIT.V_F_PERS')
-                        ->where('TN = \'' . \Yii::$app->user->id .'\' and KODZIFR in ('.$ids.')');
-                    $command = $query->createCommand();
-                    $data = $command->queryAll();
-                    if(!empty($data)) {
-                        $user_have_permission = 1;
+                    //group date
+                    $old_task_date_2 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 2])->one();
+                    if(!$old_task_date_2) {
+                        $transactions_for_date = \app\models\Transactions::findOne($issue->TRACT_ID);
+                        $group_date = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:Y-m-d');
+                        $group_date_for_table = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');
+
+                        $task_date_2 = new \app\models\TaskDates;
+                        $task_date_2->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . $group_date . "','{$this->dateFormat}')");
+                        $task_date_2->TASK_ID = $issue_id;
+                        $task_date_2->DATE_TYPE_ID = 2;
+                        $task_date_2->TRACT_ID = $transactions->ID;
+                        $task_date_2->save();
                     } else {
-                        $user_have_permission = 0;
+                        $group_date_for_table = \Yii::$app->formatter->asDate($old_task_date_2->TASK_TYPE_DATE, 'php:d-m-Y');
                     }
-                }
 
-
-
-                //group date
-                $old_task_date_2 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 2])->one();
-                if(!$old_task_date_2) {
-                    $transactions_for_date = \app\models\Transactions::findOne($issue->TRACT_ID);
-                    $group_date = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:Y-m-d');
-                    $group_date_for_table = \Yii::$app->formatter->asDate($transactions_for_date->TRACT_DATETIME, 'php:d-m-Y');
-
-                    $task_date_2 = new \app\models\TaskDates;
-                    $task_date_2->TASK_TYPE_DATE = new \yii\db\Expression("to_date('" . $group_date . "','{$this->dateFormat}')");
-                    $task_date_2->TASK_ID = $issue_id;
-                    $task_date_2->DATE_TYPE_ID = 2;
-                    $task_date_2->TRACT_ID = $transactions->ID;
-                    $task_date_2->save();
-                } else {
-                    $group_date_for_table = \Yii::$app->formatter->asDate($old_task_date_2->TASK_TYPE_DATE, 'php:d-m-Y');
-                }
-
-                  
+                      
 
 
 
 
-                if(!empty($issue->SOURCENUM)) {
-                    $sourcenum = $issue->SOURCENUM;
-                } else {
-                    $sourcenum = self::_UNDEFINED;
-                }
-                if(!empty($issue->ADDITIONAL_TEXT)) {
-                    $additional_text = $issue->ADDITIONAL_TEXT;
-                } else {
-                    $additional_text = self::_UNDEFINED;
-                }
-                if(!empty($issue->REPORT_TEXT)) {
-                    $report_text = $issue->REPORT_TEXT;
-                } else {
-                    $report_text = self::_UNDEFINED;
-                }
-
-                $task_date_first_time = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '1', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
-                if($task_date_first_time) {
-                    $first_date = \Yii::$app->formatter->asDate($task_date_first_time->TASK_TYPE_DATE, 'php:d-m-Y');
-                } else {
-                    $first_date = self::_UNDEFINED;
-                }
-
-                $task_date_closed = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '4', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
-                if($task_date_closed) {
-                    $closed_date = \Yii::$app->formatter->asDate($task_date_closed->TASK_TYPE_DATE, 'php:d-m-Y');
-                } else {
-                    $closed_date = self::_UNDEFINED;
-                }
-
-                $task_sector_date = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '3', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
-                if($task_sector_date) {
-                    $sektor_date = \Yii::$app->formatter->asDate($task_sector_date->TASK_TYPE_DATE, 'php:d-m-Y');
-                } else {
-                    $sektor_date = self::_UNDEFINED;
-                }
-
-                $transactions = \app\models\Transactions::findOne($issue->TRACT_ID);
-
-                $task_docs = \app\models\TaskDocs::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->all();
-                if($task_docs) {
-                    $task_docs_list = '';
-                    foreach($task_docs as $doc) {
-                        $task_docs_list .= '<a target="_blank" href="/storage/'.$doc->DOC_CODE.'">'.$doc->DOC_CODE.'</a><br>';
+                    if(!empty($issue->SOURCENUM)) {
+                        $sourcenum = $issue->SOURCENUM;
+                    } else {
+                        $sourcenum = self::_UNDEFINED;
                     }
+                    if(!empty($issue->ADDITIONAL_TEXT)) {
+                        $additional_text = $issue->ADDITIONAL_TEXT;
+                    } else {
+                        $additional_text = self::_UNDEFINED;
+                    }
+                    if(!empty($issue->REPORT_TEXT)) {
+                        $report_text = $issue->REPORT_TEXT;
+                    } else {
+                        $report_text = self::_UNDEFINED;
+                    }
+
+                    $task_date_first_time = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '1', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
+                    if($task_date_first_time) {
+                        $first_date = \Yii::$app->formatter->asDate($task_date_first_time->TASK_TYPE_DATE, 'php:d-m-Y');
+                    } else {
+                        $first_date = self::_UNDEFINED;
+                    }
+
+                    $task_date_closed = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '4', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
+                    if($task_date_closed) {
+                        $closed_date = \Yii::$app->formatter->asDate($task_date_closed->TASK_TYPE_DATE, 'php:d-m-Y');
+                    } else {
+                        $closed_date = self::_UNDEFINED;
+                    }
+
+                    $task_sector_date = \app\models\TaskDates::find()->where(['DATE_TYPE_ID' => '3', 'TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->one();
+                    if($task_sector_date) {
+                        $sektor_date = \Yii::$app->formatter->asDate($task_sector_date->TASK_TYPE_DATE, 'php:d-m-Y');
+                    } else {
+                        $sektor_date = self::_UNDEFINED;
+                    }
+
+                    $transactions = \app\models\Transactions::findOne($issue->TRACT_ID);
+
+                    $task_docs = \app\models\TaskDocs::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0])->all();
+                    if($task_docs) {
+                        $task_docs_list = '';
+                        foreach($task_docs as $doc) {
+                            $task_docs_list .= '<a target="_blank" href="/storage/'.$doc->DOC_CODE.'">'.$doc->DOC_CODE.'</a><br>';
+                        }
+                    } else {
+                        $task_docs_list = self::_UNDEFINED;
+                    }
+
+                    $task_state = $issue->_getLastTaskStatusWithText($issue->ID);
+                    if($task_state != '') {
+                        $task_states_list = $task_state;
+                    } else {
+                        $task_states_list = self::_UNDEFINED;
+                    }
+
+
+
+                    $result_table = '<table class="table table-bordered">';
+                    $result_table .= '
+                                    <tr>
+                                        <td class="issue-table-label">Подразделения</td>
+                                        <td>'.$podr_list.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Исполнитель</td>
+                                        <td>'.$pers_list.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Исходящий номер</td>
+                                        <td>'.$issue->TASK_NUMBER.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Входящий номер</td>
+                                        <td>'.$sourcenum.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Заказ (изделие)</td>
+                                        <td>'.$issue->ORDERNUM.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Заказ ПЭО</td>
+                                        <td>'.$issue->PEOORDERNUM.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Срок выполнения</td>
+                                        <td>'.\Yii::$app->formatter->asDate($issue->DEADLINE, 'php:d-m-Y').'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Содержание</td>
+                                        <td>'.$issue->TASK_TEXT.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Дополнительные указания</td>
+                                        <td>'.$additional_text.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Дата поступления в сектор</td>
+                                        <td>'.$sektor_date.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Дата поступления в группу</td>
+                                        <td>'.$group_date_for_table.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Дата поступления исполнителю</td>
+                                        <td>'.$first_date.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Дата завершения</td>
+                                        <td>'.$closed_date.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Выпущенная документация</td>
+                                        <td>'.$task_docs_list.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Отчет о работе</td>
+                                        <td>'.$report_text.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Согласовано с</td>
+                                        <td>'.$task_confirms_list.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Передано в</td>
+                                        <td>'.$task_docs_recvrs_list.'</td>  
+                                    </tr>
+                                    <tr>
+                                        <td class="issue-table-label">Состояние</td>
+                                        <td>'.$task_states_list.'</td>  
+                                    </tr>
+                    ';
+                    $result_table .= '</table>';
+
+                    if($permissions_for_read_and_write->PERM_LEVEL == '1') {
+                        $permissions_for_write = 0;
+                    } 
+                    if($permissions_for_read_and_write->PERM_LEVEL == '2') {
+                        $permissions_for_write = 1;
+                    }
+
+
+
+
+
+                    $items = ['permissons_for_read' => 1, 'user_have_permission' => $user_have_permission, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
+                    return $items;
                 } else {
-                    $task_docs_list = self::_UNDEFINED;
+                    if(!$check_permissions_for_status) {
+                        $error_message = 'У Вас нет прав на просмотр заданий в текущем статусе';
+                    }
+                    if(!$permissions_for_read_and_write) {
+                        $error_message = 'У Вас нет прав на просмотр "Форма свойств задания"';
+                    }
+
+                    $items = ['permissons_for_read' => 0, 'error_message' => $error_message, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER];
+                    return $items;
                 }
-
-                $task_state = $issue->_getLastTaskStatusWithText($issue->ID);
-                if($task_state != '') {
-                    $task_states_list = $task_state;
-                } else {
-                    $task_states_list = self::_UNDEFINED;
-                }
-
-
-
-                $result_table = '<table class="table table-bordered">';
-                $result_table .= '
-                                <tr>
-                                    <td class="issue-table-label">Подразделения</td>
-                                    <td>'.$podr_list.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Исполнитель</td>
-                                    <td>'.$pers_list.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Исходящий номер</td>
-                                    <td>'.$issue->TASK_NUMBER.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Входящий номер</td>
-                                    <td>'.$sourcenum.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Заказ (изделие)</td>
-                                    <td>'.$issue->ORDERNUM.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Заказ ПЭО</td>
-                                    <td>'.$issue->PEOORDERNUM.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Срок выполнения</td>
-                                    <td>'.\Yii::$app->formatter->asDate($issue->DEADLINE, 'php:d-m-Y').'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Содержание</td>
-                                    <td>'.$issue->TASK_TEXT.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Дополнительные указания</td>
-                                    <td>'.$additional_text.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Дата поступления в сектор</td>
-                                    <td>'.$sektor_date.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Дата поступления в группу</td>
-                                    <td>'.$group_date_for_table.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Дата поступления исполнителю</td>
-                                    <td>'.$first_date.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Дата завершения</td>
-                                    <td>'.$closed_date.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Выпущенная документация</td>
-                                    <td>'.$task_docs_list.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Отчет о работе</td>
-                                    <td>'.$report_text.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Согласовано с</td>
-                                    <td>'.$task_confirms_list.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Передано в</td>
-                                    <td>'.$task_docs_recvrs_list.'</td>  
-                                </tr>
-                                <tr>
-                                    <td class="issue-table-label">Состояние</td>
-                                    <td>'.$task_states_list.'</td>  
-                                </tr>
-                ';
-                $result_table .= '</table>';
-
-                if($permissions_for_read_and_write->PERM_LEVEL == '1') {
-                    $permissions_for_write = 0;
-                } 
-                if($permissions_for_read_and_write->PERM_LEVEL == '2') {
-                    $permissions_for_write = 1;
-                }
-
-
-
-
-
-                $items = ['permissons_for_read' => 1, 'user_have_permission' => $user_have_permission, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
-                return $items;
             } else {
-                if(!$check_permissions_for_status) {
-                    $error_message = 'У Вас нет прав на просмотр заданий в текущем статусе';
-                }
-                if(!$permissions_for_read_and_write) {
-                    $error_message = 'У Вас нет прав на просмотр "Форма свойств задания"';
-                }
-
+                $error_message = 'У Вас нет прав на просмотр этого задания';
                 $items = ['permissons_for_read' => 0, 'error_message' => $error_message, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER];
                 return $items;
             }

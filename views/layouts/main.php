@@ -44,7 +44,40 @@ AppAsset::register($this);
 				<li style="padding-top: 12px;" <?php if(\Yii::$app->controller->id == 'permissions' && Yii::$app->controller->action->id == 'states') { ?>class="active"<?php } ?>><a id="states-change-link" href="<?= Url::to(['permissions/states']); ?>">Смена состояний</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li class="user-info">Вы авторизованны как: <?= \Yii::$app->user->identity->LOGIN; ?> (номер транзакции: <?= $transactions->ID;  ?>)</li>
+				<li class="user-info">
+					Вы авторизованны как: <?= \Yii::$app->user->identity->LOGIN; ?> (номер транзакции: <?= $transactions->ID;  ?>)<br>
+					<?php
+						$query = new \yii\db\Query;
+				        $query->select('*')
+				                ->from('STIGIT.V_DOLG_PODR')
+				                ->innerJoin('STIGIT.V_F_SHRAS', 'STIGIT.V_DOLG_PODR.IDDOLG = STIGIT.V_F_SHRAS.IDDOLG ')
+				                ->where('TN = \'' . \Yii::$app->user->id .'\'');
+				        $command = $query->createCommand();
+				        $user_dolg_podr_data = $command->queryAll();
+				        $user_dolg_podr_data_block = 'табельный номер: <b>'.\Yii::$app->user->id.'</b>';
+				        if($user_dolg_podr_data) {
+
+				        	foreach ($user_dolg_podr_data as $data_dolg_podr) {
+				        		if(!empty($data_dolg_podr['NAIMDOLG'])) 
+				        			$user_dolg_podr_data_block .= ', должность <b>'.$data_dolg_podr['NAIMDOLG'].'</b>';
+				        		
+				        		if(!empty($data_dolg_podr['KODZIFR'])) {
+					        		//get podr
+					        		$query_kodzifr = new \yii\db\Query;
+					        		$query_kodzifr->select('NAIMPODR AS naimpodr')
+						                ->from('STIGIT.V_F_PODR')
+						                ->where('KODZIFR = \'' . $data_dolg_podr['KODZIFR'] .'\'');
+						            $command_kodzifr = $query_kodzifr->createCommand();
+					        		$naimpodr_data = $command_kodzifr->queryOne(); 
+					        		if($naimpodr_data)
+					        			$user_dolg_podr_data_block .= ', руководимое подразделение: '.$naimpodr_data['naimpodr'];
+					        	}
+
+				        	}
+					    }
+					    echo $user_dolg_podr_data_block;
+					?>
+				</li>
 				<li style="margin-top: 10px;"><a data-method="post" href="<?= Url::to(['site/logout']); ?>">Выйти</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
