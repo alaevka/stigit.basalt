@@ -24,7 +24,9 @@
         "kartik-v/yii2-mpdf": "dev-master",
         "kartik-v/bootstrap-fileinput": "@dev",
         "kartik-v/yii2-widget-fileinput": "@dev",
-        "skeeks/yii2-assets-auto-compress": "*"
+        "skeeks/yii2-assets-auto-compress": "*",
+        "kartik-v/yii2-widgets": "*",
+        "phpoffice/phpexcel": "^1.8"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

@@ -106,23 +106,6 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							    	},
 							    	'contentOptions' => ['style' => 'width: 270px;']
 							    ],
-						    	// [
-						    	// 	'attribute' => 'DESIGNATION',
-						    	// 	//'filter' => false,
-						    	// 	'enableSorting' => false,
-						    	// ],
-						    	// [
-						     //    	'attribute' => 'TASK_NUMBER',
-						     //    	'enableSorting' => false
-						     //    ],
-						     //    [
-						     //    	'attribute' => 'ORDERNUM',
-						     //    	'enableSorting' => false
-						     //    ],
-						     //    [
-						     //    	'attribute' => 'PEOORDERNUM',
-						     //    	'enableSorting' => false
-						     //    ],
 						        [
 						        	'attribute' => 'TASK_TEXT',
 						        	'enableSorting' => false
@@ -143,8 +126,6 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						        	'format' => 'html',
 						        	'contentOptions' => ['style' => 'width: 110px; text-align: center;']
 						        ]
-						        // 'DEADLINE',
-						        // 'TRACT_ID'
 						    ],
 						]);
 					?>
@@ -752,6 +733,10 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<div class="filter-submit-block pull-right">
 								<?= Html::a('Очистить фильтр', ['index'], ['class' => 'btn btn-default']) ?>
 								<?= Html::submitButton('Применить фильтр', ['class' => 'btn btn-primary', 'id' => 'filter-submit-button']) ?>
+
+								<?php
+									//add export button here
+								?>
 							</div>
 							<?php ActiveForm::end(); ?>
 							<?php
