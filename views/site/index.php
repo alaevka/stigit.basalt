@@ -733,7 +733,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<div class="filter-submit-block pull-right">
 								<?= Html::a('Очистить фильтр', ['index'], ['class' => 'btn btn-default']) ?>
 								<?= Html::submitButton('Применить фильтр', ['class' => 'btn btn-primary', 'id' => 'filter-submit-button']) ?>
-
+								<?= Html::a('<i class="glyphicon glyphicon-save"></i>', ['/site/excel'], ['class' => 'btn btn-success']) ?>
 								<?php
 									//add export button here
 								?>

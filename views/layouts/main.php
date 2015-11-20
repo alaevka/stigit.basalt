@@ -39,13 +39,23 @@ AppAsset::register($this);
 			<a class="navbar-brand" href="<?= Url::to(['site/index']); ?>"><img src="/images/logo_fullsize.png" height="40"></a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav ">
+			<ul class="nav navbar-nav">
+				<?php
+					$permissions_for_change_permissions = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action', ['action' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 2])->one();
+					if($permissions_for_change_permissions) {
+				?>
 				<li style="padding-top: 12px;" <?php if(\Yii::$app->controller->id == 'permissions' && Yii::$app->controller->action->id == 'index') { ?>class="active"<?php } ?>><a id="permissions-link" href="<?= Url::to(['permissions/index']); ?>">Права доступа</a></li>
+				<?php } ?>
+				<?php
+					$permissions_for_states_change = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action', ['action' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 2])->one();
+					if($permissions_for_change_permissions) {
+				?>
 				<li style="padding-top: 12px;" <?php if(\Yii::$app->controller->id == 'permissions' && Yii::$app->controller->action->id == 'states') { ?>class="active"<?php } ?>><a id="states-change-link" href="<?= Url::to(['permissions/states']); ?>">Смена состояний</a></li>
+				<?php } ?>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="user-info">
-					Вы авторизованны как: <?= \Yii::$app->user->identity->LOGIN; ?> (номер транзакции: <?= $transactions->ID;  ?>)<br>
+					Вы авторизованны как: <b><?= \Yii::$app->user->identity->LOGIN; ?></b> (номер транзакции: <?= $transactions->ID;  ?>)<br>
 					<?php
 						$query = new \yii\db\Query;
 				        $query->select('*')
@@ -56,21 +66,29 @@ AppAsset::register($this);
 				        $user_dolg_podr_data = $command->queryAll();
 				        $user_dolg_podr_data_block = 'табельный номер: <b>'.\Yii::$app->user->id.'</b>';
 				        if($user_dolg_podr_data) {
-
+				        	$iddolg_array = [];
+				        	$idpodr_array = [];
 				        	foreach ($user_dolg_podr_data as $data_dolg_podr) {
-				        		if(!empty($data_dolg_podr['NAIMDOLG'])) 
-				        			$user_dolg_podr_data_block .= ', должность <b>'.$data_dolg_podr['NAIMDOLG'].'</b>';
+				        		if(!empty($data_dolg_podr['NAIMDOLG'])) {
+				        			if(!in_array($data_dolg_podr['IDDOLG'], $iddolg_array)) {
+				        				$user_dolg_podr_data_block .= ', должность <b>'.$data_dolg_podr['NAIMDOLG'].'</b>';
+				        				$iddolg_array[] = $data_dolg_podr['IDDOLG'];
+				        			}
+				        		}
 				        		
-				        		if(!empty($data_dolg_podr['KODZIFR'])) {
-					        		//get podr
-					        		$query_kodzifr = new \yii\db\Query;
-					        		$query_kodzifr->select('NAIMPODR AS naimpodr')
-						                ->from('STIGIT.V_F_PODR')
-						                ->where('KODZIFR = \'' . $data_dolg_podr['KODZIFR'] .'\'');
-						            $command_kodzifr = $query_kodzifr->createCommand();
-					        		$naimpodr_data = $command_kodzifr->queryOne(); 
-					        		if($naimpodr_data)
-					        			$user_dolg_podr_data_block .= ', руководимое подразделение: '.$naimpodr_data['naimpodr'];
+				        		if(!empty($data_dolg_podr['KODPODR_M'])) {
+				        			if(!in_array($data_dolg_podr['KODPODR_M'], $idpodr_array)) {
+						        		//get podr
+						        		$query_kodzifr = new \yii\db\Query;
+						        		$query_kodzifr->select('NAIMPODR AS naimpodr')
+							                ->from('STIGIT.V_F_PODR')
+							                ->where('KODPODR = \'' . $data_dolg_podr['KODPODR_M'] .'\'');
+							            $command_kodzifr = $query_kodzifr->createCommand();
+						        		$naimpodr_data = $command_kodzifr->queryOne(); 
+						        		if($naimpodr_data)
+						        			$user_dolg_podr_data_block .= '<br>руководимое подразделение: <b>'.$naimpodr_data['naimpodr'].'</b>';
+						        		$idpodr_array[] = $data_dolg_podr['KODPODR_M'];
+						        	}
 					        	}
 
 				        	}

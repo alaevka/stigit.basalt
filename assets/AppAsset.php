@@ -27,6 +27,7 @@ class AppAsset extends AssetBundle
         'css/jquery.tree.min.css',
         'css/jstree.min.css',
         'css/fileinput.css',
+        //'css/font-awesome.min.css',
         'css/site.css',
     ];
     public $js = [
