@@ -61,22 +61,23 @@ class PermissionsController extends Controller
                 'states_list' => $states_list,
             ]);
         } else {
-            throw new \yii\web\ForbiddenHttpException('У Вас нет разрещения на управление правами доступа.'); 
+            throw new \yii\web\ForbiddenHttpException('У Вас нет доступа на "Права доступа".'); 
         }
     }
 
     public function actionStates()
     {
-        $permissions_for_states_change = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action', ['action' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 2])->one();
+        $permissions_for_states_change = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action', ['action' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
         if($permissions_for_states_change) {
 
             $states_list = \app\models\States::find()->all();
 
             return $this->render('states', [
-                'states_list' => $states_list
+                'states_list' => $states_list,
+                'perm_level' => $permissions_for_states_change->PERM_LEVEL
             ]);
         } else {
-            throw new \yii\web\ForbiddenHttpException('У Вас нет разрещения на смену сотояний.'); 
+            throw new \yii\web\ForbiddenHttpException('У Вас нет доступа на "Последовательность смены состояний".'); 
         }
     }
 }

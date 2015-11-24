@@ -515,7 +515,8 @@ class SiteController extends Controller
                 }
 
                 //check permissons for view issue to current user
-                $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type', ['perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
+                $permissions_for_read_and_write = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)  or 
+                                                                                            (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :dolg_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)', ['subject_type_dolg' => 1, 'dolg_id' => \Yii::$app->session->get('user.user_iddolg'), 'perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
                 
                 if($permissions_for_read_and_write && $check_permissions_for_status) {
 
@@ -809,22 +810,19 @@ class SiteController extends Controller
                     ';
                     $result_table .= '</table>';
 
-                    if($permissions_for_read_and_write->PERM_LEVEL == '1') {
-                        $permissions_for_write = 0;
-                    } 
-                    if($permissions_for_read_and_write->PERM_LEVEL == '2') {
+                
+                    if($permissions_for_read_and_write->PERM_LEVEL == '2' && $check_permissions_for_status->PERM_LEVEL == 2) {
                         $permissions_for_write = 1;
+                    } else {
+                        $permissions_for_write = 0;
                     }
-
-
-
 
 
                     $items = ['permissons_for_read' => 1, 'user_have_permission' => $user_have_permission, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
                     return $items;
                 } else {
                     if(!$check_permissions_for_status) {
-                        $error_message = 'У Вас нет прав на просмотр заданий в текущем статусе';
+                        $error_message = 'У Вас нет прав на "Форму свойств задания в текущем статусе"';
                     }
                     if(!$permissions_for_read_and_write) {
                         $error_message = 'У Вас нет прав на просмотр "Форма свойств задания"';
@@ -916,7 +914,12 @@ class SiteController extends Controller
         }   
 
 
-        $permissions_for_read_and_write = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type', ['perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
+        //check permissons for view issue to current user
+        $permissions_for_read_and_write = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)  or 
+                                                                                    (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :dolg_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)', ['subject_type_dolg' => 1, 'dolg_id' => \Yii::$app->session->get('user.user_iddolg'), 'perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
+        
+
+
         if($permissions_for_read_and_write && $check_permissions_for_status) {    
             if($permissions_for_read_and_write->PERM_LEVEL == 2 && $check_permissions_for_status->PERM_LEVEL == 2) {
 
@@ -1287,7 +1290,11 @@ class SiteController extends Controller
                     ]);
                 }
             } else {
-                throw new \yii\web\ForbiddenHttpException('У Вас нет прав на редактирование "Свойств задания"'); 
+                if($permissions_for_read_and_write->PERM_LEVEL != 2) {
+                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на "Форму свойств задания"'); 
+                } elseif($check_permissions_for_status->PERM_LEVEL != 2) {
+                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на "Форму свойств задания в текущем статусе"'); 
+                }
             }
 
         } else {
@@ -1326,6 +1333,47 @@ class SiteController extends Controller
             $transactions->TRACT_DATETIME = new \yii\db\Expression('SYSDATE');
             $transactions->USER_IP = $_SERVER['REMOTE_ADDR'];
             $transactions->insert();
+
+            //заносим в сессию данные пользователя
+            $query = new \yii\db\Query;
+            $query->select('*')
+                    ->from('STIGIT.V_DOLG_PODR')
+                    ->innerJoin('STIGIT.V_F_SHRAS', 'STIGIT.V_DOLG_PODR.IDDOLG = STIGIT.V_F_SHRAS.IDDOLG ')
+                    ->where('TN = \'' . \Yii::$app->user->id .'\'');
+            $command = $query->createCommand();
+            $user_dolg_podr_data = $command->queryAll();
+            $user_dolg_podr_data_block = 'табельный номер: <b>'.\Yii::$app->user->id.'</b>';
+            if($user_dolg_podr_data) {
+                $iddolg_array = [];
+                $idpodr_array = [];
+                foreach ($user_dolg_podr_data as $data_dolg_podr) {
+                    if(!empty($data_dolg_podr['NAIMDOLG'])) {
+                        if(!in_array($data_dolg_podr['IDDOLG'], $iddolg_array)) {
+                            $user_dolg_podr_data_block .= ', должность <b>'.$data_dolg_podr['NAIMDOLG'].'</b>';
+                            $iddolg_array[] = $data_dolg_podr['IDDOLG'];
+                            \Yii::$app->session->set('user.user_iddolg', $data_dolg_podr['IDDOLG']);
+                        }
+                    }
+                    
+                    if(!empty($data_dolg_podr['KODPODR_M'])) {
+                        if(!in_array($data_dolg_podr['KODPODR_M'], $idpodr_array)) {
+                            //get podr
+                            $query_kodzifr = new \yii\db\Query;
+                            $query_kodzifr->select('NAIMPODR AS naimpodr')
+                                ->from('STIGIT.V_F_PODR')
+                                ->where('KODPODR = \'' . $data_dolg_podr['KODPODR_M'] .'\'');
+                            $command_kodzifr = $query_kodzifr->createCommand();
+                            $naimpodr_data = $command_kodzifr->queryOne(); 
+                            if($naimpodr_data)
+                                $user_dolg_podr_data_block .= '<br>руководимое подразделение: <b>'.$naimpodr_data['naimpodr'].'</b>';
+                            $idpodr_array[] = $data_dolg_podr['KODPODR_M'];
+                        }
+                    }
+
+                }
+            }
+
+            \Yii::$app->session->set('user.user_dolg_podr_data_block', $user_dolg_podr_data_block);
 
             return $this->goBack();
         } else {
@@ -1392,39 +1440,44 @@ class SiteController extends Controller
     public function actionSetpermissions() {
 
         if (Yii::$app->request->isAjax) {
-            $parent_id = $_POST['parent_id'];
-            $parent_type = $_POST['parent_type'];
-            $original_id = $_POST['original_id'];
-            $original_type = $_POST['original_type'];
+
+            $permissions_for_states_change = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action', ['action' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 2])->one();
+            if($permissions_for_states_change) {
+
+                $parent_id = $_POST['parent_id'];
+                $parent_type = $_POST['parent_type'];
+                $original_id = $_POST['original_id'];
+                $original_type = $_POST['original_type'];
 
 
 
-            $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+                $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
-            switch($original_type) {
-                case "actions": $perm_type = 1; break;
-                case "states": $perm_type = 2; break;
-            }
+                switch($original_type) {
+                    case "actions": $perm_type = 1; break;
+                    case "states": $perm_type = 2; break;
+                }
 
-            switch($parent_type) {
-                case "v_f_shra": $subject_type = 1; break;
-                case "v_f_pers": $subject_type = 2; break;
-            }
+                switch($parent_type) {
+                    case "v_f_shra": $subject_type = 1; break;
+                    case "v_f_pers": $subject_type = 2; break;
+                }
 
-            $permissions = new \app\models\Permissions;
-            $permissions->SUBJECT_ID = $parent_id;
-            $permissions->SUBJECT_TYPE = $subject_type;
-            $permissions->ACTION_ID = $original_id;
-            $permissions->TRACT_ID = $transactions->ID;
-            $permissions->PERM_TYPE = $perm_type;
+                $permissions = new \app\models\Permissions;
+                $permissions->SUBJECT_ID = $parent_id;
+                $permissions->SUBJECT_TYPE = $subject_type;
+                $permissions->ACTION_ID = $original_id;
+                $permissions->TRACT_ID = $transactions->ID;
+                $permissions->PERM_TYPE = $perm_type;
 
-            if($permissions->save()) {
-                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return ['error' => 0, 'inserted_id' => $permissions->ID];
-            } else {
-                //print_r($permissions->errors); die();
-                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return ['error' => 1];
+                if($permissions->save()) {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 0, 'inserted_id' => $permissions->ID];
+                } else {
+                    //print_r($permissions->errors); die();
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 1];
+                }
             }
             
         }
@@ -1458,22 +1511,26 @@ class SiteController extends Controller
     public function actionSetpermlevel() {
 
         if (Yii::$app->request->isAjax) {
-            $permission_id = $_POST['permission_id'];
-            $level = $_POST['level'];
+
             
-            //$transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
-            $permissions = \app\models\Permissions::findOne($permission_id);
-            $permissions->PERM_LEVEL = $level;
+                $permission_id = $_POST['permission_id'];
+                $level = $_POST['level'];
+                
+                //$transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
-            if($permissions->save()) {
-                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return ['error' => 0];
-            } else {
-                //print_r($permissions->errors); die();
-                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return ['error' => 1];
-            }
+                $permissions = \app\models\Permissions::findOne($permission_id);
+                $permissions->PERM_LEVEL = $level;
+
+                if($permissions->save()) {
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 0];
+                } else {
+                    //print_r($permissions->errors); die();
+                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                    return ['error' => 1];
+                }
+            
             
         }
 

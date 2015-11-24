@@ -29,7 +29,7 @@
 												$state_next = \app\models\StatesNext::find()->where(['STATE_ID' => $state->ID, 'NEXT_STATE_ID'=>$inner_state->ID, 'DEL_TRACT_ID' => 0])->one();
 												//if($state_next) echo $state_next->NEXT_STATE_ID;
 										?>
-											<div class="checkbox" style="font-size: 11px;"><label><input type="checkbox" <?php if($state_next) { ?>checked<?php } ?> class="states-change-checkbox" data-parent="<?= $state->ID; ?>" name="States[<?= $state->ID; ?>][]" value="<?= $inner_state->ID; ?>"> <?= $inner_state->STATE_NAME ?></label></div>
+											<div class="checkbox" style="font-size: 11px;"><label><input <?php if($perm_level != 2) { ?>disabled<?php } ?> type="checkbox" <?php if($state_next) { ?>checked<?php } ?> class="states-change-checkbox" data-parent="<?= $state->ID; ?>" name="States[<?= $state->ID; ?>][]" value="<?= $inner_state->ID; ?>"> <?= $inner_state->STATE_NAME ?></label></div>
 										<?php
 											}
 										?>
