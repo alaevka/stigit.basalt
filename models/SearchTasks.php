@@ -92,7 +92,8 @@ class SearchTasks extends Tasks
         if(isset($params['podr_issues']) && $params['podr_issues'] == 1) {
 
             //check permission
-            $permissions_podr_tasks_my = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action', ['action' => 21, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
+            $permissions_podr_tasks_my = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action) or
+                (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :id_dolg and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action)', ['subject_type_dolg' => 1, 'id_dolg' =>  \Yii::$app->session->get('user.user_iddolg'), 'action' => 21, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
             if($permissions_podr_tasks_my) {
                 if($permissions_podr_tasks_my->PERM_LEVEL == 1 || $permissions_podr_tasks_my->PERM_LEVEL == 2) {
 
@@ -106,17 +107,18 @@ class SearchTasks extends Tasks
                     $query->joinWith('podrtasks'); 
                     $query->andFilterWhere(['PODR_TASKS.KODZIFR' => trim($data['KODZIFR'])]);
                 } else {
-                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вашему подразделению'); 
+                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на "Выданные любым задания"'); 
                 }
             } else {
-                throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вашему подразделению'); 
+                throw new \yii\web\ForbiddenHttpException('У Вас нет прав на "Выданные любым задания"'); 
             }
         }
 
         //tasks my filter
         if(isset($params['tasks_my']) && $params['tasks_my'] == 1) {
             //check permission
-            $permissions_podr_tasks_my = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action', ['action' => 23, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
+            $permissions_podr_tasks_my = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action) or
+            (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :id_dolg and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action)', ['subject_type_dolg' => 1, 'id_dolg' =>  \Yii::$app->session->get('user.user_iddolg'), 'action' => 23, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
                 if($permissions_podr_tasks_my) {
                     if($permissions_podr_tasks_my->PERM_LEVEL == 1 || $permissions_podr_tasks_my->PERM_LEVEL == 2) {
                         //get all current user transactions
@@ -129,10 +131,10 @@ class SearchTasks extends Tasks
                             $query->andFilterWhere(['TRACT_ID' => $transactions_array]);
                         } 
                     } else {
-                        throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вами'); 
+                        throw new \yii\web\ForbiddenHttpException('У Вас нет прав на "Выданные лично задания"'); 
                     }
                 } else {
-                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на просмотр заданий, выданных вами'); 
+                    throw new \yii\web\ForbiddenHttpException('У Вас нет прав на "Выданные лично задания"'); 
                 }
             
         }

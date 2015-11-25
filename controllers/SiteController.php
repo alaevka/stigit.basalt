@@ -509,7 +509,8 @@ class SiteController extends Controller
             if($pers_tasks_this) {
                 $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
                 if($task_state) {
-                    $check_permissions_for_status = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type', ['perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
+                    $check_permissions_for_status = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type) or
+                        (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :id_dolg and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type)', ['subject_type_dolg' => 1, 'id_dolg' =>  \Yii::$app->session->get('user.user_iddolg'), 'perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
                 } else {
                     $check_permissions_for_status = true;
                 }
@@ -822,7 +823,9 @@ class SiteController extends Controller
                     return $items;
                 } else {
                     if(!$check_permissions_for_status) {
-                        $error_message = 'У Вас нет прав на "Форму свойств задания в текущем статусе"';
+                        //get state name
+                        $states = \app\models\States::findOne($task_state->STATE_ID);
+                        $error_message = 'У Вас нет прав на "Форма свойств задания" в статусе "'.$states->STATE_NAME.'"';
                     }
                     if(!$permissions_for_read_and_write) {
                         $error_message = 'У Вас нет прав на просмотр "Форма свойств задания"';
@@ -908,7 +911,8 @@ class SiteController extends Controller
         $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
         $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
         if($task_state) {
-            $check_permissions_for_status = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type', ['perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
+            $check_permissions_for_status = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type) or
+                (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :id_dolg and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action and PERM_TYPE = :perm_type)', ['subject_type_dolg' => 1, 'id_dolg' =>  \Yii::$app->session->get('user.user_iddolg'), 'perm_type' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => $task_state->STATE_ID])->one();
         } else {
             $check_permissions_for_status = true;
         }   
@@ -1299,7 +1303,7 @@ class SiteController extends Controller
 
         } else {
 
-        throw new \yii\web\ForbiddenHttpException('У Вас нет прав на редактирование "Свойств задания"'); 
+            throw new \yii\web\ForbiddenHttpException('У Вас нет прав на редактирование "Свойств задания"'); 
 
         }
     }
@@ -1441,7 +1445,8 @@ class SiteController extends Controller
 
         if (Yii::$app->request->isAjax) {
 
-            $permissions_for_states_change = \app\models\Permissions::find()->where('SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action', ['action' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 2])->one();
+            $permissions_for_states_change = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action) or 
+                (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :dolg_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action)', ['subject_type_dolg' => 1, 'dolg_id' => \Yii::$app->session->get('user.user_iddolg'), 'action' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 2])->one();
             if($permissions_for_states_change) {
 
                 $parent_id = $_POST['parent_id'];

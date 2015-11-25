@@ -1,5 +1,10 @@
 $(document).ready(function(){
 
+	$(".filter-form-submit").click(function(){
+		$("#filter-submit-button").trigger('click');
+	});
+
+
 	$(".login-input-box").keyup(function(){
 		var login = $("#loginform-username").val();
 		var password = $("#loginform-password").val();

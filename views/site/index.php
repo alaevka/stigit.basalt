@@ -133,7 +133,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 				<div class="col-md-4">
 					<div class="row">
 						<div class="panel-group fixed" style="height: 580px; overflow: auto;" id="accordion" role="tablist" aria-multiselectable="true">
-							<div class="filters-header fixed" style="z-index: 99;">Фильтры</div>
+							<div class="filters-header fixed" style="z-index: 99;">Фильтры<a class="pull-right filter-form-submit" href="#"><span style="font-size: 16px;" class="glyphicon glyphicon-filter"></span></a></div>
 							
 							<?php $form_filter = ActiveForm::begin([
 					                'id' => 'filter-form',
@@ -733,9 +733,21 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							<div class="filter-submit-block pull-right">
 								<?= Html::a('Очистить фильтр', ['index'], ['class' => 'btn btn-default']) ?>
 								<?= Html::submitButton('Применить фильтр', ['class' => 'btn btn-primary', 'id' => 'filter-submit-button']) ?>
-								<?= Html::a('<i class="glyphicon glyphicon-save"></i>', ['/site/excel'], ['class' => 'btn btn-success']) ?>
+
 								<?php
-									//add export button here
+									$permissions_report_task_search = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action) or
+										(SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :dolg_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action)', ['subject_type_dolg' => 1, 'dolg_id' => \Yii::$app->session->get('user.user_iddolg'), 'action' => 82, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0])->one();
+									if($permissions_report_task_search) {
+										//get selected issues ids
+										$selected_issues = $dataProvider->getModels();
+										if($selected_issues) {
+											$selected_issues_array = [];
+											foreach($selected_issues as $issue) {
+												$selected_issues_array[] = $issue->ID;
+											}
+										}
+										echo Html::a('<i class="glyphicon glyphicon-save"></i>', ['/reports/excel', 'ids' => implode(',', $selected_issues_array)], ['class' => 'btn btn-success', 'title' => 'Сформировать отчет']);
+									}
 								?>
 							</div>
 							<?php ActiveForm::end(); ?>

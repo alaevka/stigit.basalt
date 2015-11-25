@@ -40,5 +40,19 @@ class TaskStates extends \yii\db\ActiveRecord
         $state = \app\models\States::findOne($this->STATE_ID);
         return '<img height="16" src="/images/items_status/'.$state->STATE_COLOUR.'.png">';
     }
+
+    public function getStateName()
+    {
+        $state = \app\models\States::findOne($this->STATE_ID);
+        return $state->STATE_NAME;
+    }
+
+    public function getStateColour()
+    {
+        $state = \app\models\States::findOne($this->STATE_ID);
+        return $state->STATE_COLOUR;
+    }
+
+
     
 }
