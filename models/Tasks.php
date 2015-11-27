@@ -1,11 +1,13 @@
 <?php
-
+/*
+    Модель заданий
+*/
 namespace app\models;
-
 use Yii;
 
 class Tasks extends \yii\db\ActiveRecord
 {
+    //объявление используемых проперти и констант
     const SCENARIO_UPDATE = 'update';
 
     public $podr_list;
@@ -18,13 +20,12 @@ class Tasks extends \yii\db\ActiveRecord
     public $agreed_podr_list;
     public $transmitted_podr_list;
     public $state;
-
     public $hidden_ordernum;
     public $hidden_peoordernum;
     
 
     /**
-     * @inheritdoc
+     * @метод, возвращающий имя таблицы TASKS
      */
     public static function tableName()
     {
@@ -32,7 +33,7 @@ class Tasks extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
+     * @валидация
      */
     public function rules()
     {
@@ -46,53 +47,63 @@ class Tasks extends \yii\db\ActiveRecord
         ];
     }
 
-
+    //реляция с таблицей TaskStates
     public function getTaskstates()
     {
         return $this->hasMany(\app\models\TaskStates::className(), ['TASK_ID' => 'ID'])->where(['IS_CURRENT' => 1]);
     }
 
+    //реляция с таблицей PodrTasks
     public function getPodrtasks()
     {
         return $this->hasMany(\app\models\PodrTasks::className(), ['TASK_ID' => 'ID'])->where('PODR_TASKS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
     }
 
+    //реляция с таблицей TaskConfirms
     public function getTaskconfirms()
     {
         return $this->hasMany(\app\models\TaskConfirms::className(), ['TASK_ID' => 'ID'])->where('TASK_CONFIRMS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
     }
 
+    //реляция с таблицей PersTasks
     public function getPerstasks()
     {
         return $this->hasMany(\app\models\PersTasks::className(), ['TASK_ID' => 'ID'])->where('PERS_TASKS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
     }
 
+    //реляция с таблицей TaskDocs
     public function getTaskdocs()
     {
         return $this->hasMany(\app\models\TaskDocs::className(), ['TASK_ID' => 'ID'])->where('TASK_DOCS.DEL_TRACT_ID = :del_tract_id', ['del_tract_id'=>0]);
     }
 
+    //реляция с таблицей TaskDates
     public function getDatetype3()
     {
         return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>3]);
     }
 
+    //реляция с таблицей TaskDates
     public function getDatetype2()
     {
         return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>2]);
     }
 
+    //реляция с таблицей TaskDates
     public function getDatetype1()
     {
         return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>1]);
     }
 
+    //реляция с таблицей TaskDates
     public function getDatetype4()
     {
         return $this->hasOne(\app\models\TaskDates::className(), ['TASK_ID' => 'ID'])->where('TASK_DATES.DEL_TRACT_ID = :del_tract_id and TASK_DATES.DATE_TYPE_ID = :date_type_id', ['del_tract_id'=>0, 'date_type_id'=>4]);
     }
 
-
+    /*
+        Описание полей для формирования label
+    */
     public function attributeLabels()
     {
         return [
@@ -121,6 +132,9 @@ class Tasks extends \yii\db\ActiveRecord
         ];
     }
 
+    /*
+        Получение иконки предыдущего статуса задания 
+    */
     public function _getLastTaskStatus($id) {
 
         $task_state = \app\models\TaskStates::find()->where(['TASK_ID' => $id])->orderBy('ID DESC')->LIMIT(1)->one();
@@ -132,6 +146,9 @@ class Tasks extends \yii\db\ActiveRecord
         }
     }
 
+    /*
+        Получение иконки и текста предыдущего статуса задания 
+    */
     public function _getLastTaskStatusWithText($id) {
         $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
         if($pers_tasks) {
@@ -147,7 +164,9 @@ class Tasks extends \yii\db\ActiveRecord
         }
     }
 
-
+    /*
+        Получение текущего статуса без текста, только иконка
+    */
     public function _getCurrentTaskStatus($id) {
         $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
         if($persons) {
@@ -175,6 +194,10 @@ class Tasks extends \yii\db\ActiveRecord
         }
     }
 
+
+    /*
+        Получение текущего статуса с текстом
+    */
     public function _getCurrentTaskStatusWithText($id) {
         $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
         if($persons) {
@@ -202,6 +225,10 @@ class Tasks extends \yii\db\ActiveRecord
         }
     }
 
+
+    /*
+        Возвращает Id текущего
+    */
     public function _getCurrentTaskStatusWithId($id) {
         $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
         if($persons) {

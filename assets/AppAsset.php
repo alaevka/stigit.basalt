@@ -1,18 +1,13 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+/*
+    Класс подключения стилей и клиентских js скриптов
+*/
 
 namespace app\assets;
 
 use yii\web\AssetBundle;
 
-/**
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
- */
+
 class AppAsset extends AssetBundle
 {
     public $basePath = '@webroot';
@@ -27,7 +22,6 @@ class AppAsset extends AssetBundle
         'css/jquery.tree.min.css',
         'css/jstree.min.css',
         'css/fileinput.css',
-        //'css/font-awesome.min.css',
         'css/site.css',
     ];
     public $js = [
@@ -49,6 +43,7 @@ class AppAsset extends AssetBundle
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapPluginAsset',
     ];
+    //отображаем в <head> теге
     public $jsOptions = ['position' => \yii\web\View::POS_HEAD];
 
 }

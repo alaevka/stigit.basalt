@@ -35,18 +35,21 @@ class TaskStates extends \yii\db\ActiveRecord
         ];
     }
 
+    //реляция с моделью States для получения иконки
     public function getState_name_state_colour_without_text()
     {
         $state = \app\models\States::findOne($this->STATE_ID);
         return '<img height="16" src="/images/items_status/'.$state->STATE_COLOUR.'.png">';
     }
 
+    //реляция с моделью States для получения имени статуса
     public function getStateName()
     {
         $state = \app\models\States::findOne($this->STATE_ID);
         return $state->STATE_NAME;
     }
 
+    //реляция с моделью States для получения цвета статуса
     public function getStateColour()
     {
         $state = \app\models\States::findOne($this->STATE_ID);

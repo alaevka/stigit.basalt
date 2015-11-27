@@ -1,13 +1,14 @@
 <?php
-
+/*
+    Модель прав доступа
+*/
 namespace app\models;
-
 use Yii;
 
 class Permissions extends \yii\db\ActiveRecord
 {
     /**
-     * @inheritdoc
+     * метод, возвращающий имя таблицы ACTIONS
      */
     public static function tableName()
     {
@@ -15,7 +16,7 @@ class Permissions extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
+     * валидация данных
      */
     public function rules()
     {
@@ -25,11 +26,17 @@ class Permissions extends \yii\db\ActiveRecord
         ];
     }
 
+    /*
+        реляция с моделью Actions
+    */
     public function getPermactiontype()
     {
         return $this->hasOne(\app\models\Actions::className(), ['ID' => 'ACTION_ID']);
     }
 
+    /*
+        реляция с моделью States
+    */
     public function getPermstatestype()
     {
         return $this->hasOne(\app\models\States::className(), ['ID' => 'ACTION_ID']);

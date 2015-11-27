@@ -1,5 +1,7 @@
 <?php
-
+/*
+    Модель для таблицы  pers_tasks
+*/
 namespace app\models;
 
 use Yii;

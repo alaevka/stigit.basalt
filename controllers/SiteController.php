@@ -76,11 +76,9 @@ class SiteController extends Controller
     */
     public function actionIndex()
     {
-
-        
-       
+        //создаем новый объект для формы добавления задания
         $model = new \app\models\IssueForm;
-        
+        //получаем дерево подразделей        
         $this->_podr_data_array = $this->_getPodrData();
         $this->_createPodrTree(1, 0, $link = 'checkbox-podr-link');
         $this->_createPodrTree(1, 0, 'checkbox-podr-link-filter');
@@ -98,7 +96,7 @@ class SiteController extends Controller
                 // получаем объект текущей транзакции
                 $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
                 /*
-                    Сохраняем модель TASKS
+                    Сохраняем модель TASKS-----------------------------------------------------------------------------------------
                 */
                 $task = new \app\models\Tasks;
                 // в случае, если DESIGNATION не был выбран из имеющихся данных и создан новый
@@ -176,9 +174,7 @@ class SiteController extends Controller
         if(!is_array($searchModel->documentation))
             $searchModel->documentation = [];
 
-        
-
-        // рендерим шаблон
+        // рендерим шаблон и передаем в него переменные
         return $this->render('index', [
             'podr_data' => $this->_multidemensional_podr,
             'podr_data_filter' => $this->_multidemensional_podr_filter,
@@ -186,7 +182,6 @@ class SiteController extends Controller
             'model' => $model,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
-            
         ]);
     }
 
@@ -229,17 +224,13 @@ class SiteController extends Controller
             }
             
             foreach ($this->_podr_data_array[$parent_id] as $value) {
-               // if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
-                    if($this->_checkNextPodrTree($value['id'])) {
-                        $class = "class=\"collapsed\"";
-                    } else {
-                        $class = '';
-                    }
-                //} else {
-                //    $class = 'not-collapsed-for-filter';
-                //}
+                if($this->_checkNextPodrTree($value['id'])) {
+                    $class = "class=\"collapsed\"";
+                } else {
+                    $class = '';
+                }
                 
-                
+                //формируем строку списка в зависимости от нужного нам дерева подразделений
                 switch ($checkbox_link) {
                     case 'checkbox-podr-link':
                         $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
@@ -259,9 +250,7 @@ class SiteController extends Controller
                 }
 
                 $level++;
-                //if($checkbox_link != 'checkbox-podr-link-filter' && $checkbox_link != 'checkbox-agreed-link-filter') {
-                    $this->_createPodrTree($value['id'], $level, $checkbox_link);
-                //}
+                $this->_createPodrTree($value['id'], $level, $checkbox_link);
                 $level--; 
             }
             switch ($checkbox_link) {
@@ -284,6 +273,9 @@ class SiteController extends Controller
         }
     }
 
+    /*
+        Формирования списков подразделений для формы редактировани задания поля "Согласовано"
+    */
     public function _createPodrTreeAgreed($parent_id, $level) {
         if (isset($this->_podr_data_array[$parent_id])) { 
             $this->_multidemensional_podr_agreed .= "<ul>";
@@ -303,6 +295,9 @@ class SiteController extends Controller
         }
     }
 
+    /*
+        Формирования списков подразделений для формы редактировани задания поля "Передано в"
+    */
     public function _createPodrTreeTransmitted($parent_id, $level) {
         if (isset($this->_podr_data_array[$parent_id])) { 
             $this->_multidemensional_podr_transmitted .= "<ul>";
@@ -322,7 +317,9 @@ class SiteController extends Controller
         }
     }
 
-
+    /*
+        НЕ ИСПОЛЬЗУЕТСЯ. Метод формирования иерархии дерева подразделений. В настоящее время не используется, но оставлю на всяки случай.
+    */
     public function _getMulti(&$rs, $parent) {
         $out = array();
         if (!isset($rs[$parent]))
@@ -342,6 +339,9 @@ class SiteController extends Controller
         return $out;
     }
 
+    /*
+        Возвращает массив подразделей
+    */
     public function _getPodrData($parent = 1, $i = 0) {
         $query = new \yii\db\Query;
         $query->select('NAIMPODR AS name, VIDPODR as vid, KODPODR AS id, KODRODIT as parent, KODZIFR as code')
@@ -356,6 +356,9 @@ class SiteController extends Controller
         return $return;
     }
 
+    /*
+        Метод live-search поиска по основанию
+    */
     public function actionDesignationsearch($q = null, $id = null) {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -366,7 +369,6 @@ class SiteController extends Controller
                 ->from('STIGIT.V_PRP_DESIGNATION')
                 ->where('LOWER(DESIGNATION) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
-                //echo mb_strtolower($q, 'UTF-8'); die();
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
@@ -374,6 +376,9 @@ class SiteController extends Controller
         return $out;
     }
 
+    /*
+        Метод live-search поиска по номеру заказа
+    */
     public function actionFilterordernumsearch($q = null, $id = null) {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -384,7 +389,6 @@ class SiteController extends Controller
                 ->from('STIGIT.V_PRP_DESIGNATION')
                 ->where('LOWER(ORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
-                //echo mb_strtolower($q, 'UTF-8'); die();
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
@@ -392,6 +396,9 @@ class SiteController extends Controller
         return $out;
     }
 
+    /*
+        Метод live-search поиска по заказ ПЭО
+    */
     public function actionFilterpeoordernumsearch($q = null, $id = null) {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -402,7 +409,6 @@ class SiteController extends Controller
                 ->from('STIGIT.V_PRP_DESIGNATION')
                 ->where('LOWER(PEOORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
-                //echo mb_strtolower($q, 'UTF-8'); die();
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
@@ -410,6 +416,9 @@ class SiteController extends Controller
         return $out;
     }
 
+    /*
+        Метод live-search поиска по документации
+    */
     public function actionFilterdocumentationsearch($q = null, $id = null) {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -427,6 +436,9 @@ class SiteController extends Controller
         return $out;
     }
 
+    /*
+        Метод live-search поиска по заказу для формы редактирования
+    */
     public function actionOrdernumsearch($q = null, $id = null) {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -437,7 +449,6 @@ class SiteController extends Controller
                 ->from('STIGIT.V_PRP_DESIGNATION')
                 ->where('LOWER(ORDERNUM) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
-                //echo mb_strtolower($q, 'UTF-8'); die();
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
@@ -445,6 +456,9 @@ class SiteController extends Controller
         return $out;
     }
 
+    /*
+        Метод live-search поиска по заказу ПЭО для формы редактирования
+    */
     public function actionPeoordernumsearch($q = null, $id = null) {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -463,8 +477,11 @@ class SiteController extends Controller
         return $out;
     }
 
-
+    /*
+        Метод формирования списка сотрудников для конкретного подразделения
+    */
     public function actionGetpersons() {
+        //проверка на асинхронный запрос
         if (Yii::$app->request->isAjax) {
             $post_data = $_POST['selected_podr'];
 
@@ -478,9 +495,8 @@ class SiteController extends Controller
                 $command = $query->createCommand();
                 $data = $command->queryOne();
                 
-
+                //формирование списка 
                 $persons_list .= "<li class=\"expanded\"><span style=\"font-weight: normal; font-size: 12px;\">".$data['vid']." ".$data['code'].". ".$data['name']."</span>";
-                //get persons names
                 $query = new \yii\db\Query;
                 $query->select('*')
                     ->from('STIGIT.V_F_PERS')
@@ -498,14 +514,20 @@ class SiteController extends Controller
         }
     }
 
+    /*
+        Метод вывода информации по заданию в модальном окне - только для асинхронных запросов.
+    */
     public function actionGetissuedata() {
+        //проверка на ajax запрос
         if (Yii::$app->request->isAjax) {
             $issue_id = $_POST['id'];
+            //устанавливаем формат ответа
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $issue = \app\models\Tasks::findOne($issue_id);
 
-            //get current issue status for this user
+            //получаем текущий статус для пользователя сделавшего запрос
             $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue->ID, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+            //проверяем имеет ли доступ в текущем статусе
             if($pers_tasks_this) {
                 $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
                 if($task_state) {
@@ -515,15 +537,15 @@ class SiteController extends Controller
                     $check_permissions_for_status = true;
                 }
 
-                //check permissons for view issue to current user
+                //проверяем имеет ли пользователь доступ к форме редактирования задания
                 $permissions_for_read_and_write = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)  or 
                                                                                             (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :dolg_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)', ['subject_type_dolg' => 1, 'dolg_id' => \Yii::$app->session->get('user.user_iddolg'), 'perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
                 
                 if($permissions_for_read_and_write && $check_permissions_for_status) {
-
-                    
+                    //переменная для проверки входит ли текщий пользователь в подразделения, назначенные в задании
                     $user_have_permission = 0;
 
+                    //получаем список подразделений задания
                     $podr_tasks = \app\models\PodrTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
                     if($podr_tasks) {
                         $podr_list = '';
@@ -542,7 +564,7 @@ class SiteController extends Controller
                         }
                        
                     }
-
+                    //получаем список подразделений для поля "Согласовано"
                     $tasks_confirms = \app\models\TaskConfirms::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
                     if($tasks_confirms) {
                         $task_confirms_list = '';
@@ -559,7 +581,7 @@ class SiteController extends Controller
                     } else {
                         $task_confirms_list = self::_UNDEFINED;
                     }
-
+                    //получаем список подразделений для поля "Передано в"
                     $tasks_docs_recvrs = \app\models\TaskDocsRecvrs::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
                     if($tasks_docs_recvrs) {
                         $task_docs_recvrs_list = '';
@@ -576,7 +598,7 @@ class SiteController extends Controller
                     } else {
                         $task_docs_recvrs_list = self::_UNDEFINED;
                     }
-
+                    //получаем список пользователей, кому назначено задание
                     $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' => $issue->ID, 'DEL_TRACT_ID' => 0])->all();
                     $pers_list = '';
                     if($pers_tasks) {
@@ -596,8 +618,9 @@ class SiteController extends Controller
                         $persons_array = [];
                     }
 
+
                     $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
-                    //save date for person if his owner this issue
+                    //save date for person if his owner this issue - формируем дату поступления в группу, если задание открыто первый раз
                     if(in_array(\Yii::$app->user->id, $persons_array)) {
 
                         //check if window opened first time for date
@@ -636,7 +659,7 @@ class SiteController extends Controller
                     }
 
 
-                    //check if user in podr
+                    //проверяем входит ли пользователь в список подразделений задания
                     if(empty($persons_array)) {
                         $ids = join(',', $podr_list_kodzifr_array); 
                         $query = new \yii\db\Query;
@@ -652,9 +675,7 @@ class SiteController extends Controller
                         }
                     }
 
-
-
-                    //group date
+                    //получаем дату поступления в группу
                     $old_task_date_2 = \app\models\TaskDates::find()->where(['TASK_ID' => $issue_id, 'DEL_TRACT_ID' => 0, 'DATE_TYPE_ID' => 2])->one();
                     if(!$old_task_date_2) {
                         $transactions_for_date = \app\models\Transactions::findOne($issue->TRACT_ID);
@@ -671,11 +692,7 @@ class SiteController extends Controller
                         $group_date_for_table = \Yii::$app->formatter->asDate($old_task_date_2->TASK_TYPE_DATE, 'php:d-m-Y');
                     }
 
-                      
-
-
-
-
+                    //формируем поля по заданию
                     if(!empty($issue->SOURCENUM)) {
                         $sourcenum = $issue->SOURCENUM;
                     } else {
@@ -733,7 +750,7 @@ class SiteController extends Controller
                     }
 
 
-
+                    //формируем html - таблицу для вывода информации
                     $result_table = '<table class="table table-bordered">';
                     $result_table .= '
                                     <tr>
@@ -811,17 +828,18 @@ class SiteController extends Controller
                     ';
                     $result_table .= '</table>';
 
-                
+                    //проверяем есть ли доступ на редактирование для отображения ссылки (кнопки) редактирования
                     if($permissions_for_read_and_write->PERM_LEVEL == '2' && $check_permissions_for_status->PERM_LEVEL == 2) {
                         $permissions_for_write = 1;
                     } else {
                         $permissions_for_write = 0;
                     }
 
-
+                    // возвращаем json массив
                     $items = ['permissons_for_read' => 1, 'user_have_permission' => $user_have_permission, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
                     return $items;
                 } else {
+                    //в случае, если нет доступа, формируем тексты ошибок
                     if(!$check_permissions_for_status) {
                         //get state name
                         $states = \app\models\States::findOne($task_state->STATE_ID);
@@ -830,7 +848,7 @@ class SiteController extends Controller
                     if(!$permissions_for_read_and_write) {
                         $error_message = 'У Вас нет прав на просмотр "Форма свойств задания"';
                     }
-
+                    // возвращаем json массив
                     $items = ['permissons_for_read' => 0, 'error_message' => $error_message, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER];
                     return $items;
                 }
@@ -842,7 +860,11 @@ class SiteController extends Controller
         }
     }
 
+    /*
+        Метод загрузки документации
+    */
     public function actionDocumentsupload() {
+        //проверка что запрос асинхронный
         if(Yii::$app->request->post()) {
             $formats = Yii::$app->request->post();
             $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
@@ -850,8 +872,10 @@ class SiteController extends Controller
             if($_FILES) {
                 $no_error = 0;
                 $errors = '';
+                //обходим все загружаемые файлы
                 foreach($_FILES['documentation']['name'] as $key => $filename) {
                     
+                    //пишем в модель и сохраняем
                     $model = new \app\models\TaskDocs;
                     $model->DOC_CODE = $filename;
                     $model->TASK_ID = $task_id;
@@ -875,6 +899,7 @@ class SiteController extends Controller
                         $no_error = 1;
                     }
                 }
+                //в зависимости от ошибки формируем json-ответ
                 if($no_error == 0) {
                     Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
                     return [];
@@ -890,6 +915,9 @@ class SiteController extends Controller
         }
     }
 
+    /*
+        Метод удаления загруженных документов
+    */
     public function actionDocumentdelete() {
         if (Yii::$app->request->isAjax) {
             $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
@@ -902,7 +930,9 @@ class SiteController extends Controller
         }
     }
 
-
+    /*
+        Метод изменения задания
+    */
     public function actionUpdateissue($id) {
 
         /*
@@ -918,7 +948,9 @@ class SiteController extends Controller
         }   
 
 
-        //check permissons for view issue to current user
+        /*
+            проверка на запись 
+        */
         $permissions_for_read_and_write = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)  or 
                                                                                     (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :dolg_id and ACTION_ID = :action and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and PERM_TYPE = :perm_type)', ['subject_type_dolg' => 1, 'dolg_id' => \Yii::$app->session->get('user.user_iddolg'), 'perm_type' => 1, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 0, 'action' => 3])->one();
         
@@ -926,7 +958,7 @@ class SiteController extends Controller
 
         if($permissions_for_read_and_write && $check_permissions_for_status) {    
             if($permissions_for_read_and_write->PERM_LEVEL == 2 && $check_permissions_for_status->PERM_LEVEL == 2) {
-
+                //формируем модель данных для формы редактирования
                 $model = $this->findModel($id);
                 $model->scenario = \app\models\Tasks::SCENARIO_UPDATE;
                 $model->DEADLINE = \Yii::$app->formatter->asDate($model->DEADLINE, 'php:d-m-Y');
@@ -973,19 +1005,14 @@ class SiteController extends Controller
                     $last_state = null;
                 }
 
-                
-               
-
+                //ajax - валидация формы редактирования
                 if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
                     Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
                     return \yii\widgets\ActiveForm::validate($model);
                 }
 
                 if ($model->load(Yii::$app->request->post())) {
-
-                    //echo '<pre>';
-                    //print_r(Yii::$app->request->post()); die();
-
+                    //если был сабмит формы - пишем нове д=анные в модель и сохраняем ее                    
                     $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
                     if(!empty($model->hidden_ordernum))
@@ -1251,9 +1278,6 @@ class SiteController extends Controller
                         print_r($model->errors); die();
                     }
 
-
-                    //after save generate script to confirm and close window
-                    //return $this->redirect(['view', 'id' => (string) $model->_id]);
                 } elseif (Yii::$app->request->isAjax) {
                     $this->_podr_data_array = $this->_getPodrData();
                     $this->_createPodrTree(1, 0, 'checkbox-podr-link');
@@ -1277,10 +1301,6 @@ class SiteController extends Controller
                     $this->_createPodrTree(1, 0, 'checkbox-podr-link-transmitted');
                     
 
-                    // echo '<pre>';
-                    // print_r($this->_multidemensional_podr_transmitted); die();
-
-
                     return $this->render('_formupdateissue', [
                         'model' => $model,
                         'not_ajax' => true,
@@ -1294,6 +1314,9 @@ class SiteController extends Controller
                     ]);
                 }
             } else {
+                /*
+                    Вызываем эксепшн в случае, если доступ к редактированию запрещен
+                */
                 if($permissions_for_read_and_write->PERM_LEVEL != 2) {
                     throw new \yii\web\ForbiddenHttpException('У Вас нет прав на "Форму свойств задания"'); 
                 } elseif($check_permissions_for_status->PERM_LEVEL != 2) {
@@ -1302,12 +1325,18 @@ class SiteController extends Controller
             }
 
         } else {
-
+            /*
+                Вызываем эксепшн в случае, если доступ к редактированию запрещен
+            */
             throw new \yii\web\ForbiddenHttpException('У Вас нет прав на редактирование "Свойств задания"'); 
 
         }
     }
 
+
+    /*
+        Формирование модели задания
+    */
     protected function findModel($id)
     {
         if (($model = \app\models\Tasks::findOne($id)) !== null) {
@@ -1397,7 +1426,9 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-
+    /*
+        Формирования списка последющих состояний
+    */
     public function actionSetstatenext() {
 
         if (Yii::$app->request->isAjax) {
@@ -1433,18 +1464,15 @@ class SiteController extends Controller
                 }
 
             }
-
-
-            
         }
 
     }
 
-
+    /*
+        Метод назначения прав на чтение и запись
+    */
     public function actionSetpermissions() {
-
         if (Yii::$app->request->isAjax) {
-
             $permissions_for_states_change = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action) or 
                 (SUBJECT_TYPE = :subject_type_dolg and SUBJECT_ID = :dolg_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL = :perm_level and ACTION_ID = :action)', ['subject_type_dolg' => 1, 'dolg_id' => \Yii::$app->session->get('user.user_iddolg'), 'action' => 2, 'subject_type' => 2, 'user_id' => \Yii::$app->user->id, 'del_tract' => 0, 'perm_level' => 2])->one();
             if($permissions_for_states_change) {
@@ -1453,9 +1481,6 @@ class SiteController extends Controller
                 $parent_type = $_POST['parent_type'];
                 $original_id = $_POST['original_id'];
                 $original_type = $_POST['original_type'];
-
-
-
                 $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
                 switch($original_type) {
@@ -1489,7 +1514,9 @@ class SiteController extends Controller
 
     }
 
-
+    /*
+        Удаление действий и состояний из дерева прав
+    */
     public function actionDeletepermissions() {
 
         if (Yii::$app->request->isAjax) {
@@ -1513,36 +1540,31 @@ class SiteController extends Controller
 
     }
 
+    /*
+        Присваивание состоянию или действию уровня доступа
+    */    
     public function actionSetpermlevel() {
 
         if (Yii::$app->request->isAjax) {
 
+            $permission_id = $_POST['permission_id'];
+            $level = $_POST['level'];
             
+            //$transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
-                $permission_id = $_POST['permission_id'];
-                $level = $_POST['level'];
-                
-                //$transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+            $permissions = \app\models\Permissions::findOne($permission_id);
+            $permissions->PERM_LEVEL = $level;
 
-                $permissions = \app\models\Permissions::findOne($permission_id);
-                $permissions->PERM_LEVEL = $level;
-
-                if($permissions->save()) {
-                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                    return ['error' => 0];
-                } else {
-                    //print_r($permissions->errors); die();
-                    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                    return ['error' => 1];
-                }
-            
-            
+            if($permissions->save()) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 0];
+            } else {
+                //print_r($permissions->errors); die();
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['error' => 1];
+            }
         }
 
     }
 
-
-    
-
-    
 }

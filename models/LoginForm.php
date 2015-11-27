@@ -7,10 +7,11 @@ use yii\base\Model;
 use app\models\FailedEntries;
 
 /**
- * LoginForm is the model behind the login form.
+ * Модель формы авторизации на сайте
  */
 class LoginForm extends Model
 {
+    //объявление проперти
     public $username;
     public $password;
     public $rememberMe = true;
@@ -19,7 +20,7 @@ class LoginForm extends Model
 
 
     /**
-     * @return array the validation rules.
+     * валидация полей
      */
     public function rules()
     {
@@ -34,6 +35,9 @@ class LoginForm extends Model
         ];
     }
 
+    /*
+        описание полей для label
+    */
     public function attributeLabels()
     {
         return [
@@ -47,8 +51,6 @@ class LoginForm extends Model
      * Валидация пароля
      * 
      *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
      */
     public function validatePassword($attribute, $params)
     {

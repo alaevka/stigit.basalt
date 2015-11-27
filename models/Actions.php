@@ -1,5 +1,7 @@
 <?php
-
+/*
+    Модель действий для назначения прав
+*/
 namespace app\models;
 
 use Yii;
@@ -7,7 +9,7 @@ use Yii;
 class Actions extends \yii\db\ActiveRecord
 {
     /**
-     * @inheritdoc
+     * метод, возвращающий имя таблицы ACTIONS
      */
     public static function tableName()
     {
@@ -15,7 +17,7 @@ class Actions extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
+     * валидация данных
      */
     public function rules()
     {

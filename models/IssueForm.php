@@ -6,10 +6,11 @@ use Yii;
 use yii\base\Model;
 
 /**
- * LoginForm is the model behind the login form.
+ * Модель формы выдачи задания не связана с таблицей заданий
  */
 class IssueForm extends Model
 {
+    //проперти полей
     public $designation;
     public $task_number;
     public $podr_list;
@@ -19,11 +20,9 @@ class IssueForm extends Model
     public $message;
     public $date;
     public $documentid;
-    
-
 
     /**
-     * @return array the validation rules.
+     * @return возвращает массив валидируемых данных
      */
     public function rules()
     {
@@ -35,6 +34,9 @@ class IssueForm extends Model
         ];
     }
 
+    /*
+        функция валидации уникального номера задания
+    */
     public function validateUniqueTaskNumber()
     {
         $tasks = Tasks::find()->where(['TASK_NUMBER' => $this->task_number])->one();
@@ -43,6 +45,9 @@ class IssueForm extends Model
         }
     }
 
+    /*
+        Описание полей для формирования label
+    */
     public function attributeLabels()
     {
         return [

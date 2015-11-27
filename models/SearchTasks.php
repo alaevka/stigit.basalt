@@ -1,5 +1,8 @@
 <?php
-
+/*
+    Модель, наследующая класс Tasks, 
+    содержит в себе методы для фильтрации заданий
+*/
 namespace app\models;
 
 use Yii;
@@ -9,6 +12,7 @@ use app\models\Tasks;
 
 class SearchTasks extends Tasks
 {
+    //переменные для фильтра таблицы
     public $states;
     public $deadline_from;
     public $deadline_to;
@@ -23,7 +27,9 @@ class SearchTasks extends Tasks
     private $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
    
 
-
+    /*
+        валидация данных
+    */
     public function rules()
     {
         return [
@@ -33,11 +39,13 @@ class SearchTasks extends Tasks
         ];
     }
 
+    //наследование сценариев родителя
     public function scenarios()
     {
         return Model::scenarios();
     }
 
+    //возвращает объект с названиями статусов
     public function getSelectedTasksStatesNames()
     {
         $selected_states = \app\models\States::find()->where(['ID' => $this->states])->all();
@@ -51,6 +59,9 @@ class SearchTasks extends Tasks
         
     }
 
+    /*
+        название полей поиска для label
+    */
     public function attributeLabels()
     {
         return [
@@ -67,14 +78,18 @@ class SearchTasks extends Tasks
         ];
     }
 
+    /*
+        метод поиска заданий по заданым фильтрам
+    */
     public function search($params)
     {
-        $query = Tasks::find();//->joinWith('datetype2');
+        $query = Tasks::find();
+        //формируем провайдер
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            //'sort'=> ['defaultOrder' => ['ID'=> SORT_DESC]]
         ]);
 
+        //задание сортировки по умолчанию
         $dataProvider->sort->attributes = ['TASKS.ID' => [
             'asc' => ['TASKS.ID' => SORT_ASC],
             'desc' => ['TASKS.ID' => SORT_DESC],
@@ -144,6 +159,7 @@ class SearchTasks extends Tasks
             return $dataProvider;
         }
 
+        //проверяем существует ли фильтр и добавляем его в запрос провайдера для каждого из полей фильтра
         if(!empty($this->states)) {
             $query->joinWith('taskstates'); 
             $query->andFilterWhere(['TASK_STATES.STATE_ID' => $this->states]);

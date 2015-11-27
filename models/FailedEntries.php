@@ -1,5 +1,7 @@
 <?php
-
+/*
+    Модель ошибочных авторизаций 
+*/
 namespace app\models;
 
 use Yii;
