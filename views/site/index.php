@@ -20,11 +20,33 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 				<div class="col-md-8">
 
 					<?php
+						$summary = '
+							<ul class="nav nav-pills pull-right">
+							  	<li role="presentation"><a href="#">Всего заданий {totalCount}</a></li>
+							  	<li role="presentation" class="selected_issues_link dropdown">
+							  		<a id="selected_issues_link_dropdown" class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+								      	
+								    </a>
+								    <ul class="dropdown-menu" style="width: 250px;">
+								      	<li>
+								      		<div style="padding-left: 10px; padding-top: 10px;" id="state-dropdown-block">
+								      			<div style="text-align:center;"><b>Изменить статус</b></div>
+								      			<hr>
+								      			'.Html::radioList("changed_status", null, yii\helpers\ArrayHelper::map(\app\models\States::find()->orderBy('ID asc')->all(), 'ID', 'STATE_NAME'), ['separator' => '', 'class' => 'state-checkbox-selected']).'
+								      			<hr>
+								      			<div style="text-align:center;"><button id="change_state_for_selected_rows" class="btn btn-sm btn-primary">Изменить</button></div>
+								      		</div>
+								      	</li>
+								    </ul>
+							  	</li>
+							</ul>
+						';
+
 						echo GridView::widget([
 						    'dataProvider' => $dataProvider,
 						    //'filterModel' => $searchModel,
-						    'layout' => '<div class="row"><div class="col-md-9">{pager}</div><div class="col-md-3">{summary}</div></div><div>{items}</div>',
-						    'summary' => '<div class="summary">Всего заданий {totalCount}</div>',
+						    'layout' => '<div class="row"><div class="col-md-7">{pager}</div><div class="col-md-5">{summary}</div></div><div>{items}</div>',
+						    'summary' => $summary,//'<div class="pull-right selected_issues_link"></div><div class="summary pull-right">Всего заданий {totalCount}</div>',
 						    'hover'=>true,
 						    'headerRowOptions' => ['class' => 'grid-header-row'],
 						    'rowOptions' => function ($model, $key, $index, $grid) {
@@ -32,7 +54,8 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 					        },
 						    'columns' => [
 						    	[
-							        'class' => '\kartik\grid\CheckboxColumn'
+							        'class' => '\kartik\grid\CheckboxColumn',
+							        'rowSelectedClass' => GridView::TYPE_INFO,
 							    ],
 							    [
 							    	'attribute' => 'STATUS',
@@ -745,8 +768,9 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 											foreach($selected_issues as $issue) {
 												$selected_issues_array[] = $issue->ID;
 											}
+											echo Html::a('<i class="glyphicon glyphicon-save"></i>', ['/reports/excel', 'ids' => implode(',', $selected_issues_array)], ['class' => 'btn btn-success', 'title' => 'Сформировать отчет']);
 										}
-										echo Html::a('<i class="glyphicon glyphicon-save"></i>', ['/reports/excel', 'ids' => implode(',', $selected_issues_array)], ['class' => 'btn btn-success', 'title' => 'Сформировать отчет']);
+										
 									}
 								?>
 							</div>

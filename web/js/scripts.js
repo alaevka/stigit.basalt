@@ -40,59 +40,93 @@ $(document).ready(function(){
 		$("#persons-select-modal").modal();
 	});
 	
-	$(".issue-row").click(function(){
-		$("#issue-view-preloader").css('display', 'block');
-		$(".kv-grid-table").css('opacity', '0.5');
-		//console.log($(this).attr('id'));
-		//get data and create modal
-		$.ajax({
-        	type: "POST",
-        	dataType: 'json',
-        	url: "index.php?r=site/getissuedata",
-        	data: "id="+$(this).attr('id'),
-        	success: function(data,status){
+	$(".issue-row").click(function(e){
+		if(!$(e.target).hasClass('kv-row-select') && e.target.type != "checkbox") {
+
+			$("#issue-view-preloader").css('display', 'block');
+			$(".kv-grid-table").css('opacity', '0.5');
+			//console.log($(this).attr('id'));
+			//get data and create modal
+			$.ajax({
+	        	type: "POST",
+	        	dataType: 'json',
+	        	url: "index.php?r=site/getissuedata",
+	        	data: "id="+$(this).attr('id'),
+	        	success: function(data,status){
 
 
-        		$("#myModalLabel-issue").html('Задание '+data.issue_designation);
+	        		$("#myModalLabel-issue").html('Задание '+data.issue_designation);
 
-        		if(data.permissons_for_read == 0) {
-        			$("#issue-view-table").html('<div class="alert alert-danger" role="alert">'+data.error_message+'</div>');
-        			$("#update-issue-button-new-tab").hide();
-        			$("#update-issue-button-new-tab").attr('href', '#');
-        			$("#update-issue-top-button").hide();
-        			$("#update-issue-top-button").attr('href', '#');
-        		} else {
-        			$("#issue-view-table").html(data.result_table);
-        			if(data.permissions_for_write == 0) {
-        				$("#update-issue-button-new-tab").hide();
+	        		if(data.permissons_for_read == 0) {
+	        			$("#issue-view-table").html('<div class="alert alert-danger" role="alert">'+data.error_message+'</div>');
+	        			$("#update-issue-button-new-tab").hide();
 	        			$("#update-issue-button-new-tab").attr('href', '#');
 	        			$("#update-issue-top-button").hide();
 	        			$("#update-issue-top-button").attr('href', '#');
-        			} else {
-
-        				if(data.user_have_permission != 1) {
+	        		} else {
+	        			$("#issue-view-table").html(data.result_table);
+	        			if(data.permissions_for_write == 0) {
 	        				$("#update-issue-button-new-tab").hide();
 		        			$("#update-issue-button-new-tab").attr('href', '#');
 		        			$("#update-issue-top-button").hide();
 		        			$("#update-issue-top-button").attr('href', '#');
-		        		} else {
-		        			$("#update-issue-button-new-tab").show();
-	        				$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
-	        				$("#update-issue-top-button").show();
-		        			$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
-		        		}
+	        			} else {
 
-        				
-        			}
-        		}
+	        				if(data.user_have_permission != 1) {
+		        				$("#update-issue-button-new-tab").hide();
+			        			$("#update-issue-button-new-tab").attr('href', '#');
+			        			$("#update-issue-top-button").hide();
+			        			$("#update-issue-top-button").attr('href', '#');
+			        		} else {
+			        			$("#update-issue-button-new-tab").show();
+		        				$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+		        				$("#update-issue-top-button").show();
+			        			$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+			        		}
 
-        		$("#issue-view-preloader").css('display', 'none');
-        		$(".kv-grid-table").css('opacity', '1.0');
-        		$("#issue-view-modal").modal();	
+	        				
+	        			}
+	        		}
 
-        	}
-        });
+	        		$("#issue-view-preloader").css('display', 'none');
+	        		$(".kv-grid-table").css('opacity', '1.0');
+	        		$("#issue-view-modal").modal();	
 
+	        	}
+	        });
+
+		} else if(e.target.type == "checkbox") {
+			var $checkbox = $(this).find(':checkbox');
+			_getSelectedRows();
+		}
+	});
+
+	$(document).on('change', '.select-on-check-all', function(){
+        if($(this).is(":checked")) {
+            var mass_array_for_delete = [];
+            $(".kv-grid-table").find('tr.issue-row').each(function(){
+                mass_array_for_delete.push(parseInt($(this).attr('data-key')));
+            });
+            $("#selected_issues_link_dropdown").html('Выделено '+mass_array_for_delete.length+' <span class="caret"></span>');
+			$(".selected_issues_link").show();
+        } else {
+            $(".selected_issues_link").hide();
+        }
+    });
+
+	function _getSelectedRows() {
+		var keys = $('.grid-view').yiiGridView('getSelectedRows');
+		if(keys != '') {
+			$("#selected_issues_link_dropdown").html('Выделено '+keys.length+' <span class="caret"></span>');
+			$(".selected_issues_link").show();
+		} else {
+			$(".selected_issues_link").hide();
+		}
+	}
+
+	$('#state-dropdown-block').bind('click', function (e) { e.stopPropagation() });
+
+	$("#change_state_for_selected_rows").click(function(){
 		
 	});
 

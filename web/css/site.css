@@ -189,7 +189,17 @@ form[role=login] .form-control + .glyphicon {
 .summary {
     font-size: 12px;
     text-align: right;
-    padding-top: 9px;
+}
+.selected_issues_link {
+    font-size: 12px;
+    display: none;
+}
+.state-checkbox-selected {
+    width: 140px;
+    padding-left: 10px;
+}
+.state-checkbox-selected label {
+    font-weight: normal;
 }
 .select2-results__option {
     font-size: 11px;

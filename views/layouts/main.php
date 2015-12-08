@@ -60,7 +60,7 @@ AppAsset::register($this);
 					    echo \Yii::$app->session->get('user.user_dolg_podr_data_block');
 					?>
 				</li>
-				<li style="margin-top: 10px;"><a data-method="post" href="<?= Url::to(['site/logout']); ?>">Выйти</a></li>
+				<li style="margin-top: 10px;"><a data-method="post" href="<?= Url::to(['site/logout']); ?>"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Выйти</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>
