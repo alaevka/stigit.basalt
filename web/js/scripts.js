@@ -127,7 +127,34 @@ $(document).ready(function(){
 	$('#state-dropdown-block').bind('click', function (e) { e.stopPropagation() });
 
 	$("#change_state_for_selected_rows").click(function(){
-		
+		var status_id = $("input:radio[name ='changed_status']:checked").val();
+		if (typeof status_id  !== "undefined") {
+			bootbox.confirm({size: 'small', message: "Вы уверены, что хотите установить указанный статус выбранным заданиям?", callback: function(result) {
+			  	if(result == true) {
+		  			$('[data-toggle="dropdown"]').parent().removeClass('open');
+		  			var keys = $('.grid-view').yiiGridView('getSelectedRows');
+			  		if(keys != '') {
+				  		$.ajax({
+				        	type: "POST",
+				        	dataType: 'json',
+				        	url: "index.php?r=site/changestatus",
+				        	data: "selected_issues="+JSON.stringify(keys)+"&status="+status_id,
+				        	success: function(data,status){
+				        		if(data.string_status_changed != '') {
+				        			$.jGrowl("Статус изменен у: "+data.string_status_changed, {themeState: "success-jg"});
+				        		}
+				        		if(data.string_status_not_changed != '') {
+				        			$.jGrowl("Статус не изменен у: "+data.string_status_not_changed+" так как у вас нет доступа.", {themeState: "error-jg"});
+				        		}
+				        	}
+				        });
+				    }
+			  	}	
+			}});
+		} else {
+  			alert('Выберите статус для изменения');
+  		}
+
 	});
 
 	$("#update-issue-button").click(function(){

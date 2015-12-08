@@ -862,11 +862,13 @@ class SiteController extends Controller
                     $result_table .= '</table>';
 
                     //проверяем есть ли доступ на редактирование для отображения ссылки (кнопки) редактирования
-                    if($permissions_for_read_and_write->PERM_LEVEL == '2' && $check_permissions_for_status->PERM_LEVEL == 2) { // если есть права на запись
-                        $permissions_for_write = 1;
-                    } else { // иначе разрешаем только чтение
-                        $permissions_for_write = 0;
-                    }
+                    
+                        if($permissions_for_read_and_write->PERM_LEVEL == '2' && @$check_permissions_for_status->PERM_LEVEL == 2) { // если есть права на запись
+                            $permissions_for_write = 1;
+                        } else { // иначе разрешаем только чтение
+                            $permissions_for_write = 0;
+                        }
+                    
 
                     // возвращаем json массив
                     $items = ['permissons_for_read' => 1, 'user_have_permission' => $user_have_permission, 'permissions_for_write' => $permissions_for_write, 'issue_id' => $issue_id, 'issue_designation' => $issue->TASK_NUMBER, 'result_table' => $result_table];
@@ -1595,6 +1597,88 @@ class SiteController extends Controller
             }
         }
 
+    }
+
+    /*
+        Метод ручной установки статуса в выбранные задания
+    */
+    public function actionChangestatus() {
+        if (Yii::$app->request->isAjax) {
+
+            $status_id = $_POST['status'];
+            $selected_issues = $_POST['selected_issues'];
+
+            foreach(json_decode($selected_issues) as $issue) {
+
+
+                $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+                
+                $user_cant_permissions_on = [];
+                $user_have_permission_and_status_changed_on = [];
+
+                //проверяем имеет ли доступ пользователь к заданию и входит ли вообще в него
+                if($pers_tasks_this) {
+                    $task_state = \app\models\TaskStates::find()->where(['PERS_TASKS_ID' => $pers_tasks_this->ID, 'IS_CURRENT' => 1])->one();
+
+                    if($task_state) { // проверяем есть ли статус
+                        $last_state = $task_state->STATE_ID;
+                    } else { // иначе устанавливаем значние даты null
+                        $last_state = null;
+                    }
+
+
+                    if($last_state != $status_id) {
+
+                        $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
+
+                        $new_state = new \app\models\TaskStates;
+                        $new_state->TASK_ID = $issue;
+                        $new_state->STATE_ID = $status_id;
+                        $new_state->TRACT_ID = $transactions->ID;
+                        $new_state->IS_CURRENT = 1;
+                        $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
+                        $new_state->PERS_TASKS_ID = $pers_tasks_this->ID;
+                        $new_state->save();
+
+                        $user_have_permission_and_status_changed_on[] = $issue;
+
+                        //обновление поля IS_CURRENT для предыдущего состояния
+                        if($last_state != null) {
+                            $task_state->IS_CURRENT = 0;
+                            $task_state->save();
+                        }
+                    }
+
+                } else {
+                    $user_cant_permissions_on[] = $issue;
+                }
+
+            }
+
+            $string_status_changed = '';
+            if(!empty($user_have_permission_and_status_changed_on)) {
+                
+                foreach ($user_have_permission_and_status_changed_on as $issue) {
+                    $task = \app\models\Tasks::findOne($issue);
+                    $string_status_changed .= 'Задание №'.$task->TASK_NUMBER.',';
+                }
+            }
+
+            $string_status_not_changed = '';
+            if(!empty($user_cant_permissions_on)) {
+                
+                foreach ($user_cant_permissions_on as $issue) {
+                    $task = \app\models\Tasks::findOne($issue);
+                    $string_status_not_changed .= 'Задание №'.$task->TASK_NUMBER.',';
+                }
+            }
+
+
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return ['string_status_changed' => $string_status_changed, 'string_status_not_changed' => $string_status_not_changed];
+
+        }
     }
 
 }

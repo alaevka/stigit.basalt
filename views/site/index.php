@@ -52,6 +52,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						    'rowOptions' => function ($model, $key, $index, $grid) {
 					            return ['id' => $model['ID'], 'class' => 'issue-row'];
 					        },
+					        'pjax'=>true, 
 						    'columns' => [
 						    	[
 							        'class' => '\kartik\grid\CheckboxColumn',
