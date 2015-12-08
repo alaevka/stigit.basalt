@@ -1585,7 +1585,7 @@ class SiteController extends Controller
             //$transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 
             $permissions = \app\models\Permissions::findOne($permission_id);
-            $permissions->PERM_LEVEL = $level;
+            $permissions->PERM_LEVEL = $level; 
 
             if($permissions->save()) {
                 Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -1608,13 +1608,15 @@ class SiteController extends Controller
             $status_id = $_POST['status'];
             $selected_issues = $_POST['selected_issues'];
 
+
+            $user_cant_permissions_on = [];
+            $user_have_permission_and_status_changed_on = [];
             foreach(json_decode($selected_issues) as $issue) {
 
 
                 $pers_tasks_this = \app\models\PersTasks::find()->where(['TASK_ID' =>$issue, 'TN' => \Yii::$app->user->id, 'DEL_TRACT_ID' => 0])->one();
                 
-                $user_cant_permissions_on = [];
-                $user_have_permission_and_status_changed_on = [];
+                
 
                 //проверяем имеет ли доступ пользователь к заданию и входит ли вообще в него
                 if($pers_tasks_this) {
@@ -1657,7 +1659,6 @@ class SiteController extends Controller
 
             $string_status_changed = '';
             if(!empty($user_have_permission_and_status_changed_on)) {
-                
                 foreach ($user_have_permission_and_status_changed_on as $issue) {
                     $task = \app\models\Tasks::findOne($issue);
                     $string_status_changed .= 'Задание №'.$task->TASK_NUMBER.',';

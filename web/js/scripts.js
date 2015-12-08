@@ -141,11 +141,13 @@ $(document).ready(function(){
 				        	data: "selected_issues="+JSON.stringify(keys)+"&status="+status_id,
 				        	success: function(data,status){
 				        		if(data.string_status_changed != '') {
-				        			$.jGrowl("Статус изменен у: "+data.string_status_changed, {themeState: "success-jg"});
+
+				        			$.jGrowl("Статус изменен у: "+data.string_status_changed, {themeState: "success-jg", sticky: true});
 				        		}
 				        		if(data.string_status_not_changed != '') {
-				        			$.jGrowl("Статус не изменен у: "+data.string_status_not_changed+" так как у вас нет доступа.", {themeState: "error-jg"});
+				        			$.jGrowl("Статус не изменен у: "+data.string_status_not_changed+" так как у вас нет доступа.", {themeState: "error-jg", sticky: true});
 				        		}
+				        		$.pjax.reload({container:'#w0'});
 				        	}
 				        });
 				    }
