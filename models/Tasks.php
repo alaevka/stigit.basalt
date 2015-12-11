@@ -8,7 +8,8 @@ use Yii;
 class Tasks extends \yii\db\ActiveRecord
 {
     //объявление используемых проперти и констант
-    const SCENARIO_UPDATE = 'update';
+    const SCENARIO_UPDATE_PERSON = 'update_person';
+    const SCENARIO_UPDATE_BOSS = 'update_boss';
 
     public $podr_list;
     public $persons_list;
@@ -41,7 +42,8 @@ class Tasks extends \yii\db\ActiveRecord
             [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'DEADLINE', 'TRACT_ID'], 'required'],
             [['TASK_NUMBER'], 'integer'],
             [['TASK_NUMBER'], 'unique'],
-            [['SOURCENUM', 'state', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE],
+            [['SOURCENUM', 'state', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE_PERSON],
+            [['SOURCENUM', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE_BOSS],
             [['SOURCENUM'], 'string', 'max' => 25],
             [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state', 'hidden_ordernum', 'hidden_peoordernum'], 'safe'],
         ];

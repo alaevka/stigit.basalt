@@ -119,6 +119,7 @@ class SearchTasks extends Tasks
                         ->where('TN = \'' . \Yii::$app->user->id .'\'');
                     $command = $query_dao->createCommand();
                     $data = $command->queryOne();
+                    //вот тут решить что означает выданные моему подразделению
                     $query->joinWith('podrtasks'); 
                     $query->andFilterWhere(['PODR_TASKS.KODZIFR' => trim($data['KODZIFR'])]);
                 } else {

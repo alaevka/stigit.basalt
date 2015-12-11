@@ -71,20 +71,10 @@ $(document).ready(function(){
 		        			$("#update-issue-top-button").hide();
 		        			$("#update-issue-top-button").attr('href', '#');
 	        			} else {
-
-	        				if(data.user_have_permission != 1) {
-		        				$("#update-issue-button-new-tab").hide();
-			        			$("#update-issue-button-new-tab").attr('href', '#');
-			        			$("#update-issue-top-button").hide();
-			        			$("#update-issue-top-button").attr('href', '#');
-			        		} else {
-			        			$("#update-issue-button-new-tab").show();
-		        				$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
-		        				$("#update-issue-top-button").show();
-			        			$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
-			        		}
-
-	        				
+		        			$("#update-issue-button-new-tab").show();
+	        				$("#update-issue-button-new-tab").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
+	        				$("#update-issue-top-button").show();
+		        			$("#update-issue-top-button").attr('href', 'index.php?r=site/updateissue&id='+data.issue_id);
 	        			}
 	        		}
 

@@ -332,7 +332,7 @@
 				    	$this->registerJs('function format_selection(state) {return "<b>"+state.text+"</b>";}', View::POS_HEAD);
 				    ?>
 				    <?php
-
+				    	if($show_states == 1) {
 				    	$states_list = yii\helpers\ArrayHelper::map(\app\models\StatesNext::find()->where(['STATE_ID' => $model->state, 'DEL_TRACT_ID' => 0])->orderBy('ID ASC')->all(), 'NEXT_STATE_ID', 'state_name_state_colour');
 				        $current_status = \app\models\States::findOne($model->state)->getState_name_state_colour();
 				        $states_list = [ $model->state => $current_status ] + $states_list;
@@ -356,6 +356,7 @@
 						        //'templateSelection' => new JsExpression('function (designation) { return state.text; }'),
 						    ],
 						]);
+						}
 				    ?>
 
 </div>
