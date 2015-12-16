@@ -56,6 +56,13 @@ class TaskStates extends \yii\db\ActiveRecord
         return $state->STATE_COLOUR;
     }
 
+    public function getStateDate()
+    {
+        $transaction_id = $this->TRACT_ID;
+        $transactions = \app\models\Transactions::findOne($transaction_id);
+        return '('.\Yii::$app->formatter->asDate($transactions->TRACT_DATETIME, 'php:d-m-Y').')';
+    }
+
 
     
 }

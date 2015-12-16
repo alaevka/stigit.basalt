@@ -4,6 +4,7 @@
 */
 namespace app\models;
 use Yii;
+use yii\helpers\Url;
 
 class Tasks extends \yii\db\ActiveRecord
 {
@@ -180,8 +181,10 @@ class Tasks extends \yii\db\ActiveRecord
                 ->where('TN = \'' . $person->TN .'\'');
                 $command = $query->createCommand();
                 $data = $command->queryOne();
+
+                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
                
-                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $id])->one();
+                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $id])->one();
                 if($task_state) {
                     $states_array[] = $task_state->STATE_ID;
                 } else {
@@ -211,8 +214,10 @@ class Tasks extends \yii\db\ActiveRecord
                 ->where('TN = \'' . $person->TN .'\'');
                 $command = $query->createCommand();
                 $data = $command->queryOne();
+
+                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
                
-                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $id])->one();
+                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $id])->one();
                 if($task_state) {
                     $states_array[] = $task_state->STATE_ID;
                 } else {
@@ -242,8 +247,10 @@ class Tasks extends \yii\db\ActiveRecord
                 ->where('TN = \'' . $person->TN .'\'');
                 $command = $query->createCommand();
                 $data = $command->queryOne();
-               
-                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $person->TN, 'TASK_ID' => $id])->one();
+                
+                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
+
+                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $id])->one();
                 if($task_state) {
                     $states_array[] = $task_state->STATE_ID;
                 } else {
@@ -261,5 +268,56 @@ class Tasks extends \yii\db\ActiveRecord
             return false;
         }
     }
+
+
+    public function _getStatusPerson() {
+        
+        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $this->ID, 'DEL_TRACT_ID' => 0])->all();
+        if($persons) {
+            $list = '';
+            foreach($persons as $person) {
+                $query = new \yii\db\Query;
+                $query->select('*')
+                    ->from('STIGIT.V_F_PERS')
+                    ->where('TN = \'' . $person->TN .'\'');
+                $command = $query->createCommand();
+                $data = $command->queryOne();
+                //$list .= '<nobr><a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FAM'].' '.mb_substr($data['IMJ'], 0, 1, 'UTF-8').'. '.mb_substr($data['OTCH'], 0, 1, 'UTF-8').'.</a></nobr><br>';
+                //get current state 
+                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$this->ID, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
+
+                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $this->ID])->one();
+                if($task_state) {
+                    $state = $task_state->getState_name_state_colour_without_text();
+                    $state_date = $task_state->getStateDate();
+                } else {
+                    $state = '';
+                    $state_date = '';
+                }
+
+                $list .= '<nobr>'.$state.'&nbsp;<a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
+            }
+            return $list;
+        } else {
+            $podr = \app\models\PodrTasks::find()->where(['TASK_ID' => $this->ID])->all();
+            if($podr) {
+                $list = '';
+                foreach($podr as $task) {
+                    $query = new \yii\db\Query;
+                    $query->select('*')
+                        ->from('STIGIT.V_F_PODR')
+                        ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
+                    $command = $query->createCommand();
+                    $data = $command->queryOne();
+                    if(isset($data['NAIMPODR']))
+                        $list .= $data['NAIMPODR']."<br>";
+                }
+                return $list;
+            }
+
+        }
+
+    }
+
     
 }

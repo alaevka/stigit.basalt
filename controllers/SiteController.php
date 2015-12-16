@@ -243,6 +243,12 @@ class SiteController extends Controller
                 //формируем строку списка в зависимости от нужного нам дерева подразделений
                 switch ($checkbox_link) {
                     case 'checkbox-podr-link': // в случае, если генерируем список для выборки подразделений в форму выдачи задания
+                        
+                        //получаем количество заданий в работе для данного подразделения
+                        $kodzifr = $value['code'];
+                        
+                        
+
                         $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
                         break;
                     case 'checkbox-podr-link-agreed': // в случае, если генерируем список для выборки подразделений в форму редактирования задания "согласовано с"

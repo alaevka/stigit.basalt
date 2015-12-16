@@ -97,6 +97,53 @@ class SearchTasks extends Tasks
 
         $dataProvider->sort->defaultOrder = ['TASKS.ID' => SORT_DESC];
 
+        //overdue issues filter
+        if(isset($params['overdue']) && $params['overdue'] == 1) {
+            
+            $tasks = \app\models\Tasks::find()->all();
+            $list = [];
+            foreach($tasks as $task) {
+                $id = $task->ID;
+                $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
+                if($persons) {
+                    $states_array = [];
+                   
+                    foreach($persons as $person) {
+                        
+                        $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
+                       
+                        $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $id])->one();
+                        if($task_state) {
+                            $states_array[] = $task_state->STATE_ID;
+                        } else {
+                            $list[] = $id;
+                        }
+                    }
+                    if(!empty($states_array)) {
+                        $min_state = min($states_array);
+                        $state = \app\models\States::findOne($min_state);
+                    
+                    }
+                }
+                if(isset($state)) {
+
+                    if($state->ID != 7 || $state->ID != 9) {
+                        $list[] = $id;
+                    }
+                }
+
+            }
+
+            $list = array_unique($list);
+
+            $query->andFilterWhere(['TASKS.ID' => $list]);
+            $now = date("Y-m-d");
+            $query->andFilterWhere(['<', 'TASKS.DEADLINE', new \yii\db\Expression("to_date('" . $now . "','{$this->dateFormat}')")]);
+            $query->joinWith('perstasks'); 
+            $query->andFilterWhere(['PERS_TASKS.TN' => \Yii::$app->user->id]);
+        }
+
+
         //own issues filter
         if(isset($params['own_issues']) && $params['own_issues'] == 1) {
             $query->joinWith('perstasks'); 

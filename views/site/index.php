@@ -23,7 +23,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						$summary = '
 							<ul class="nav nav-pills pull-right">
 							  	<li role="presentation"><a href="#">Всего заданий {totalCount}</a></li>
-							  	<li role="presentation" class="selected_issues_link dropdown">
+							  	<li role="presentation" class="selected_issues_link dropdown" style="display: none;">
 							  		<a id="selected_issues_link_dropdown" class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 								      	
 								    </a>
@@ -45,7 +45,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						echo GridView::widget([
 						    'dataProvider' => $dataProvider,
 						    //'filterModel' => $searchModel,
-						    'layout' => '<div class="row"><div class="col-md-7">{pager}</div><div class="col-md-5">{summary}</div></div><div>{items}</div>',
+						    'layout' => '<div class="row"><div class="col-md-6">{pager}</div><div class="col-md-6">{summary}</div></div><div>{items}</div>',
 						    'summary' => $summary,//'<div class="pull-right selected_issues_link"></div><div class="summary pull-right">Всего заданий {totalCount}</div>',
 						    'hover'=>true,
 						    'headerRowOptions' => ['class' => 'grid-header-row'],
@@ -72,48 +72,7 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							    	'label' => 'Исполнитель',
 							    	'format' => 'html',
 							    	'value' => function ($model, $key, $index, $widget) {
-							    		$persons = \app\models\PersTasks::find()->where(['TASK_ID' => $model->ID, 'DEL_TRACT_ID' => 0])->all();
-							    		if($persons) {
-							    			$list = '';
-							    			foreach($persons as $person) {
-							    				$query = new \yii\db\Query;
-								                $query->select('*')
-								                    ->from('STIGIT.V_F_PERS')
-								                    ->where('TN = \'' . $person->TN .'\'');
-								                $command = $query->createCommand();
-								                $data = $command->queryOne();
-							    				//$list .= '<nobr><a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FAM'].' '.mb_substr($data['IMJ'], 0, 1, 'UTF-8').'. '.mb_substr($data['OTCH'], 0, 1, 'UTF-8').'.</a></nobr><br>';
-								                //get current state	
-								                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$model->ID, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
-
-								                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $model->ID])->one();
-								                if($task_state) {
-								                	$state = $task_state->getState_name_state_colour_without_text();
-								                } else {
-								                	$state = '';
-								                }
-
-								                $list .= '<nobr>'.$state.'&nbsp;<a href="'.Url::to(['user', 'id'=>$person->TN]).'">'.$data['FIO'].'</a></nobr><br>';
-							    			}
-							    			return $list;
-							    		} else {
-							    			$podr = \app\models\PodrTasks::find()->where(['TASK_ID' => $model->ID])->all();
-							    			if($podr) {
-							    				$list = '';
-							    				foreach($podr as $task) {
-								                    $query = new \yii\db\Query;
-								                    $query->select('*')
-								                        ->from('STIGIT.V_F_PODR')
-								                        ->where('KODZIFR = \'' . trim($task->KODZIFR) .'\'');
-								                    $command = $query->createCommand();
-								                    $data = $command->queryOne();
-								                    if(isset($data['NAIMPODR']))
-								                        $list .= $data['NAIMPODR']."<br>";
-								                }
-								                return $list;
-							    			}
-
-							    		}
+							    		return $model->_getStatusPerson();
 							    	},
 							    	'contentOptions' => ['style' => 'width: 250px;']
 							    ],
@@ -144,11 +103,30 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 							            } else {
 							                $group_date_for_table = \Yii::$app->formatter->asDate($old_task_date_2->TASK_TYPE_DATE, 'php:d-m-Y');
 							            }
-							            return $group_date_for_table.'<br>'.\Yii::$app->formatter->asDate($model->DEADLINE, 'php:d-m-Y');
+							            $transactions = \app\models\Transactions::findOne($model->TRACT_ID);
+							            $query = new \yii\db\Query;
+						                $query->select('FAM')
+						                    ->from('STIGIT.V_F_PERS')
+						                    ->where('TN = \'' . $transactions->TN .'\'');
+						                $command = $query->createCommand();
+						                $data = $command->queryOne();
+
+							            return $group_date_for_table.'<br><b>'.$data['FAM'].'</b><br>'.\Yii::$app->formatter->asDate($model->DEADLINE, 'php:d-m-Y');
+							            
 						        	},
 						        	'label' => 'Выдано Срок',
 						        	'format' => 'html',
-						        	'contentOptions' => ['style' => 'width: 110px; text-align: center;']
+						        	'contentOptions' => function ($model, $key, $index, $column) {
+
+						        		$status = $model->_getCurrentTaskStatusWithId($model->ID);
+
+						        		if(($status != 7 || $status != 9) && (time() > \Yii::$app->formatter->asTimestamp($model->DEADLINE))) {
+						        			return ['style' => 'width: 110px; text-align: center; background-color: #f9dfe0;'];
+						        		} else {
+						        			return ['style' => 'width: 110px; text-align: center;'];
+						        		}
+						        		
+						        	}
 						        ]
 						    ],
 						]);

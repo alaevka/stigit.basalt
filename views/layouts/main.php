@@ -85,7 +85,7 @@ AppAsset::register($this);
 			</li>
 			<hr>
 			<?php } ?>
-			<li class="submenu-li"><a href="<?= Url::to(['site/index']); ?>">Все задания</a> <?php if(!isset(Yii::$app->request->getQueryParams()['own_issues']) && !isset(Yii::$app->request->getQueryParams()['podr_issues']) && !isset(Yii::$app->request->getQueryParams()['tasks_my'])) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
+			<li class="submenu-li"><a href="<?= Url::to(['site/index']); ?>">Все задания</a> <?php if(!isset(Yii::$app->request->getQueryParams()['own_issues']) && !isset(Yii::$app->request->getQueryParams()['podr_issues']) && !isset(Yii::$app->request->getQueryParams()['tasks_my']) && !isset(Yii::$app->request->getQueryParams()['overdue'])) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
 			<li class="submenu-li"><a href="<?= Url::to(['/site/index', 'own_issues' => 1]); ?>">Задания мне</a> <?php if(isset(Yii::$app->request->getQueryParams()['own_issues']) && Yii::$app->request->getQueryParams()['own_issues'] == 1) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
 			<?php
 				$permissions_podr_tasks_my = \app\models\Permissions::find()->where('(SUBJECT_TYPE = :subject_type and SUBJECT_ID = :user_id and DEL_TRACT_ID = :del_tract and PERM_LEVEL != :perm_level and ACTION_ID = :action) or
@@ -109,6 +109,68 @@ AppAsset::register($this);
 					}
 				}
 			?>
+			<?php
+				//check if isset overdue issues
+
+				$tasks = \app\models\Tasks::find()->all();
+	            $list = [];
+	            foreach($tasks as $task) {
+	                $id = $task->ID;
+	                $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
+	                if($persons) {
+	                    $states_array = [];
+	                   
+	                    foreach($persons as $person) {
+	                        
+	                        $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
+	                       
+	                        $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $id])->one();
+	                        if($task_state) {
+	                            $states_array[] = $task_state->STATE_ID;
+	                        } else {
+	                            $list[] = $id;
+	                        }
+	                    }
+	                    if(!empty($states_array)) {
+	                        $min_state = min($states_array);
+	                        $state = \app\models\States::findOne($min_state);
+	                    
+	                    }
+	                }
+	                if(isset($state)) {
+
+	                    if($state->ID != 7 || $state->ID != 9) {
+	                        $list[] = $id;
+	                    }
+	                }
+
+	            }
+
+	            $list = array_unique($list);
+	            $query = \app\models\Tasks::find();
+		        
+	            $dateFormat = 'YYYY-MM-DD hh24:mi:ss';
+	            $query->andFilterWhere(['TASKS.ID' => $list]);
+	            $now = date("Y-m-d");
+	            $query->andFilterWhere(['<', 'TASKS.DEADLINE', new \yii\db\Expression("to_date('" . $now . "','{$dateFormat}')")]);
+	            $query->joinWith('perstasks'); 
+	            $query->andFilterWhere(['PERS_TASKS.TN' => \Yii::$app->user->id]);
+	            
+	            $counter_overdue = $query->count();
+	            if($counter_overdue > 0) {
+
+			?>
+			<li class="submenu-li"><a style="color: #ff0000;" href="<?= Url::to(['/site/index', 'overdue' => 1]); ?>">Просроченные задания (<?= $counter_overdue; ?>)</a> <?php if(isset(Yii::$app->request->getQueryParams()['overdue']) && Yii::$app->request->getQueryParams()['overdue'] == 1) { ?><i class="pull-right glyphicon glyphicon-ok"></i><?php } ?></li>
+			<?php } ?>
+			<hr>
+			<li class="submenu-li">
+				<?php
+					$states = \app\models\States::find()->all();
+					foreach($states as $state) {
+				?>
+				<div style="padding-bottom: 3px;"><?= $state->getState_name_state_colour(); ?></div>
+				<?php } ?>
+			</li>
 		</ul>
 		<?php } ?>
 	</div>

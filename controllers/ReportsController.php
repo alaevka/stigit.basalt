@@ -119,6 +119,8 @@ class ReportsController extends Controller
                             
                             foreach ($task_states as $state) {
 
+                                $state_date = $state->getStateDate();    
+
                                 $logo = new \PHPExcel_Worksheet_Drawing();
                                 $logo->setPath(Yii::getAlias('@webroot').'/images/items_status/'.$state->getStateColour().'.png');
                                 $logo->setCoordinates("G".$row_number);                
@@ -138,7 +140,7 @@ class ReportsController extends Controller
                                 $command = $query->createCommand();
                                 $data = $command->queryOne();
 
-                                $sheet->setCellValue("H".$row_number, $data['FIO']);
+                                $sheet->setCellValue("H".$row_number, $data['FIO'].' '.$state_date);
 
                                 $task_docs = \app\models\TaskDocs::find()->where(['PERS_TASKS_ID' => $state->PERS_TASKS_ID])->one();
                                 if($task_docs) {
