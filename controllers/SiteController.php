@@ -239,29 +239,75 @@ class SiteController extends Controller
                 } else { // иначе класс не указываем, так как дерево разворачиваться не будет
                     $class = '';
                 }
+
+                //получаем количество заданий в работе для каждого подразделения
+                $kodzifr = $value['code'];
+                $podr_tasks = \app\models\PodrTasks::find()->where(['KODZIFR' => $kodzifr, 'DEL_TRACT_ID' => 0])->all();
+                if($podr_tasks) {
+                    
+                    $tasks_array = [];
+                    foreach($podr_tasks as $task) {
+                        $tasks_array[] = $task->TASK_ID;
+                    }
+
+                    $tasks = \app\models\Tasks::find()->where(['in', 'ID', $tasks_array])->all();
+                    $list = [];
+                    foreach($tasks as $task) {
+                        $id = $task->ID;
+                        $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
+                        if($persons) {
+                            $states_array = [];
+                           
+                            foreach($persons as $person) {
+                                
+                                $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
+                               
+                                $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $id])->one();
+                                if($task_state) {
+                                    $states_array[] = $task_state->STATE_ID;
+                                } else {
+                                    $list[] = $id;
+                                }
+                            }
+                            if(!empty($states_array)) {
+                                $min_state = min($states_array);
+                                $state = \app\models\States::findOne($min_state);
+                            
+                            }
+                        }
+                        if(isset($state)) {
+
+                            if($state->ID != 7 || $state->ID != 9) {
+                                $list[] = $id;
+                            }
+                        }
+
+                    }
+
+                    $list = array_unique($list);
+                    $counter = count($list);
+                    $counter = ' <span class="label label-info"><a target="_blank" href="'.\yii\helpers\Url::to(['/site/index', 'for_podr' => $kodzifr]).'">Заданий в работе: '.$counter.'</a></span>';
+                } else {
+                    $counter = '';
+                }
+
                 
                 //формируем строку списка в зависимости от нужного нам дерева подразделений
                 switch ($checkbox_link) {
                     case 'checkbox-podr-link': // в случае, если генерируем список для выборки подразделений в форму выдачи задания
-                        
-                        //получаем количество заданий в работе для данного подразделения
-                        $kodzifr = $value['code'];
-                        
-                        
-
-                        $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
+                        $this->_multidemensional_podr .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a>".$counter."</span>";
                         break;
                     case 'checkbox-podr-link-agreed': // в случае, если генерируем список для выборки подразделений в форму редактирования задания "согласовано с"
-                        $this->_multidemensional_podr_agreed .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
+                        $this->_multidemensional_podr_agreed .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a>".$counter."</span>";
                         break;
                     case 'checkbox-podr-link-transmitted': // в случае, если генерируем список для выборки подразделений в форму выдачи задания "передано в"
-                        $this->_multidemensional_podr_transmitted .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
+                        $this->_multidemensional_podr_transmitted .= "<li ".$class."><input id=\"checkbox_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a>".$counter."</span>";
                         break;
                     case 'checkbox-podr-link-filter': //в случае, если генерируем список для выборки подразделений в фильтр заданий
-                        $this->_multidemensional_podr_filter .= "<li ".$class."><input id=\"checkbox_filter_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
+                        $this->_multidemensional_podr_filter .= "<li ".$class."><input id=\"checkbox_filter_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a>".$counter."</span>";
                         break;
                     case 'checkbox-agreed-link-filter': //в случае, если генерируем список для выборки подразделений в фильтр заданий "согласованно с"
-                        $this->_multidemensional_agreed_filter .= "<li ".$class."><input id=\"checkbox_filter_agreed_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a></span>";
+                        $this->_multidemensional_agreed_filter .= "<li ".$class."><input id=\"checkbox_filter_agreed_".$value['code']."\" style=\"display: none;\" type='checkbox' name=\"podr_check[]\" data-title=\"".$value['name']."\" value=\"".$value['code']."\" /><span style=\"font-weight: normal; font-size: 11px;\" for=\"checkbox_".$value['code']."\"><a href=\"#\" data-id=\"".$value['code']."\" class=\"".$checkbox_link."\">".$value['vid']." ".$value['code'].". ".$value['name']."</a>".$counter."</span>";
                         break;
                 }
 
@@ -546,8 +592,60 @@ class SiteController extends Controller
                 $command = $query->createCommand();
                 $data = $command->queryAll();
                 $persons_list .= '<ul>';
+
                 foreach ($data as $key => $value) { // обходим список сотрудников каждого подразделения
-                    $persons_list .= "<li><input id=\"checkbox_".$value['TN']."\" type='checkbox' name=\"persons_check[]\" data-title=\"".$value['FIO']."\" value=\"".$value['TN']."\" /> <span style=\"font-size: 11px;\">".$value['FAM']." ".$value['IMJ']." ".$value['OTCH']."</span></li>";
+
+                    //получаем кол-во заданий для каждого исполнителя
+                    $pers_tasks = \app\models\PersTasks::find()->where(['TN' => $value['TN'], 'DEL_TRACT_ID' => 0])->all();
+                    if($pers_tasks) {
+                        
+                        $tasks_array = [];
+                        foreach($pers_tasks as $task) {
+                            $tasks_array[] = $task->TASK_ID;
+                        }
+
+                        $tasks = \app\models\Tasks::find()->where(['in', 'ID', $tasks_array])->all();
+                        $list = [];
+                        foreach($tasks as $task) {
+                            $id = $task->ID;
+                            $persons = \app\models\PersTasks::find()->where(['TASK_ID' => $id, 'DEL_TRACT_ID' => 0])->all();
+                            if($persons) {
+                                $states_array = [];
+                               
+                                foreach($persons as $person) {
+                                    
+                                    $pers_tasks = \app\models\PersTasks::find()->where(['TASK_ID' =>$id, 'TN' => $person->TN, 'DEL_TRACT_ID' => 0])->one();
+                                   
+                                    $task_state = \app\models\TaskStates::find()->where(['IS_CURRENT' => 1, 'PERS_TASKS_ID' => $pers_tasks->ID, 'TASK_ID' => $id])->one();
+                                    if($task_state) {
+                                        $states_array[] = $task_state->STATE_ID;
+                                    } else {
+                                        $list[] = $id;
+                                    }
+                                }
+                                if(!empty($states_array)) {
+                                    $min_state = min($states_array);
+                                    $state = \app\models\States::findOne($min_state);
+                                
+                                }
+                            }
+                            if(isset($state)) {
+
+                                if($state->ID != 7 || $state->ID != 9) {
+                                    $list[] = $id;
+                                }
+                            }
+
+                        }
+
+                        $list = array_unique($list);
+                        $counter = count($list);
+                        $counter = ' <span class="label label-info"><a target="_blank" href="'.\yii\helpers\Url::to(['/site/index', 'for_person' => $value['TN']]).'">Заданий в работе: '.$counter.'</a></span>';
+                    } else {
+                        $counter = '';
+                    }
+
+                    $persons_list .= "<li><input id=\"checkbox_".$value['TN']."\" type='checkbox' name=\"persons_check[]\" data-title=\"".$value['FIO']."\" value=\"".$value['TN']."\" /> <span style=\"font-size: 11px;\">".$value['FAM']." ".$value['IMJ']." ".$value['OTCH']." ".$counter."</span></li>";
                 }
                 $persons_list .= '</ul>';
             }

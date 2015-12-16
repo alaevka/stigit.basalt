@@ -150,6 +150,16 @@ class SearchTasks extends Tasks
             $query->andFilterWhere(['PERS_TASKS.TN' => \Yii::$app->user->id]);
         }
 
+        if(isset($params['for_person']) && $params['for_person'] != '') {
+            $query->joinWith('perstasks'); 
+            $query->andFilterWhere(['PERS_TASKS.TN' => $params['for_person']]);
+        }
+
+        if(isset($params['for_podr']) && $params['for_podr'] != '') {
+            $query->joinWith('podrtasks'); 
+            $query->andFilterWhere(['PODR_TASKS.KODZIFR' => $params['for_podr']]);
+        }
+
         //podr issues filter
         if(isset($params['podr_issues']) && $params['podr_issues'] == 1) {
 
