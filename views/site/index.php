@@ -7,7 +7,7 @@ use yii\web\JsExpression;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\web\View;
-$this->title = 'index page';
+$this->title = 'Перечень заданий';
 $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->user->id ])->orderBy('ID DESC')->one();
 ?>
 
@@ -15,10 +15,9 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	<!-- Page Content -->
 	<div id="page-content-wrapper">
 		<div class="container-fluid">
-			
+			<!-- <div style="position: fixed; top: 50px; right: 0%; background-color: #eee; padding: 10px; z-index: 999;"></div> -->
 			<div class="row">
-				<div class="col-md-8">
-
+				<div class="col-md-12" id="items-panel-col">
 					<?php
 						$summary = '
 							<ul class="nav nav-pills pull-right">
@@ -39,13 +38,16 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 								      	</li>
 								    </ul>
 							  	</li>
+							  	<li>
+							  	<a id="show_filter_panel" href="#">Показать фильтры</a>
+							  	</li>
 							</ul>
 						';
 
 						echo GridView::widget([
 						    'dataProvider' => $dataProvider,
 						    //'filterModel' => $searchModel,
-						    'layout' => '<div class="row"><div class="col-md-6">{pager}</div><div class="col-md-6">{summary}</div></div><div>{items}</div>',
+						    'layout' => '<div class="row"><div class="col-md-4">{pager}</div><div class="col-md-8">{summary}</div></div><div>{items}</div>',
 						    'summary' => $summary,//'<div class="pull-right selected_issues_link"></div><div class="summary pull-right">Всего заданий {totalCount}</div>',
 						    'hover'=>true,
 						    'headerRowOptions' => ['class' => 'grid-header-row'],
@@ -132,9 +134,10 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						]);
 					?>
 				</div>
-				<div class="col-md-4">
+				<div class="col-md-0" id="filter-panel-col">
 					<div class="row">
-						<div class="panel-group fixed" style="height: 580px; overflow: auto;" id="accordion" role="tablist" aria-multiselectable="true">
+						
+						<div class="panel-group fixed panel-fixed-default" style="display: none; height: 500px; overflow: auto;" id="accordion" role="tablist" aria-multiselectable="true">
 							<div class="filters-header fixed" style="z-index: 99;">Фильтры<a class="pull-right filter-form-submit" href="#"><span style="font-size: 16px;" class="glyphicon glyphicon-filter"></span></a></div>
 							
 							<?php $form_filter = ActiveForm::begin([
@@ -873,7 +876,22 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 	        ]); ?>
 			<div class="modal-body">
 				<?= $form->errorSummary($model); ?>
-					
+						
+					<?php
+				    	$reason_types = yii\helpers\ArrayHelper::map(\app\models\ReasonTypes::find()->orderBy('ID ASC')->all(), 'ID', 'REASON_TYPE');
+				    	echo $form->field($model, 'reason_type', [
+					        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+					        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+					        'inputOptions'=>['class'=>'form-control input-sm']
+					    ])->widget(\kartik\select2\Select2::classname(), [
+						    'options' => ['placeholder' => ''],
+						    'hideSearch' => false,
+						    'data' => $reason_types,
+						    
+						]);
+						
+				    ?>
+
 				    <?= $form->field($model, 'designation', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
 				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
@@ -904,11 +922,14 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 						    		$(\"#issueform-ordernum\").val(selected_data.ordernum);
 						    		$(\"#issueform-peoordernum\").val(selected_data.peoordernum);
 						    		$(\"#issueform-documentid\").val(selected_data.id);
-
+						    		$(\"#issueform-income_number\").val(selected_data.income);
+						    		$(\"#issueform-stagenum\").val(selected_data.stagenum);
 						    	} else {
 						    		$(\"#issueform-documentid\").val('');
 						    		$(\"#issueform-ordernum\").val('');
 						    		$(\"#issueform-peoordernum\").val('');
+						    		$(\"#issueform-income_number\").val('');
+						    		$(\"#issueform-stagenum\").val('');
 						    	}
 					    	}",
 					    ]
@@ -917,6 +938,14 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 
 				    <?= $form->field($model, 'documentid', ['options' => ['class' => '']])->hiddenInput()->label(false) ?>
 
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'income_number', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm'],
+				        'enableAjaxValidation' => true
+				    ])->textInput() ?>
 				    <div class="hr-line-dashed"></div>
 
 				    <?= $form->field($model, 'task_number', [
@@ -949,6 +978,13 @@ $transactions = \app\models\Transactions::find()->where(['TN' => \Yii::$app->use
 				    <div class="hr-line-dashed"></div>
 
 				    <?= $form->field($model, 'peoordernum', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm']
+				    ])->textInput() ?>
+				    <div class="hr-line-dashed"></div>
+
+				    <?= $form->field($model, 'stagenum', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
 				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
 				        'inputOptions'=>['class'=>'form-control input-sm']

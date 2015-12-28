@@ -1,5 +1,17 @@
 $(document).ready(function(){
 
+	$("#show_filter_panel").click(function(){
+		$("#items-panel-col").toggleClass('col-md-12 col-md-8');
+		$("#filter-panel-col").toggleClass('col-md-0 col-md-4');
+		if($("#filter-panel-col").hasClass('col-md-4')){
+			$(".panel-fixed-default").css('display', 'block');
+			$("#show_filter_panel").html('Скрыть фильтры');
+		} else {
+			$(".panel-fixed-default").css('display', 'none');
+			$("#show_filter_panel").html('Показать фильтры');
+		}
+	});
+
 	$(".filter-form-submit").click(function(){
 		$("#filter-submit-button").trigger('click');
 	});

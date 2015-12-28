@@ -11,6 +11,9 @@ use yii\base\Model;
 class IssueForm extends Model
 {
     //проперти полей
+    public $stagenum;
+    public $income_number;
+    public $reason_type;
     public $designation;
     public $task_number;
     public $podr_list;
@@ -27,7 +30,7 @@ class IssueForm extends Model
     public function rules()
     {
         return [
-            [['designation', 'task_number', 'podr_list', 'ordernum', 'peoordernum', 'message', 'date'], 'required'],
+            [['stagenum', 'income_number', 'reason_type', 'designation', 'task_number', 'podr_list', 'ordernum', 'peoordernum', 'message', 'date'], 'required'],
             [['task_number'], 'integer'],
             [['task_number'], 'validateUniqueTaskNumber'],
             [['persons_list', 'documentid'], 'safe']
@@ -51,11 +54,14 @@ class IssueForm extends Model
     public function attributeLabels()
     {
         return [
+            'stagenum' => 'Этап',
+            'income_number' => 'Входящий номер',
+            'reason_type' => 'Вид основания',
             'designation' => 'Основание',
             'task_number' => 'Исходящий номер',
             'podr_list' => 'Подразделения',
             'persons_list' => 'Исполнители',
-            'ordernum' => 'Заказ (изделие)',
+            'ordernum' => 'Изделие',
             'peoordernum' => 'Заказ ПЭО',
             'message' => 'Содержание задания',
             'date' => 'Срок выполнения',

@@ -1,5 +1,5 @@
 <?php
-	$this->title = 'permissions page';
+	$this->title = 'Настройка следования состояний';
 ?>
 <!-- Page Content -->
 	<div id="page-content-wrapper">

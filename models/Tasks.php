@@ -24,6 +24,7 @@ class Tasks extends \yii\db\ActiveRecord
     public $state;
     public $hidden_ordernum;
     public $hidden_peoordernum;
+    public $STAGENUM;
     
 
     /**
@@ -46,7 +47,7 @@ class Tasks extends \yii\db\ActiveRecord
             [['SOURCENUM', 'state', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE_PERSON],
             [['SOURCENUM', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE_BOSS],
             [['SOURCENUM'], 'string', 'max' => 25],
-            [['DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state', 'hidden_ordernum', 'hidden_peoordernum'], 'safe'],
+            [['STAGENUM', 'REASON', 'REASON_ID', 'DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state', 'hidden_ordernum', 'hidden_peoordernum'], 'safe'],
         ];
     }
 
@@ -132,6 +133,8 @@ class Tasks extends \yii\db\ActiveRecord
             'agreed_podr_list' => 'Согласовано с',
             'transmitted_podr_list' => 'Передано в',
             'state' => 'Состояние',
+            'REASON' => 'Основание',
+            'STAGENUM' => 'Этап',
         ];
     }
 

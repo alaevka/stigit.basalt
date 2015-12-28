@@ -101,23 +101,25 @@ class SiteController extends Controller
                 $task = new \app\models\Tasks;
                 // в случае, если DESIGNATION не был выбран из имеющихся данных и создан новый
                 if(empty($model->documentid)) {
-                    $task->DESIGNATION = $model->designation;
+                    //$task->DESIGNATION = $model->designation;
+                    $task->REASON = $model->designation;
                     
                 } else { // в случае, если DESIGNATION был выбран из имеющихся данных получаем его значение из представления
                     $query = new \yii\db\Query;
-                    $query->select('DESIGNATION AS name')
-                            ->from('STIGIT.V_PRP_DESIGNATION')
-                            ->where('DOCUMENTID = \'' . $model->documentid .'\'');
+                    $query->select('REASON AS name')
+                            ->from('STIGIT.V_F_REASONS')
+                            ->where('REASONID = \'' . $model->documentid .'\'');
                     $command = $query->createCommand();
                     $data = $command->queryOne();
-                    $task->DESIGNATION = $data['name'];
-                    $task->DOCUMENTID = $model->documentid;
+                    $task->REASON = $data['name'];
+                    $task->REASONID = $model->documentid;
                 }
                 
                 //сохраняем прямые поля в модель
                 $task->TASK_NUMBER = $model->task_number;
                 $task->ORDERNUM = $model->ordernum;
                 $task->PEOORDERNUM = $model->peoordernum;
+                $task->STAGENUM = $model->stagenum;
                 $task->TASK_TEXT = $model->message;
 
                 $deadline = explode('-', $model->date);
@@ -442,9 +444,9 @@ class SiteController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) { // проверяем, существует ли параметр поиска в запросе
             $query = new \yii\db\Query;
-            $query->select('DOCUMENTID AS id, DESIGNATION AS text, ORDERNUM AS ordernum, PEOORDERNUM AS peoordernum')
-                ->from('STIGIT.V_PRP_DESIGNATION')
-                ->where('LOWER(DESIGNATION) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
+            $query->select('REASONID AS id, REASON AS text, ORDERNUM AS ordernum, PEOORDERNUM AS peoordernum, STAGENUM as stagenum, INCOME as income')
+                ->from('STIGIT.V_F_REASONS')
+                ->where('LOWER(REASON) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
             $command = $query->createCommand();
             $data = $command->queryAll();

@@ -39,12 +39,12 @@
 				    ])->textInput() ?>
 				    <div class="hr-line-dashed"></div>
 
-				    <?= $form->field($model, 'TASK_NUMBER', [
+				    <?= $form->field($model, 'REASON', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
 				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
 				        'inputOptions'=>['class'=>'form-control input-sm'],
 				        'enableAjaxValidation' => true
-				    ])->textInput() ?>
+				    ])->textInput()->label('Основание') ?>
 				    <div class="hr-line-dashed"></div>
 
 				    <?= $form->field($model, 'SOURCENUM', [
@@ -86,7 +86,7 @@
 					    		}
 					    	}",
 					    ]
-					]);
+					])->label('Изделие');
 				    ?>
 				    <?= $form->field($model, 'hidden_ordernum', ['options' => ['class' => '']])->hiddenInput()->label(false); ?>
 
@@ -124,6 +124,14 @@
 					]);
 				    ?>
 				    <?= $form->field($model, 'hidden_peoordernum', ['options' => ['class' => '']])->hiddenInput()->label(false); ?>
+
+				    <?= $form->field($model, 'STAGENUM', [
+				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
+				        'labelOptions'=>['class'=>'col-sm-4 control-label'],
+				        'inputOptions'=>['class'=>'form-control input-sm'],
+				        'enableAjaxValidation' => true
+				    ])->textInput() ?>
+				    <div class="hr-line-dashed"></div>
 
 				    <?= $form->field($model, 'DEADLINE', [
 				        'template' => "{label}<div class=\"col-sm-8\">{input}</div>\n{hint}", 
