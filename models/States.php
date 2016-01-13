@@ -11,7 +11,7 @@ class States extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.STATES';
+        return Yii::$app->params['scheme_name'].'.STATES';
     }
 
     public function getState_name_state_colour()

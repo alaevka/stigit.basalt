@@ -512,7 +512,7 @@ class SiteController extends Controller
         if (!is_null($q)) { // проверяем, существует ли параметр поиска в запросе
             $query = new \yii\db\Query;
             $query->select('DOC_CODE AS id, DOC_CODE AS text')
-                ->from('DEV03.TASK_DOCS')
+                ->from(Yii::$app->params['scheme_name'].'.TASK_DOCS')
                 ->where('LOWER(DOC_CODE) LIKE \'%' . mb_strtolower($q, 'UTF-8') .'%\'')
                 ->limit(20);
             $command = $query->createCommand();

@@ -11,7 +11,7 @@ class Transactions extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.TRANSACTIONS';
+        return Yii::$app->params['scheme_name'].'.TRANSACTIONS';
     }
 
     /**

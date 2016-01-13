@@ -11,7 +11,7 @@ class TaskDocs extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.TASK_DOCS';
+        return Yii::$app->params['scheme_name'].'.TASK_DOCS';
     }
 
     /**

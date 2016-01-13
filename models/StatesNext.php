@@ -11,7 +11,7 @@ class StatesNext extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.STATES_NEXT';
+        return Yii::$app->params['scheme_name'].'.STATES_NEXT';
     }
 
     /**

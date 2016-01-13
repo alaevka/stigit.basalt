@@ -11,7 +11,7 @@ class TaskDocsRecvrs extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.TASK_DOCS_RECVRS';
+        return Yii::$app->params['scheme_name'].'.TASK_DOCS_RECVRS';
     }
 
     /**

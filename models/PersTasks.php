@@ -13,7 +13,7 @@ class PersTasks extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.PERS_TASKS';
+        return Yii::$app->params['scheme_name'].'.PERS_TASKS';
     }
 
     /**

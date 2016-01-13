@@ -11,7 +11,7 @@ class TaskDates extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.TASK_DATES';
+        return Yii::$app->params['scheme_name'].'.TASK_DATES';
     }
 
     /**

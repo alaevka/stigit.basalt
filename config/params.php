@@ -8,5 +8,6 @@ return [
     'system_copyrights' => 'Разработано ООО СТИГИТ',
     'auth_fail' => 'Авторизация не выполнена. Пара логин-пароль не зарегистрированны в системе.',
     'documents_dir' => 'storage/',
+    'scheme_name' => 'DEV03',
     
 ];

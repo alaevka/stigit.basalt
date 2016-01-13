@@ -13,7 +13,7 @@ class PodrTasks extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.PODR_TASKS';
+        return Yii::$app->params['scheme_name'].'.PODR_TASKS';
     }
 
     /**

@@ -11,7 +11,7 @@ class TaskConfirms extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.TASK_CONFIRMS';
+        return Yii::$app->params['scheme_name'].'.TASK_CONFIRMS';
     }
 
     /**

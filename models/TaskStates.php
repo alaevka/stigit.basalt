@@ -11,7 +11,7 @@ class TaskStates extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.TASK_STATES';
+        return Yii::$app->params['scheme_name'].'.TASK_STATES';
     }
 
     /**

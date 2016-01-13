@@ -13,7 +13,7 @@ class Actions extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.ACTIONS';
+        return Yii::$app->params['scheme_name'].'.ACTIONS';
     }
 
     /**

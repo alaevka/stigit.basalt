@@ -11,7 +11,7 @@ class ReasonTypes extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.REASON_TYPES';
+        return Yii::$app->params['scheme_name'].'.REASON_TYPES';
     }
 
     /**

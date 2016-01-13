@@ -12,7 +12,7 @@ class Permissions extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.PERMISSIONS';
+        return Yii::$app->params['scheme_name'].'.PERMISSIONS';
     }
 
     /**

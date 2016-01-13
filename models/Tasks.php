@@ -32,7 +32,7 @@ class Tasks extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'DEV03.TASKS';
+        return Yii::$app->params['scheme_name'].'.TASKS';
     }
 
     /**
