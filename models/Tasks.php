@@ -41,13 +41,13 @@ class Tasks extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['DESIGNATION', 'TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'DEADLINE', 'TRACT_ID'], 'required'],
+            [['TASK_NUMBER', 'ORDERNUM', 'PEOORDERNUM', 'TASK_TEXT', 'DEADLINE', 'TRACT_ID'], 'required'],
             [['TASK_NUMBER'], 'integer'],
             [['TASK_NUMBER'], 'unique'],
             [['SOURCENUM', 'state', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE_PERSON],
             [['SOURCENUM', 'podr_list'], 'required', 'on' => self::SCENARIO_UPDATE_BOSS],
             [['SOURCENUM'], 'string', 'max' => 25],
-            [['STAGENUM', 'REASON', 'REASON_ID', 'DOCUMENTID', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state', 'hidden_ordernum', 'hidden_peoordernum'], 'safe'],
+            [['STAGENUM', 'REASON', 'DEL_TRACT_ID', 'ADDITIONAL_TEXT', 'SOURCENUM', 'REPORT_TEXT', 'podr_list', 'persons_list', 'task_type_date_3', 'task_type_date_1', 'task_type_date_4', 'documentation', 'agreed_podr_list', 'transmitted_podr_list', 'state', 'hidden_ordernum', 'hidden_peoordernum'], 'safe'],
         ];
     }
 
@@ -111,14 +111,12 @@ class Tasks extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'DESIGNATION' => 'Основание',
             'TASK_NUMBER' => 'Исходящий номер',
             'ORDERNUM' => 'Заказ (изделие)',
             'PEOORDERNUM' => 'Заказ ПЭО',
             'TASK_TEXT' => 'Содержание задания',
             'DEADLINE' => 'Срок выполнения',
             'TRACT_ID' => 'id транзакции',
-            'DOCUMENTID' => 'id основания',
             'DEL_TRACT_ID' => 'if deleted',
             'SOURCENUM' => 'Входящий номер',
             'ADDITIONAL_TEXT' => 'Дополнительные указания',
